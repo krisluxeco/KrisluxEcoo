@@ -416,7 +416,7 @@ function HeroSlideshow() {
 }
 
 // ─── Main Home Page ────────────────────────────────────────────────────────────
-export default function Home() {
+export default function Home({ featuredProducts = [], savedProductIds = [] }) {
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -655,7 +655,7 @@ export default function Home() {
         </div>
       </section>
 
-      <FeaturedProducts />
+      <FeaturedProducts products={featuredProducts} savedProductIds={savedProductIds} />
 
       {/* ─── WHY KRISLUXECO ───────────────────────────────────────────────────── */}
       <section className="relative py-24 bg-[#FAF8F5] overflow-hidden">
@@ -1165,36 +1165,7 @@ export default function Home() {
 
 
 
-      {/* ─── FOOTER MINI ──────────────────────────────────────────────────────── */}
-      <footer className="border-t border-[#E8DDD0] py-10 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="#4A6741">
-              <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 4-8 4 .83-.83 3-2.67 4-5-2.5 1-5.33 2.5-7 4.5C9 8 8.5 11 9 14c-1-1.5-1.5-4-1-6-2 2-3 6-3 8a8 8 0 0 0 8 8c4-2 5-9 4-16z" />
-            </svg>
-            <span
-              className="font-semibold text-[#1C1C1A]"
-              style={{ fontFamily: serif, fontSize: "1.1rem" }}
-            >
-              Krislux<span className="text-[#4A6741]">ECO</span>
-            </span>
-          </div>
-          <p className="text-xs text-[#9E9088] text-center">
-            © 2026 KrisluxECO. Crafted with love for the planet.
-          </p>
-          <div className="flex gap-6">
-            {["Products", "About", "Contact"].map((link) => (
-              <a
-                key={link}
-                href={`/${link.toLowerCase()}`}
-                className="text-xs text-[#9E9088] hover:text-[#4A6741] transition-colors tracking-wide"
-              >
-                {link}
-              </a>
-            ))}
-          </div>
-        </div>
-      </footer>
+
     </main >
   );
 }

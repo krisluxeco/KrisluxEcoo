@@ -2,6 +2,9 @@
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 
 /**
@@ -24,54 +27,13 @@ import { motion, useInView, AnimatePresence } from "framer-motion";
  * are keyed off `badge` text so you can add new badge types freely.
  */
 
-const products = [
-  {
-    name: "Bamboo Desk Organizer Set",
-    category: "Corporate Gifts",
-    badge: "BEST SELLER",
-    moq: 50,
-    price: 850,
-    image: "/artisan_craft.png",
-  },
-  {
-    name: "Handwoven Jute Storage Baskets",
-    category: "Storage & Organisation",
-    badge: "ECO CHOICE",
-    moq: 100,
-    price: 650,
-    image: "/raw_materials.png",
-  },
-  {
-    name: "Coconut Shell Bowl Collection",
-    category: "Home Decor",
-    badge: "NEW",
-    moq: 200,
-    price: 350,
-    image: "/corporate_gifts.png",
-  },
-  {
-    name: "Terracotta Garden Planter Set",
-    category: "Garden & Planters",
-    badge: "POPULAR",
-    moq: 50,
-    price: 450,
-    image: "/premium_furniture.png",
-  },
-  {
-    name: "Bamboo Travel Cutlery Set",
-    category: "Corporate Gifts",
-    badge: "ECO CHOICE",
-    moq: 100,
-    price: 280,
-    image: "/artisan_craft.png",
-  },
-];
-
 const badgeStyles = {
   "BEST SELLER": "bg-[#4A6741] text-white",
   "ECO CHOICE": "bg-[#8FBD84] text-[#1C1C1A]",
-  NEW: "bg-[#1C1C1A] text-white",
-  POPULAR: "bg-[#C8A97A] text-white",
+  "NEW": "bg-[#1C1C1A] text-white",
+  "POPULAR": "bg-[#C8A97A] text-white",
+  "SPECIAL OFFER": "bg-[#D98C5F] text-white",
+  "OUT OF STOCK": "bg-[#1C1C1A]/60 text-white",
 };
 
 const CARD_WIDTH = 296; // card width + gap, used for arrow-button paging
@@ -93,14 +55,20 @@ function LikeBurst() {
   );
 }
 
-function ProductCard({ product, index, onDragStateRef }) {
-  const [liked, setLiked] = useState(false);
+function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggleSaved }) {
+  const { status } = useSession();
+  const router = useRouter();
+  const [liked, setLiked] = useState(isLiked);
   const [showBurst, setShowBurst] = useState(false);
   const cardRef = useRef(null);
   const inView = useInView(cardRef, { once: true, margin: "-40px" });
 
   // 3D tilt-on-hover, driven by pointer position relative to the card
   const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
+
+  useEffect(() => {
+    setLiked(isLiked);
+  }, [isLiked]);
 
   const handlePointerMoveCard = (e) => {
     const card = cardRef.current;
@@ -117,17 +85,49 @@ function ProductCard({ product, index, onDragStateRef }) {
 
   const resetTilt = () => setTilt({ rx: 0, ry: 0 });
 
-  const handleLikeClick = (e) => {
+  const handleLikeClick = async (e) => {
     e.stopPropagation();
-    setLiked((v) => {
-      const next = !v;
-      if (next) {
-        setShowBurst(true);
-        setTimeout(() => setShowBurst(false), 500);
+    
+    if (status !== "authenticated") {
+      router.push("/login");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/user/saved-products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ productId: product._id }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        const nextState = data.saved;
+        setLiked(nextState);
+        if (nextState) {
+          setShowBurst(true);
+          setTimeout(() => setShowBurst(false), 500);
+        }
+        onToggleSaved?.(product._id, nextState);
       }
-      return next;
-    });
+    } catch (err) {
+      console.error("Error toggling saved status:", err);
+    }
   };
+
+  const coverImg = product.images?.[0]?.url || "";
+  const displayPrice = product.discountPrice ?? product.price;
+  const isOutOfStock = product.stock === 0;
+
+  const getBadgeText = () => {
+    if (isOutOfStock) return "OUT OF STOCK";
+    if (product.category === "Eco & Sustainable") return "ECO CHOICE";
+    if (product.discountPrice) return "SPECIAL OFFER";
+    if (product.isBestSeller) return "BEST SELLER";
+    return "NEW";
+  };
+  const badgeText = getBadgeText();
 
   return (
     <motion.div
@@ -169,19 +169,19 @@ function ProductCard({ product, index, onDragStateRef }) {
             animate={inView ? { opacity: 1, scale: 1, x: 0 } : {}}
             transition={{ delay: index * 0.09 + 0.25, type: "spring", stiffness: 300, damping: 16 }}
             className={`absolute top-3 left-3 z-10 text-[10px] font-semibold tracking-wider px-2.5 py-1 rounded-full whitespace-nowrap shadow-sm ${
-              badgeStyles[product.badge] ?? "bg-[#4A6741] text-white"
+              badgeStyles[badgeText] ?? "bg-[#4A6741] text-white"
             }`}
           >
-            {product.badge === "BEST SELLER" || product.badge === "NEW" ? (
+            {badgeText === "BEST SELLER" || badgeText === "NEW" ? (
               <motion.span
                 className="inline-block"
                 animate={{ scale: [1, 1.12, 1] }}
                 transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
               >
-                {product.badge}
+                {badgeText}
               </motion.span>
             ) : (
-              product.badge
+              badgeText
             )}
           </motion.span>
 
@@ -190,14 +190,20 @@ function ProductCard({ product, index, onDragStateRef }) {
             whileHover={{ scale: 1.12 }}
             transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            <Image
-              src={product.image}
-              alt={product.name}
-              fill
-              draggable={false}
-              sizes="(max-width: 768px) 260px, 280px"
-              className="object-cover"
-            />
+            {coverImg ? (
+              <Image
+                src={coverImg}
+                alt={product.name}
+                fill
+                draggable={false}
+                sizes="(max-width: 768px) 260px, 280px"
+                className="object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-[#9E9088]">
+                <Package size={32} className="stroke-1" />
+              </div>
+            )}
           </motion.div>
 
           {/* Soft gradient sheen that sweeps across on hover */}
@@ -230,29 +236,34 @@ function ProductCard({ product, index, onDragStateRef }) {
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
                 <circle cx="12" cy="12" r="9" />
               </svg>
-              MOQ: {product.moq}
+              MOQ: {product.minOrderQty || 1}
             </span>
             <span className="text-[#4A6741] font-semibold whitespace-nowrap">
-              ₹{product.price.toLocaleString()} <span className="text-[#9E9088] font-normal">onwards</span>
+              ₹{displayPrice.toLocaleString()} <span className="text-[#9E9088] font-normal">onwards</span>
             </span>
           </div>
 
           <div className="flex items-center gap-2">
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.96 }}
-              transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              className="relative flex-1 bg-[#1C1C1A] hover:bg-[#4A6741] text-white text-xs tracking-wide py-2.5 rounded-full transition-colors overflow-hidden"
+            <Link
+              href={`/user/products/${product._id}`}
+              className="flex-1"
             >
-              REQUEST QUOTE
-            </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                className="w-full relative flex items-center justify-center bg-[#1C1C1A] hover:bg-[#4A6741] text-white text-xs tracking-wide py-2.5 rounded-full transition-colors overflow-hidden cursor-pointer"
+              >
+                REQUEST QUOTE
+              </motion.button>
+            </Link>
 
             <motion.button
               onClick={handleLikeClick}
               aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
               whileTap={{ scale: 0.8 }}
               whileHover={{ scale: 1.08 }}
-              className="relative w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-full border border-[#E8DDD0] hover:border-[#4A6741] transition-colors"
+              className="relative w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-full border border-[#E8DDD0] hover:border-[#4A6741] transition-colors cursor-pointer"
             >
               <AnimatePresence>{showBurst && <LikeBurst />}</AnimatePresence>
               <motion.svg
@@ -275,7 +286,7 @@ function ProductCard({ product, index, onDragStateRef }) {
   );
 }
 
-export default function FeaturedProducts() {
+export default function FeaturedProducts({ products = [], savedProductIds = [] }) {
   const railRef = useRef(null);
   const sectionRef = useRef(null);
   const inView = useInView(sectionRef, { once: true, margin: "-60px" });
@@ -530,8 +541,13 @@ export default function FeaturedProducts() {
             style={{ scrollSnapType: "x proximity" }}
           >
             {products.map((product, i) => (
-              <div key={i} style={{ scrollSnapAlign: "start" }}>
-                <ProductCard product={product} index={i} onDragStateRef={drag} />
+              <div key={product._id} style={{ scrollSnapAlign: "start" }}>
+                <ProductCard
+                  product={product}
+                  index={i}
+                  onDragStateRef={drag}
+                  isLiked={savedProductIds?.includes(product._id.toString())}
+                />
               </div>
             ))}
           </div>
@@ -548,7 +564,7 @@ export default function FeaturedProducts() {
 
         <div className="flex justify-center">
           <motion.a
-            href="/products"
+            href="/user/products"
             initial={{ opacity: 0, y: 10 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.6 }}

@@ -1,8 +1,11 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { signIn } from "next-auth/react";
 
 // ─── Shared Typography Helpers ─────────────────────────────────────────────────
 const serif = "'Cormorant Garamond', Georgia, serif";
@@ -27,7 +30,12 @@ function Leaf({ style }) {
         ease: "linear",
       }}
     >
-      <svg width={style.size ?? 16} height={style.size ?? 16} viewBox="0 0 24 24" fill="currentColor">
+      <svg
+        width={style.size ?? 16}
+        height={style.size ?? 16}
+        viewBox="0 0 24 24"
+        fill="currentColor"
+      >
         <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 4-8 4 .83-.83 3-2.67 4-5-2.5 1-5.33 2.5-7 4.5C9 8 8.5 11 9 14c-1-1.5-1.5-4-1-6-2 2-3 6-3 8a8 8 0 0 0 8 8c4-2 5-9 4-16z" />
       </svg>
     </motion.div>
@@ -50,11 +58,18 @@ const leaves = Array.from({ length: 10 }, (_, i) => ({
 function Eyebrow({ children, light = false }) {
   return (
     <div className="flex items-center justify-center gap-3 mb-3">
-      <span className={`h-px w-8 ${light ? "bg-[#C8A97A]/50" : "bg-[#C8A97A]/60"}`} />
-      <p className="text-xs tracking-[0.25em] uppercase text-[#C8A97A]" style={{ fontFamily: sans }}>
+      <span
+        className={`h-px w-8 ${light ? "bg-[#C8A97A]/50" : "bg-[#C8A97A]/60"}`}
+      />
+      <p
+        className="text-xs tracking-[0.25em] uppercase text-[#C8A97A]"
+        style={{ fontFamily: sans }}
+      >
         {children}
       </p>
-      <span className={`h-px w-8 ${light ? "bg-[#C8A97A]/50" : "bg-[#C8A97A]/60"}`} />
+      <span
+        className={`h-px w-8 ${light ? "bg-[#C8A97A]/50" : "bg-[#C8A97A]/60"}`}
+      />
     </div>
   );
 }
@@ -68,11 +83,16 @@ function FloatField({ label, type = "text", icon, name, autoComplete }) {
   return (
     <div className="relative">
       <div
-        className={`relative flex items-center gap-3 rounded-2xl border bg-white/70 backdrop-blur-sm px-5 transition-all duration-300 ${focused ? "border-[#4A6741] shadow-[0_0_0_4px_rgba(74,103,65,0.08)]" : "border-[#E8DDD0]"
-          }`}
+        className={`relative flex items-center gap-3 rounded-2xl border bg-white/70 backdrop-blur-sm px-5 transition-all duration-300 ${
+          focused
+            ? "border-[#4A6741] shadow-[0_0_0_4px_rgba(74,103,65,0.08)]"
+            : "border-[#E8DDD0]"
+        }`}
         style={{ height: 58 }}
       >
-        <span className={`shrink-0 transition-colors duration-300 ${focused ? "text-[#4A6741]" : "text-[#B7AFA4]"}`}>
+        <span
+          className={`shrink-0 transition-colors duration-300 ${focused ? "text-[#4A6741]" : "text-[#B7AFA4]"}`}
+        >
           {icon}
         </span>
 
@@ -116,12 +136,24 @@ function PasswordField({ label, name }) {
 
   return (
     <div
-      className={`relative flex items-center gap-3 rounded-2xl border bg-white/70 backdrop-blur-sm px-5 transition-all duration-300 ${focused ? "border-[#4A6741] shadow-[0_0_0_4px_rgba(74,103,65,0.08)]" : "border-[#E8DDD0]"
-        }`}
+      className={`relative flex items-center gap-3 rounded-2xl border bg-white/70 backdrop-blur-sm px-5 transition-all duration-300 ${
+        focused
+          ? "border-[#4A6741] shadow-[0_0_0_4px_rgba(74,103,65,0.08)]"
+          : "border-[#E8DDD0]"
+      }`}
       style={{ height: 58 }}
     >
-      <span className={`shrink-0 transition-colors duration-300 ${focused ? "text-[#4A6741]" : "text-[#B7AFA4]"}`}>
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <span
+        className={`shrink-0 transition-colors duration-300 ${focused ? "text-[#4A6741]" : "text-[#B7AFA4]"}`}
+      >
+        <svg
+          width="17"
+          height="17"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+        >
           <rect x="4" y="11" width="16" height="9" rx="2" />
           <path d="M8 11V7a4 4 0 0 1 8 0v4" />
         </svg>
@@ -143,7 +175,11 @@ function PasswordField({ label, name }) {
           htmlFor={name}
           className="absolute left-0 bottom-[6px] pointer-events-none origin-left select-none"
           style={{ fontFamily: sans, color: focused ? "#4A6741" : "#9E9088" }}
-          animate={active ? { y: -20, scale: 0.78, opacity: 0.9 } : { y: 0, scale: 1, opacity: 0.75 }}
+          animate={
+            active
+              ? { y: -20, scale: 0.78, opacity: 0.9 }
+              : { y: 0, scale: 1, opacity: 0.75 }
+          }
           transition={{ duration: 0.22, ease: "easeOut" }}
         >
           {label}
@@ -157,12 +193,26 @@ function PasswordField({ label, name }) {
         aria-label="Toggle password visibility"
       >
         {visible ? (
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <svg
+            width="17"
+            height="17"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+          >
             <path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-5 0-9.27-3.11-11-7.5a13.16 13.16 0 0 1 2.16-3.19m3.9-2.27A9.77 9.77 0 0 1 12 5c5 0 9.27 3.11 11 7.5a13.06 13.06 0 0 1-1.67 2.68M9.9 9.9a3 3 0 1 0 4.2 4.2" />
             <path d="M2 2l20 20" />
           </svg>
         ) : (
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <svg
+            width="17"
+            height="17"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+          >
             <path d="M1 12s4-7.5 11-7.5S23 12 23 12s-4 7.5-11 7.5S1 12 1 12z" />
             <circle cx="12" cy="12" r="3" />
           </svg>
@@ -211,17 +261,34 @@ function StrengthMeter() {
 function GoogleButton() {
   return (
     <motion.button
+      onClick={() => signIn("google", { callbackUrl: "/post-login" })}
       type="button"
-      whileHover={{ scale: 1.015, y: -1, boxShadow: "0 10px 30px rgba(28,28,26,0.08)" }}
+      whileHover={{
+        scale: 1.015,
+        y: -1,
+        boxShadow: "0 10px 30px rgba(28,28,26,0.08)",
+      }}
       whileTap={{ scale: 0.98 }}
       className="w-full flex items-center justify-center gap-3 rounded-2xl border border-[#E8DDD0] bg-white px-5 py-4 text-sm font-medium text-[#1C1C1A] transition-all"
       style={{ fontFamily: sans }}
     >
       <svg width="18" height="18" viewBox="0 0 24 24">
-        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.69-2.26 1.1-3.71 1.1-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-        <path fill="#FBBC05" d="M5.84 14.14A6.96 6.96 0 0 1 5.43 12c0-.74.13-1.46.36-2.14V7.02H2.18A11.93 11.93 0 0 0 1 12c0 1.92.46 3.74 1.18 5.34l3.66-2.84z" />
-        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.02l3.66 2.84c.87-2.6 3.3-4.48 6.16-4.48z" />
+        <path
+          fill="#4285F4"
+          d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+        />
+        <path
+          fill="#34A853"
+          d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.69-2.26 1.1-3.71 1.1-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+        />
+        <path
+          fill="#FBBC05"
+          d="M5.84 14.14A6.96 6.96 0 0 1 5.43 12c0-.74.13-1.46.36-2.14V7.02H2.18A11.93 11.93 0 0 0 1 12c0 1.92.46 3.74 1.18 5.34l3.66-2.84z"
+        />
+        <path
+          fill="#EA4335"
+          d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.02l3.66 2.84c.87-2.6 3.3-4.48 6.16-4.48z"
+        />
       </svg>
       Continue with Google
     </motion.button>
@@ -230,8 +297,59 @@ function GoogleButton() {
 
 // ─── Main Register Page ────────────────────────────────────────────────────────
 export default function RegisterPage() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError("");
+    setSuccess("");
+    setLoading(true);
+
+    const formData = new FormData(event.currentTarget);
+    const body = {
+      firstName: formData.get("firstName")?.toString().trim() ?? "",
+      lastName: formData.get("lastName")?.toString().trim() ?? "",
+      email: formData.get("email")?.toString().trim() ?? "",
+      password: formData.get("password")?.toString() ?? "",
+    };
+
+    if (!body.firstName || !body.lastName || !body.email || !body.password) {
+      setError("Please fill in all fields.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await axios.post("/api/auth/register", body);
+      const data = response.data;
+      setLoading(false);
+
+      if (!(response.status >= 200 && response.status < 300)) {
+        setError(data.message || "Unable to register. Please try again.");
+        return;
+      }
+
+      setSuccess("Account created successfully. Redirecting to login...");
+      window.setTimeout(() => router.push("/login"), 1200);
+    } catch (err) {
+      setLoading(false);
+      const message =
+        err && err.response && err.response.data && err.response.data.message
+          ? err.response.data.message
+          : err instanceof Error
+            ? err.message
+            : "Unable to register. Please try again.";
+      setError(message);
+    }
+  };
   return (
-    <main className="relative min-h-screen bg-[#FAF7F2] text-[#1C1C1A] overflow-hidden" style={{ fontFamily: sans }}>
+    <main
+      className="relative min-h-screen bg-[#FAF7F2] text-[#1C1C1A] overflow-hidden"
+      style={{ fontFamily: sans }}
+    >
       {/* Google Fonts */}
       <style>{`
   @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:wght@300;400;500;600&display=swap');
@@ -280,7 +398,10 @@ export default function RegisterPage() {
             animate={{ x: [0, 40, 0], y: [0, -25, 0] }}
             transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
             className="absolute -top-32 -left-32 w-[420px] h-[420px] rounded-full blur-[140px] opacity-25"
-            style={{ background: "radial-gradient(circle, #8FBD84 0%, transparent 70%)" }}
+            style={{
+              background:
+                "radial-gradient(circle, #8FBD84 0%, transparent 70%)",
+            }}
           />
 
           {/* Logo */}
@@ -293,7 +414,10 @@ export default function RegisterPage() {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="#8FBD84">
               <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 4-8 4 .83-.83 3-2.67 4-5-2.5 1-5.33 2.5-7 4.5C9 8 8.5 11 9 14c-1-1.5-1.5-4-1-6-2 2-3 6-3 8a8 8 0 0 0 8 8c4-2 5-9 4-16z" />
             </svg>
-            <span className="font-semibold text-white" style={{ fontFamily: serif, fontSize: "1.15rem" }}>
+            <span
+              className="font-semibold text-white"
+              style={{ fontFamily: serif, fontSize: "1.15rem" }}
+            >
               Krislux<span className="text-[#8FBD84]">ECO</span>
             </span>
           </motion.div>
@@ -313,13 +437,22 @@ export default function RegisterPage() {
             <motion.h1
               initial={{ opacity: 0, y: 26 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+              transition={{
+                duration: 0.8,
+                delay: 0.25,
+                ease: [0.25, 0.46, 0.45, 0.94],
+              }}
               className="leading-[1.08] text-white mb-6"
-              style={{ fontFamily: serif, fontSize: "clamp(2.4rem, 4vw, 3.2rem)" }}
+              style={{
+                fontFamily: serif,
+                fontSize: "clamp(2.4rem, 4vw, 3.2rem)",
+              }}
             >
               <span className="block font-light">
                 Begin your{" "}
-                <span className="italic font-normal text-[#C8A97A]">sustainable</span>
+                <span className="italic font-normal text-[#C8A97A]">
+                  sustainable
+                </span>
               </span>
               <span className="block font-semibold">story with us</span>
             </motion.h1>
@@ -337,8 +470,8 @@ export default function RegisterPage() {
               transition={{ duration: 0.7, delay: 0.5 }}
               className="text-white/70 text-[15px] leading-relaxed"
             >
-              Create an account to track orders, save your favourite pieces,
-              and unlock B2B pricing on every handcrafted collection.
+              Create an account to track orders, save your favourite pieces, and
+              unlock B2B pricing on every handcrafted collection.
             </motion.p>
           </div>
 
@@ -349,12 +482,18 @@ export default function RegisterPage() {
             transition={{ duration: 0.8, delay: 0.8 }}
             className="relative z-10 flex items-center gap-6 flex-wrap"
           >
-            {["200+ Artisan Partners", "ISO Certified", "Zero Plastic"].map((item, i) => (
-              <div key={item} className="flex items-center gap-2">
-                {i !== 0 && <span className="h-1 w-1 rounded-full bg-white/30" />}
-                <span className="text-[11px] uppercase tracking-[0.18em] text-white/55">{item}</span>
-              </div>
-            ))}
+            {["200+ Artisan Partners", "ISO Certified", "Zero Plastic"].map(
+              (item, i) => (
+                <div key={item} className="flex items-center gap-2">
+                  {i !== 0 && (
+                    <span className="h-1 w-1 rounded-full bg-white/30" />
+                  )}
+                  <span className="text-[11px] uppercase tracking-[0.18em] text-white/55">
+                    {item}
+                  </span>
+                </div>
+              ),
+            )}
           </motion.div>
         </section>
 
@@ -385,7 +524,10 @@ export default function RegisterPage() {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="#4A6741">
                 <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 4-8 4 .83-.83 3-2.67 4-5-2.5 1-5.33 2.5-7 4.5C9 8 8.5 11 9 14c-1-1.5-1.5-4-1-6-2 2-3 6-3 8a8 8 0 0 0 8 8c4-2 5-9 4-16z" />
               </svg>
-              <span className="font-semibold text-[#1C1C1A]" style={{ fontFamily: serif, fontSize: "1.1rem" }}>
+              <span
+                className="font-semibold text-[#1C1C1A]"
+                style={{ fontFamily: serif, fontSize: "1.1rem" }}
+              >
                 Krislux<span className="text-[#4A6741]">ECO</span>
               </span>
             </div>
@@ -401,7 +543,10 @@ export default function RegisterPage() {
             </h2>
             <p className="text-center text-[13.5px] text-[#9E9088] mb-9">
               Already have an account?{" "}
-              <Link href="/login" className="text-[#4A6741] font-medium hover:underline underline-offset-2">
+              <Link
+                href="/login"
+                className="text-[#4A6741] font-medium hover:underline underline-offset-2"
+              >
                 Sign in
               </Link>
             </p>
@@ -422,14 +567,21 @@ export default function RegisterPage() {
             </div>
 
             {/* Form */}
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-4">
                 <FloatField
                   label="First name"
                   name="firstName"
                   autoComplete="given-name"
                   icon={
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    >
                       <circle cx="12" cy="8" r="4" />
                       <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" />
                     </svg>
@@ -440,7 +592,14 @@ export default function RegisterPage() {
                   name="lastName"
                   autoComplete="family-name"
                   icon={
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    >
                       <circle cx="12" cy="8" r="4" />
                       <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" />
                     </svg>
@@ -454,7 +613,14 @@ export default function RegisterPage() {
                 type="email"
                 autoComplete="email"
                 icon={
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  >
                     <rect x="3" y="5" width="18" height="14" rx="2" />
                     <path d="M3 7l9 6 9-6" />
                   </svg>
@@ -468,23 +634,51 @@ export default function RegisterPage() {
                 </div>
               </div>
 
+              {error ? (
+                <div className="rounded-2xl bg-[#FAD4D6] px-4 py-3 text-sm text-[#8B1C1C]">
+                  {error}
+                </div>
+              ) : null}
+              {success ? (
+                <div className="rounded-2xl bg-[#D7F2D0] px-4 py-3 text-sm text-[#2F5E20]">
+                  {success}
+                </div>
+              ) : null}
+
               {/* Terms checkbox */}
               <label className="flex items-start gap-3 pt-2 cursor-pointer select-none">
                 <span className="relative mt-0.5 shrink-0">
                   <input type="checkbox" className="peer sr-only" />
                   <span className="flex items-center justify-center w-[18px] h-[18px] rounded-md border-2 border-[#D8CFC2] bg-white peer-checked:bg-[#4A6741] peer-checked:border-[#4A6741] transition-all duration-200">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" className="opacity-0 peer-checked:opacity-100">
+                    <svg
+                      width="11"
+                      height="11"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="white"
+                      strokeWidth="3"
+                      className="opacity-0 peer-checked:opacity-100"
+                    >
                       <path d="M5 13l4 4L19 7" />
                     </svg>
                   </span>
                 </span>
-                <span className="text-[13px] text-[#6B6560] leading-relaxed" style={{ fontFamily: sans }}>
+                <span
+                  className="text-[13px] text-[#6B6560] leading-relaxed"
+                  style={{ fontFamily: sans }}
+                >
                   I agree to the{" "}
-                  <Link href="/terms" className="text-[#4A6741] font-medium hover:underline underline-offset-2">
+                  <Link
+                    href="/terms"
+                    className="text-[#4A6741] font-medium hover:underline underline-offset-2"
+                  >
                     Terms of Service
                   </Link>{" "}
                   and{" "}
-                  <Link href="/privacy" className="text-[#4A6741] font-medium hover:underline underline-offset-2">
+                  <Link
+                    href="/privacy"
+                    className="text-[#4A6741] font-medium hover:underline underline-offset-2"
+                  >
                     Privacy Policy
                   </Link>
                 </span>
@@ -498,11 +692,19 @@ export default function RegisterPage() {
                   boxShadow: "0 14px 36px rgba(74,103,65,0.38)",
                 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full mt-2 flex items-center justify-center gap-2 bg-[#4A6741] text-white py-4 rounded-2xl text-sm tracking-wide font-medium transition-all"
+                disabled={loading}
+                className="w-full mt-2 flex items-center justify-center gap-2 bg-[#4A6741] text-white py-4 rounded-2xl text-sm tracking-wide font-medium transition-all disabled:cursor-not-allowed disabled:opacity-60"
                 style={{ fontFamily: sans }}
               >
-                Create Account
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                {loading ? "Creating account..." : "Create Account"}
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
               </motion.button>
