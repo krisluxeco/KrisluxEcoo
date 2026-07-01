@@ -16,6 +16,14 @@ const imageSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const volumePricingSchema = new mongoose.Schema(
+  {
+    minQty: { type: Number, required: true, min: 1 },
+    price: { type: Number, required: true, min: 0 },
+  },
+  { _id: false }
+);
+
 const productSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
@@ -44,6 +52,11 @@ const productSchema = new mongoose.Schema(
 
     tags: { type: [String], default: [] },
     specs: { type: [specSchema], default: [] },
+    
+    // B2B features
+    volumePricing: { type: [volumePricingSchema], default: [] },
+    leadTime: { type: String, trim: true, default: "3-4 weeks" },
+    downloadableSpecSheetUrl: { type: String, trim: true },
 
     status: {
       type: String,

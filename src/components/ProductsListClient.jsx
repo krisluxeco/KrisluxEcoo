@@ -46,16 +46,16 @@ function FacetCheckbox({ label, count, checked, onChange }) {
       <span className="flex items-center gap-3">
         <span
           className={`relative h-3.5 w-3.5 rounded-full border flex items-center justify-center transition-all duration-300 ${checked
-              ? "bg-[#1C1C1A] border-[#1C1C1A]"
-              : "bg-transparent border-[#D9CFC2] group-hover:border-[#1C1C1A]/40"
+            ? "bg-[#1C1C1A] border-[#1C1C1A]"
+            : "bg-transparent border-[#D9CFC2] group-hover:border-[#1C1C1A]/40"
             }`}
         >
           {checked && (
-             <motion.div
-               initial={{ scale: 0 }}
-               animate={{ scale: 1 }}
-               className="w-1.5 h-1.5 bg-[#C8A97A] rounded-full"
-             />
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="w-1.5 h-1.5 bg-[#C8A97A] rounded-full"
+            />
           )}
         </span>
         <input
@@ -218,7 +218,7 @@ export function StorefrontProductCard({ product, onQuickView, isLiked = false, o
                 <Package size={32} className="stroke-1" />
               </div>
             )}
-            
+
             {/* Elegant inner shadow/overlay */}
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500 pointer-events-none" />
 
@@ -252,13 +252,13 @@ export function StorefrontProductCard({ product, onQuickView, isLiked = false, o
 
             <div className="mt-4 flex items-end justify-between">
               <div className="space-y-1">
-                 <div className="text-[10px] uppercase tracking-wider text-[#9E9088] font-medium">
-                   MOQ: {product.minOrderQty || 1} units
-                 </div>
-                 <div className="font-semibold text-[#1C1C1A] text-sm tracking-wide">
-                   ₹{displayPrice.toLocaleString()}{" "}
-                   <span className="font-normal text-[#9E9088] text-xs">/ unit</span>
-                 </div>
+                <div className="text-[10px] uppercase tracking-wider text-[#9E9088] font-medium">
+                  MOQ: {product.minOrderQty || 1} units
+                </div>
+                <div className="font-semibold text-[#1C1C1A] text-sm tracking-wide">
+                  ₹{displayPrice.toLocaleString()}{" "}
+                  <span className="font-normal text-[#9E9088] text-xs">/ unit</span>
+                </div>
               </div>
 
               <button

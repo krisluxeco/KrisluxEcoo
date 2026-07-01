@@ -62,6 +62,38 @@ const userSchema = new mongoose.Schema(
       type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
       default: [],
     },
+
+    // B2B Details
+    companyName: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    taxId: {
+      type: String, // GST or VAT
+      trim: true,
+      default: "",
+    },
+
+    // Analytics & Tracking
+    lastLogin: {
+      type: Date,
+      default: null,
+    },
+    totalTimeSpent: {
+      type: Number, // in seconds
+      default: 0,
+    },
+    quotesRequested: {
+      type: Number, // how many times they initiated whatsapp intent
+      default: 0,
+    },
+
+    // Account Management
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

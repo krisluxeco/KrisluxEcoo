@@ -6,6 +6,7 @@ import {
   useScroll,
   useTransform,
   useInView,
+  AnimatePresence,
 } from "framer-motion";
 import Link from "next/link";
 
@@ -44,6 +45,80 @@ function FadeUp({ children, delay = 0, className = "" }) {
   );
 }
 
+// ─── Hero Slideshow ────────────────────────────────────────────────────────────
+const aboutSlides = [
+  { url: "/images/artisan_crafting.png", caption: "Preserving Heritage" },
+  { url: "/images/home_storage.png", caption: "Natural Materials" },
+  { url: "/images/luxury_amenities.png", caption: "Elevated Living" },
+];
+
+function AboutSlideshow() {
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setCurrent((c) => (c + 1) % aboutSlides.length);
+    }, 5000);
+    return () => clearInterval(t);
+  }, []);
+
+  const goTo = (i) => setCurrent(i);
+
+  return (
+    <>
+      <div className="absolute inset-0 z-0">
+        {aboutSlides.map((slide, i) => (
+          <motion.div
+            key={slide.url}
+            className="absolute inset-0 bg-cover bg-center mix-blend-multiply"
+            style={{ backgroundImage: `url(${slide.url})` }}
+            initial={false}
+            animate={{
+              opacity: i === current ? 0.8 : 0,
+              scale: i === current ? 1.0 : 1.07,
+            }}
+            transition={{
+              opacity: { duration: 1.4, ease: "easeInOut" },
+              scale: { duration: 7, ease: "easeOut" },
+            }}
+          />
+        ))}
+        {/* Dark gradient overlays for text legibility */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1C1C1A]/80 via-[#1C1C1A]/40 to-transparent z-10 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1A]/80 via-transparent to-transparent z-10 pointer-events-none" />
+      </div>
+
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+        {aboutSlides.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goTo(i)}
+            aria-label={`Slide ${i + 1}`}
+            className={`rounded-full transition-all duration-500 ${i === current
+                ? "w-6 h-2 bg-[#C8A97A]"
+                : "w-2 h-2 bg-white/40 hover:bg-white/70"
+              }`}
+          />
+        ))}
+      </div>
+
+      <AnimatePresence mode="wait">
+        <motion.p
+          key={current}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.5 }}
+          className="absolute bottom-10 right-8 z-20 text-[10px] tracking-[0.22em] uppercase text-white/70 hidden md:block"
+          style={{ fontFamily: sans }}
+        >
+          {aboutSlides[current].caption}
+        </motion.p>
+      </AnimatePresence>
+    </>
+  );
+}
+
 // ─── Ticker items ────────────────────────────────────────────────────────────
 const TICKER_ITEMS = [
   "Water Hyacinth",
@@ -58,7 +133,7 @@ const TICKER_ITEMS = [
 // ─── Product data ────────────────────────────────────────────────────────────
 const products = [
   {
-    icon: "🏠",
+    img: "/images/home_storage.png",
     name: "Home & Storage",
     desc: "Everyday objects made to last a decade — baskets, trays, organisers, and lampshades from water hyacinth and natural fibre.",
     tags: ["Baskets", "Trays", "Organisers", "Lampshades"],
@@ -67,7 +142,7 @@ const products = [
     buyer: "Eco home décor · NRI gifting",
   },
   {
-    icon: "👜",
+    img: "/images/fashion_bags.png",
     name: "Fashion & Bags",
     desc: "Wearable craft — handbags, clutches, wallets, and totes designed for sustainable fashion buyers and boutique retail.",
     tags: ["Handbags", "Clutches", "Wallets", "Totes"],
@@ -76,7 +151,7 @@ const products = [
     buyer: "Sustainable fashion buyers",
   },
   {
-    icon: "🪑",
+    img: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=80",
     name: "Furniture & Décor",
     desc: "Statement pieces — stools, mirror frames, and wall art that serve luxury interior and hospitality buyers at scale.",
     tags: ["Stools", "Mirror Frames", "Wall Art"],
@@ -85,7 +160,7 @@ const products = [
     buyer: "Luxury interiors · hotel chains",
   },
   {
-    icon: "🎁",
+    img: "/images/corporate_gifting.png",
     name: "Corporate Gifting",
     desc: "Branded hampers, coasters, and stationery — our fastest-growing B2B revenue stream, tailored for bulk ESG-aligned gifting.",
     tags: ["Hampers", "Coasters", "Stationery"],
@@ -166,72 +241,45 @@ export default function AboutWhatWeDoPage() {
       `}</style>
 
       {/* ─── HERO ──────────────────────────────────────────────────────────── */}
-      <section
-        ref={heroRef}
-        className="relative min-h-[80vh] flex items-center overflow-hidden bg-[#1C1C1A]"
-      >
-        <motion.div
-          style={{ y: heroY, opacity: heroOpacity }}
-          className="absolute inset-0 z-0"
-        >
-          <div
-            className="absolute inset-0 bg-cover bg-center opacity-[0.22]"
-            style={{
-              backgroundImage:
-                "url(https://images.unsplash.com/photo-1569913486515-b74bf7751574?q=80&w=1400)",
-            }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1A] via-[#1C1C1A]/70 to-[#1C1C1A]/55" />
+      <section className="relative w-full h-[110vh] flex flex-col justify-end overflow-hidden pb-32 border-b border-[#1C1C1A]/5">
+        <motion.div style={{ y: heroY }} className="absolute inset-0 z-0">
+          <AboutSlideshow />
         </motion.div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 w-full pt-28 pb-20">
-          <div className="max-w-2xl">
+        <div className="relative z-20 max-w-7xl mx-auto px-6 w-full md:flex md:items-end justify-between">
+          <div className="max-w-3xl">
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white/80 text-xs tracking-widest uppercase px-4 py-2 rounded-full mb-8"
+              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white text-xs tracking-widest uppercase px-4 py-2 rounded-full mb-8"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-[#8FBD84]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#8FBD84] animate-pulse" />
               What We Do
             </motion.div>
 
             <motion.h1
-              initial={{ opacity: 0, y: 28 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.85, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="leading-[1.06] text-white mb-6"
-              style={{
-                fontFamily: serif,
-                fontSize: "clamp(2.4rem, 5.5vw, 3.8rem)",
-              }}
+              transition={{ duration: 1.2, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="text-[clamp(3.5rem,8vw,7.5rem)] font-[300] leading-[0.9] mb-8 text-white"
+              style={{ fontFamily: serif }}
             >
-              <span className="block font-light">Handcrafted goods</span>
-              <span className="block font-semibold">
-                that{" "}
-                <span className="italic font-normal text-[#C8A97A]">
-                  pay it forward
-                </span>
-              </span>
+              Handcrafted goods <br/> <span className="italic text-white/80">that pay it forward.</span>
             </motion.h1>
 
             <motion.div
-              initial={{ scaleX: 0, opacity: 0 }}
-              animate={{ scaleX: 1, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.45, ease: "easeOut" }}
-              className="h-[2px] w-14 bg-[#C8A97A] mb-8 origin-left"
-            />
-
-            <motion.p
-              initial={{ opacity: 0, y: 18 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.4 }}
-              className="text-white/75 text-base md:text-lg leading-relaxed"
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="flex flex-col sm:flex-row gap-6"
             >
-              KrisluxECO makes eco-friendly handcrafted products from Bihar's
-              natural materials — built through traditional craft, sold directly
-              to businesses, and designed so every link in the chain benefits.
-            </motion.p>
+              <p className="text-white/80 text-sm md:text-base max-w-lg font-light leading-loose">
+                KrisluxECO makes eco-friendly handcrafted products from Bihar's
+                natural materials — built through traditional craft, sold directly
+                to businesses, and designed so every link in the chain benefits.
+              </p>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -363,38 +411,44 @@ export default function AboutWhatWeDoPage() {
           <div className="grid sm:grid-cols-2 gap-5">
             {products.map((p, i) => (
               <FadeUp key={p.name} delay={i * 0.08}>
-                <div className="h-full bg-white border border-[#E7E1DA] rounded-[22px] p-7 flex flex-col gap-3 hover:-translate-y-1 hover:shadow-lg transition-all duration-500">
-                  <div className="w-10 h-10 rounded-full bg-[#4A6741]/10 flex items-center justify-center text-lg">
-                    {p.icon}
+                <div className="h-full bg-white border border-[#E7E1DA] rounded-[22px] overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-500 group">
+                  <div className="relative w-full h-48 overflow-hidden bg-[#FAF7F2]">
+                    <img 
+                      src={p.img} 
+                      alt={p.name}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
                   </div>
-                  <h3
-                    className="text-xl font-medium text-[#1C1C1A]"
-                    style={{ fontFamily: serif }}
-                  >
-                    {p.name}
-                  </h3>
-                  <p className="text-sm text-[#6B6560] leading-relaxed">{p.desc}</p>
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    {p.tags.map((t) => (
-                      <span
-                        key={t}
-                        className="text-[11px] bg-[#F0EBE3] text-[#6B6560] rounded-full px-3 py-1"
-                      >
-                        {t}
+                  <div className="p-7 flex flex-col gap-3 flex-grow">
+                    <h3
+                      className="text-xl font-medium text-[#1C1C1A]"
+                      style={{ fontFamily: serif }}
+                    >
+                      {p.name}
+                    </h3>
+                    <p className="text-sm text-[#6B6560] leading-relaxed">{p.desc}</p>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {p.tags.map((t) => (
+                        <span
+                          key={t}
+                          className="text-[11px] bg-[#F0EBE3] text-[#6B6560] rounded-full px-3 py-1"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="mt-auto pt-4 border-t border-[#ECE6DF] flex items-center justify-between">
+                      <span className="text-xs font-semibold text-[#4A6741] tracking-wide">
+                        {p.margin} · {p.price}
                       </span>
-                    ))}
+                    </div>
+                    <p
+                      className="text-[11px] text-[#9E9088] uppercase tracking-widest mt-1"
+                      style={{ fontFamily: sans }}
+                    >
+                      {p.buyer}
+                    </p>
                   </div>
-                  <div className="mt-auto pt-3 border-t border-[#ECE6DF] flex items-center justify-between">
-                    <span className="text-xs font-semibold text-[#4A6741] tracking-wide">
-                      {p.margin} · {p.price}
-                    </span>
-                  </div>
-                  <p
-                    className="text-[11px] text-[#9E9088] uppercase tracking-widest"
-                    style={{ fontFamily: sans }}
-                  >
-                    {p.buyer}
-                  </p>
                 </div>
               </FadeUp>
             ))}

@@ -42,6 +42,15 @@ export default async function ProductDetailPage({ params }) {
         .limit(4)
         .lean();
 
+      // Fallback: If no products in the same category, show any other products
+      if (similarProducts.length === 0) {
+        similarProducts = await Product.find({
+          _id: { $ne: product._id }
+        })
+          .limit(4)
+          .lean();
+      }
+
       // Check if product is saved by the logged-in user
       const session = await auth();
       if (session?.user?.id) {

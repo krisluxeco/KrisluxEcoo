@@ -14,8 +14,12 @@ import {
   X,
   Package,
   Sparkles,
+  ShoppingCart,
+  Download,
+  Box
 } from "lucide-react";
 import { StorefrontProductCard } from "./ProductsListClient";
+import { useCart } from "@/context/CartContext";
 
 const serif = "'Cormorant Garamond', Georgia, serif";
 const sans = "'DM Sans', sans-serif";
@@ -32,6 +36,10 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
     setLiked(isLiked);
   }, [isLiked]);
 
+  const { addToCart } = useCart();
+  
+  const [modalMode, setModalMode] = useState("cart"); // "cart" or "quote"
+  
   // Quote form states
   const [quoteForm, setQuoteForm] = useState({
     companyName: "",
@@ -113,7 +121,7 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
     specs.push({ key: "Finish", value: "Food-grade organic lacquer" });
     specs.push({ key: "Color", value: "Natural wood grain" });
     specs.push({ key: "Care", value: "Hand wash, dry immediately" });
-    
+
     // Add additional custom specs
     if (product.specs && product.specs.length > 0) {
       product.specs.forEach((s) => specs.push({ key: s.key, value: s.value }));
@@ -125,30 +133,73 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
   const applications = getApplications();
   const specs = getSpecs();
 
-  const handleQuoteSubmit = (e) => {
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    addToCart(product, quoteForm.quantity, quoteForm.targetBudget);
+    setQuoteSubmitted(true);
+  };
+
+  const handleQuoteSubmit = async (e) => {
     e.preventDefault();
     setSubmittingQuote(true);
-    // Simulate API call
-    setTimeout(() => {
-      setSubmittingQuote(false);
-      setQuoteSubmitted(true);
-      // Reset form
-      setQuoteForm({
-        companyName: "",
-        gstNumber: "",
-        contactPerson: "",
-        email: "",
-        phone: "",
-        quantity: product.minOrderQty || 50,
-        targetBudget: "",
-        additionalInfo: "",
+
+    if (status === "authenticated") {
+      fetch("/api/user/track-quote", { method: "POST" }).catch(() => { });
+    }
+
+    const waMessage = `🌿 *NEW BULK ORDER INQUIRY* 🌿
+    
+📦 *PRODUCT DETAILS*
+▪️ *Item:* ${product.name}
+▪️ *Quantity:* ${quoteForm.quantity} units
+▪️ *Target Budget:* ${quoteForm.targetBudget ? '₹' + quoteForm.targetBudget : 'Not specified'}
+
+🏢 *CUSTOMER PROFILE*
+▪️ *Company:* ${quoteForm.companyName}
+▪️ *Contact:* ${quoteForm.contactPerson}
+▪️ *Phone:* ${quoteForm.phone}
+▪️ *Email:* ${quoteForm.email}
+▪️ *GST:* ${quoteForm.gstNumber || 'N/A'}
+
+📝 *ADDITIONAL NOTES*
+${quoteForm.additionalInfo || '_No additional requirements specified._'}
+
+-----------------------------------
+_Sent via KrisluxECO B2B Portal_`;
+
+    const adminPhone = "6202585952"; 
+    const waUrl = `https://wa.me/${adminPhone}?text=${encodeURIComponent(waMessage)}`;
+
+    try {
+      await fetch("/api/user/send-quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...quoteForm, productName: product.name }),
       });
-    }, 1500);
+    } catch (err) {
+      console.error("Failed to send email", err);
+    }
+
+    setSubmittingQuote(false);
+    setQuoteSubmitted(true);
+
+    window.open(waUrl, "_blank");
+
+    setQuoteForm({
+      companyName: "",
+      gstNumber: "",
+      contactPerson: "",
+      email: "",
+      phone: "",
+      quantity: product.minOrderQty || 50,
+      targetBudget: "",
+      additionalInfo: "",
+    });
   };
 
   const closeQuoteModal = () => {
     setShowQuoteModal(false);
-    setQuoteSubmitted(false);
+    setTimeout(() => setQuoteSubmitted(false), 300);
   };
 
   return (
@@ -176,7 +227,7 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left Column: Vertical thumbnails + Main Image */}
           <div className="lg:col-span-6 flex flex-col-reverse md:flex-row gap-4 lg:sticky lg:top-12">
-            
+
             {/* Thumbnails (vertical on desktop) */}
             {images.length > 0 && (
               <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto md:w-20 shrink-0 py-1 scrollbar-hide">
@@ -186,11 +237,10 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
                     <button
                       key={index}
                       onClick={() => setActiveImageIndex(index)}
-                      className={`relative w-20 md:w-full h-20 md:h-24 shrink-0 rounded-sm overflow-hidden bg-[#F8F6F3] border transition-all ${
-                        active
+                      className={`relative w-20 md:w-full h-20 md:h-24 shrink-0 rounded-sm overflow-hidden bg-[#F8F6F3] border transition-all ${active
                           ? "border-[#1C1C1A] ring-1 ring-[#1C1C1A]/20"
                           : "border-transparent hover:border-[#ECE6DF]"
-                      }`}
+                        }`}
                     >
                       <img
                         src={img.url}
@@ -239,7 +289,7 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
               >
                 {product.name}
               </h1>
-              
+
               {/* Prices matching video style */}
               <div className="flex items-baseline gap-2 pt-2">
                 <span className="text-3xl font-bold text-[#1C1C1A]">
@@ -279,12 +329,25 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
             </p>
 
             {/* B2B Action Buttons Row */}
-            <div className="flex items-center gap-4 pt-4">
+            <div className="flex flex-wrap items-center gap-3 pt-4">
               <button
-                onClick={() => setShowQuoteModal(true)}
-                className="flex-1 inline-flex items-center justify-center gap-2 bg-[#1C1C1A] hover:bg-[#C8A97A] text-white py-4 px-6 text-[11px] font-bold uppercase tracking-[0.15em] transition-colors duration-300"
+                onClick={() => {
+                  setModalMode("quote");
+                  setShowQuoteModal(true);
+                }}
+                className="flex-[2] inline-flex items-center justify-center gap-2 bg-[#1C1C1A] hover:bg-[#C8A97A] text-white py-4 px-4 text-[11px] font-bold uppercase tracking-[0.15em] transition-colors duration-300 whitespace-nowrap"
               >
-                <MessageSquare size={14} /> Request Quote
+                <MessageSquare size={14} /> Request Quote Now
+              </button>
+
+              <button
+                onClick={() => {
+                  setModalMode("cart");
+                  setShowQuoteModal(true);
+                }}
+                className="flex-1 inline-flex items-center justify-center gap-2 border border-[#ECE6DF] hover:bg-[#FAF7F2] text-[#1C1C1A] py-4 px-4 text-[11px] font-bold uppercase tracking-[0.15em] transition-colors duration-300 whitespace-nowrap"
+              >
+                <ShoppingCart size={14} /> Add to Cart
               </button>
 
               <button
@@ -309,14 +372,36 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
                     console.error("Error toggling saved status:", err);
                   }
                 }}
-                className={`w-14 h-[52px] shrink-0 border flex items-center justify-center transition-colors duration-300 ${
-                  liked
+                className={`w-14 h-[52px] shrink-0 border flex items-center justify-center transition-colors duration-300 ${liked
                     ? "border-[#1C1C1A] bg-[#1C1C1A] text-white"
                     : "border-[#ECE6DF] bg-transparent text-[#1C1C1A] hover:bg-[#FAF7F2]"
-                }`}
+                  }`}
               >
                 <Heart size={16} className={liked ? "fill-white stroke-white" : ""} strokeWidth={1.5} />
               </button>
+            </div>
+
+            <div className="flex gap-4 pt-2">
+              <button
+                onClick={() => {
+                  addToCart(product, 1, "");
+                  setModalMode("cart");
+                  setQuoteSubmitted(true);
+                  setShowQuoteModal(true);
+                }}
+                className="flex-1 inline-flex items-center justify-center gap-2 border border-[#E8DDD0] hover:bg-[#FAF7F2] text-[#4A6741] py-2.5 px-4 text-[10px] font-bold uppercase tracking-[0.1em] transition-colors duration-300"
+              >
+                <Box size={14} /> Request 1 Unit Sample
+              </button>
+              {product.downloadableSpecSheetUrl && (
+                <a
+                  href={product.downloadableSpecSheetUrl}
+                  target="_blank"
+                  className="flex-1 inline-flex items-center justify-center gap-2 border border-[#E8DDD0] hover:bg-[#FAF7F2] text-[#1C1C1A] py-2.5 px-4 text-[10px] font-bold uppercase tracking-[0.1em] transition-colors duration-300"
+                >
+                  <Download size={14} /> Spec Sheet PDF
+                </a>
+              )}
             </div>
 
             {/* Highlight Bullets 2x2 Grid */}
@@ -342,11 +427,10 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`pb-4 relative transition-colors ${
-                      activeTab === tab.id
+                    className={`pb-4 relative transition-colors ${activeTab === tab.id
                         ? "text-[#1C1C1A]"
                         : "hover:text-[#1C1C1A]"
-                    }`}
+                      }`}
                   >
                     {tab.label}
                     {activeTab === tab.id && (
@@ -466,7 +550,7 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 15 }}
               transition={{ type: "spring", duration: 0.4 }}
-              className="relative w-full max-w-xl bg-white border border-[#ECE6DF] rounded-3xl p-6 sm:p-8 shadow-2xl z-10 m-4 overflow-y-auto max-h-[90vh]"
+              className={`relative w-full ${modalMode === "cart" ? "max-w-md" : "max-w-xl"} bg-white border border-[#ECE6DF] rounded-3xl p-6 sm:p-8 shadow-2xl z-10 m-4 overflow-y-auto max-h-[90vh]`}
             >
               <button
                 onClick={closeQuoteModal}
@@ -477,16 +561,16 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
 
               <div className="mb-6">
                 <span className="text-[10px] tracking-widest uppercase text-[#C8A97A] font-bold">
-                  Bulk Order inquiry
+                  {modalMode === "cart" ? "Add to Quote Cart" : "Bulk Order Inquiry"}
                 </span>
                 <h3
                   className="text-2xl font-semibold text-[#1C1C1A] mt-1"
                   style={{ fontFamily: serif }}
                 >
-                  Request a Quote
+                  {modalMode === "cart" ? "Configure Quantity" : "Request a Quote"}
                 </h3>
                 <p className="text-xs text-[#9E9088] mt-1.5">
-                  Pre-filled item: <span className="font-semibold text-[#4A6741]">{product.name}</span>
+                  Item: <span className="font-semibold text-[#4A6741]">{product.name}</span>
                 </p>
               </div>
 
@@ -494,145 +578,109 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="text-center py-10 space-y-4"
+                  className="text-center py-6 space-y-4"
                 >
                   <div className="w-12 h-12 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center mx-auto shadow-sm">
                     <Check size={22} />
                   </div>
                   <h4 className="text-lg font-semibold text-[#1C1C1A]" style={{ fontFamily: serif }}>
-                    Quote request submitted!
+                    {modalMode === "cart" ? "Added to Quote Cart!" : "Quote request submitted!"}
                   </h4>
                   <p className="text-xs text-[#6B6560] max-w-sm mx-auto font-light leading-relaxed">
-                    Thank you for your bulk order inquiry. An artisan partnerships manager will review your target budget and email your custom quote within 24 hours.
+                    {modalMode === "cart"
+                      ? "You can add more items to your list or proceed to checkout to request a quote for all items at once."
+                      : "Thank you for your bulk order inquiry. An artisan partnerships manager will review your target budget and email your custom quote within 24 hours."}
                   </p>
-                  <button
-                    onClick={closeQuoteModal}
-                    className="mt-4 rounded-full bg-[#1C1C1A] text-white hover:bg-[#4A6741] text-xs font-semibold uppercase tracking-wider py-2.5 px-6 transition"
-                  >
-                    Back to product
-                  </button>
+                  <div className="flex items-center justify-center gap-3 mt-4">
+                    {modalMode === "cart" ? (
+                      <>
+                        <button
+                          onClick={closeQuoteModal}
+                          className="rounded-full border border-[#ECE6DF] text-[#1C1C1A] hover:bg-[#FAF7F2] text-xs font-semibold uppercase tracking-wider py-2.5 px-6 transition"
+                        >
+                          Continue Shopping
+                        </button>
+                        <Link
+                          href="/user/quote-cart"
+                          className="rounded-full bg-[#1C1C1A] text-white hover:bg-[#4A6741] text-xs font-semibold uppercase tracking-wider py-2.5 px-6 transition"
+                        >
+                          View Cart
+                        </Link>
+                      </>
+                    ) : (
+                      <button
+                        onClick={closeQuoteModal}
+                        className="rounded-full bg-[#1C1C1A] text-white hover:bg-[#4A6741] text-xs font-semibold uppercase tracking-wider py-2.5 px-6 transition"
+                      >
+                        Back to product
+                      </button>
+                    )}
+                  </div>
                 </motion.div>
               ) : (
-                <form onSubmit={handleQuoteSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-semibold text-[#1C1C1A] mb-1.5">
-                        Company Name
-                      </label>
-                      <input
-                        required
-                        type="text"
-                        value={quoteForm.companyName}
-                        onChange={(e) => setQuoteForm({ ...quoteForm, companyName: e.target.value })}
-                        placeholder="e.g. EcoHotels Ltd"
-                        className="w-full rounded-xl border border-[#E8DDD0] bg-[#FAF7F2] px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-[#1C1C1A] mb-1.5">
-                        GST Number (Optional)
-                      </label>
-                      <input
-                        type="text"
-                        value={quoteForm.gstNumber}
-                        onChange={(e) => setQuoteForm({ ...quoteForm, gstNumber: e.target.value })}
-                        placeholder="22AAAAA0000A1Z5"
-                        className="w-full rounded-xl border border-[#E8DDD0] bg-[#FAF7F2] px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition font-mono uppercase"
-                      />
-                    </div>
-                  </div>
+                <form onSubmit={modalMode === "cart" ? handleAddToCart : handleQuoteSubmit} className="space-y-4">
+                  {modalMode === "quote" && (
+                    <>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-[#1C1C1A] mb-1.5">Company Name</label>
+                          <input required type="text" value={quoteForm.companyName} onChange={(e) => setQuoteForm({ ...quoteForm, companyName: e.target.value })} placeholder="e.g. EcoHotels Ltd" className="w-full rounded-xl border border-[#E8DDD0] bg-[#FAF7F2] px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-[#1C1C1A] mb-1.5">GST Number (Optional)</label>
+                          <input type="text" value={quoteForm.gstNumber} onChange={(e) => setQuoteForm({ ...quoteForm, gstNumber: e.target.value })} placeholder="22AAAAA0000A1Z5" className="w-full rounded-xl border border-[#E8DDD0] bg-[#FAF7F2] px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition font-mono uppercase" />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-[#1C1C1A] mb-1.5">Contact Person</label>
+                          <input required type="text" value={quoteForm.contactPerson} onChange={(e) => setQuoteForm({ ...quoteForm, contactPerson: e.target.value })} placeholder="Ananya Sharma" className="w-full rounded-xl border border-[#E8DDD0] bg-[#FAF7F2] px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-[#1C1C1A] mb-1.5">Email Address</label>
+                          <input required type="email" value={quoteForm.email} onChange={(e) => setQuoteForm({ ...quoteForm, email: e.target.value })} placeholder="buyer@company.com" className="w-full rounded-xl border border-[#E8DDD0] bg-[#FAF7F2] px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition" />
+                        </div>
+                      </div>
+                    </>
+                  )}
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className={`grid grid-cols-1 ${modalMode === "quote" ? "sm:grid-cols-3 gap-4" : "gap-4"}`}>
+                    {modalMode === "quote" && (
+                      <div className="sm:col-span-2">
+                        <label className="block text-xs font-semibold text-[#1C1C1A] mb-1.5">Phone Number</label>
+                        <input required type="tel" value={quoteForm.phone} onChange={(e) => setQuoteForm({ ...quoteForm, phone: e.target.value })} placeholder="+91 98765 43210" className="w-full rounded-xl border border-[#E8DDD0] bg-[#FAF7F2] px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition" />
+                      </div>
+                    )}
                     <div>
-                      <label className="block text-xs font-semibold text-[#1C1C1A] mb-1.5">
-                        Contact Person
-                      </label>
-                      <input
-                        required
-                        type="text"
-                        value={quoteForm.contactPerson}
-                        onChange={(e) => setQuoteForm({ ...quoteForm, contactPerson: e.target.value })}
-                        placeholder="Ananya Sharma"
-                        className="w-full rounded-xl border border-[#E8DDD0] bg-[#FAF7F2] px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-[#1C1C1A] mb-1.5">
-                        Email Address
-                      </label>
-                      <input
-                        required
-                        type="email"
-                        value={quoteForm.email}
-                        onChange={(e) => setQuoteForm({ ...quoteForm, email: e.target.value })}
-                        placeholder="buyer@yourcompany.com"
-                        className="w-full rounded-xl border border-[#E8DDD0] bg-[#FAF7F2] px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="sm:col-span-2">
-                      <label className="block text-xs font-semibold text-[#1C1C1A] mb-1.5">
-                        Phone Number
-                      </label>
-                      <input
-                        required
-                        type="tel"
-                        value={quoteForm.phone}
-                        onChange={(e) => setQuoteForm({ ...quoteForm, phone: e.target.value })}
-                        placeholder="+91 98765 43210"
-                        className="w-full rounded-xl border border-[#E8DDD0] bg-[#FAF7F2] px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-[#1C1C1A] mb-1.5">
-                        Quantity Required
-                      </label>
-                      <input
-                        required
-                        type="number"
-                        min={product.minOrderQty || 1}
-                        value={quoteForm.quantity}
-                        onChange={(e) => setQuoteForm({ ...quoteForm, quantity: parseInt(e.target.value) || "" })}
-                        className="w-full rounded-xl border border-[#E8DDD0] bg-[#FAF7F2] px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition font-semibold"
-                      />
+                      <label className="block text-xs font-semibold text-[#1C1C1A] mb-1.5">Quantity Required</label>
+                      <input required type="number" min={product.minOrderQty || 1} value={quoteForm.quantity} onChange={(e) => setQuoteForm({ ...quoteForm, quantity: parseInt(e.target.value) || "" })} className={`w-full rounded-xl border border-[#E8DDD0] bg-[#FAF7F2] px-4 py-2.5 ${modalMode === "cart" ? "text-sm" : "text-xs"} focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition font-semibold`} />
+                      {modalMode === "cart" && (
+                        <p className="text-[10px] text-[#9E9088] mt-1">Minimum order quantity is {product.minOrderQty || 50} units.</p>
+                      )}
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#1C1C1A] mb-1.5">
-                      Target Budget per unit (₹, Optional)
-                    </label>
-                    <input
-                      type="number"
-                      value={quoteForm.targetBudget}
-                      onChange={(e) => setQuoteForm({ ...quoteForm, targetBudget: e.target.value })}
-                      placeholder="e.g. 600"
-                      className="w-full rounded-xl border border-[#E8DDD0] bg-[#FAF7F2] px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition"
-                    />
+                    <label className="block text-xs font-semibold text-[#1C1C1A] mb-1.5">Target Budget per unit (₹, Optional)</label>
+                    <input type="number" value={quoteForm.targetBudget} onChange={(e) => setQuoteForm({ ...quoteForm, targetBudget: e.target.value })} placeholder="e.g. 600" className={`w-full rounded-xl border border-[#E8DDD0] bg-[#FAF7F2] px-4 py-2.5 ${modalMode === "cart" ? "text-sm" : "text-xs"} focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition`} />
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-semibold text-[#1C1C1A] mb-1.5">
-                      Additional Requirements / Customization
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={quoteForm.additionalInfo}
-                      onChange={(e) => setQuoteForm({ ...quoteForm, additionalInfo: e.target.value })}
-                      placeholder="Specify engraving, custom branding options, target delivery dates..."
-                      className="w-full rounded-xl border border-[#E8DDD0] bg-[#FAF7F2] px-4 py-2.5 text-xs resize-none focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition"
-                    />
-                  </div>
+                  {modalMode === "quote" && (
+                    <div>
+                      <label className="block text-xs font-semibold text-[#1C1C1A] mb-1.5">Additional Requirements</label>
+                      <textarea rows={3} value={quoteForm.additionalInfo} onChange={(e) => setQuoteForm({ ...quoteForm, additionalInfo: e.target.value })} placeholder="Specify engraving, custom branding..." className="w-full rounded-xl border border-[#E8DDD0] bg-[#FAF7F2] px-4 py-2.5 text-xs resize-none focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition" />
+                    </div>
+                  )}
 
                   <button
                     required
                     type="submit"
-                    disabled={submittingQuote}
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#4A6741] hover:bg-[#3a5233] text-white py-3 text-xs font-semibold uppercase tracking-wider transition disabled:opacity-60 shadow-sm mt-2"
+                    disabled={modalMode === "quote" && submittingQuote}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#4A6741] hover:bg-[#3a5233] text-white py-3.5 text-xs font-bold uppercase tracking-wider transition shadow-sm mt-2 disabled:opacity-60"
                   >
-                    {submittingQuote ? "Submitting Inquiry..." : "Submit Quote Request"}
+                    {modalMode === "cart" 
+                      ? "Add to Quote List" 
+                      : (submittingQuote ? "Submitting Inquiry..." : "Submit Quote Request")}
                   </button>
                 </form>
               )}

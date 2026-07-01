@@ -14,6 +14,8 @@ import {
   X,
   User,
   LogOut,
+  FileText,
+  MessageSquare,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 
@@ -22,9 +24,10 @@ const navItems = [
   { label: "Products", href: "/admin/products", icon: Package },
   { label: "Orders", href: "/admin/orders", icon: ShoppingCart },
   { label: "Customers", href: "/admin/customers", icon: Users },
-  { label: "Categories", href: "/admin/categories", icon: Tags },
+  // { label: "Categories", href: "/admin/categories", icon: Tags },
+  { label: "Blog", href: "/admin/blog", icon: FileText },
   { label: "Profile", href: "/admin/profile", icon: User },
-  { label: "Settings", href: "/admin/settings", icon: Settings },
+  // { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
 export default function AdminSidebar({

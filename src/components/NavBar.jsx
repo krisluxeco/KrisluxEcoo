@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { useSession, signOut } from "next-auth/react";
+import { ShoppingCart, Heart } from "lucide-react";
+import { useCart } from "@/context/CartContext";
 
 const navLinks = [
   { label: "Products", href: "/user/products" },
@@ -24,8 +26,8 @@ const navLinks = [
       },
     ],
   },
-  { label: "Sustainability", href: "/sustainability" },
-  { label: "Distributors", href: "/distributors" },
+  { label: "Sustainability", href: "/user/sustainability" },
+  { label: "Partners", href: "/user/partners" },
   { label: "Blog", href: "/blog" },
 
 ];
@@ -148,6 +150,8 @@ export default function NavBar() {
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
+  const { cartCount, isLoaded } = useCart();
+
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -166,12 +170,12 @@ export default function NavBar() {
   const navBg = useTransform(
     scrollY,
     [0, 80],
-    ["rgba(28,28,26,0.38)", "rgba(250,247,242,0.97)"]
+    ["rgba(28,28,26,0.85)", "rgba(20,20,18,0.98)"]
   );
   const navBorder = useTransform(
     scrollY,
     [0, 80],
-    ["rgba(255,255,255,0.14)", "rgba(28,28,26,0.08)"]
+    ["rgba(200,169,122,0.1)", "rgba(200,169,122,0.25)"]
   );
   const navShadow = useTransform(
     scrollY,
@@ -218,11 +222,10 @@ export default function NavBar() {
 
   const isActive = (href) => pathname === href || pathname?.startsWith(href + "/");
 
-  // Text/icon color flips as one unit with the background — always
-  // high-contrast, never the "dark text on transparent" trap.
-  const textTone = scrolled ? "text-[#1C1C1A]" : "text-white";
-  const textToneMuted = scrolled ? "text-[#1C1C1A]/75" : "text-white/80";
-  const logoSub = scrolled ? "text-[#8a6f3f]" : "text-[#E9D9B8]";
+  // Always light text on dark background for premium look
+  const textTone = "text-white";
+  const textToneMuted = "text-[#E8DDD0]";
+  const logoSub = "text-[#C8A97A]";
 
   return (
     <>
@@ -275,9 +278,9 @@ export default function NavBar() {
                   >
                     <Link
                       href={link.href}
-                      className={`relative inline-flex items-center gap-1 text-sm tracking-wide outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-[#C8A97A]/50 rounded-sm ${active ? textTone : textToneMuted
-                        } hover:${scrolled ? "text-[#1C1C1A]" : "text-white"}`}
-                      style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: active ? 600 : 500 }}
+                      className={`relative inline-flex items-center gap-1 text-sm tracking-[0.08em] uppercase outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-[#C8A97A]/50 rounded-sm ${active ? textTone : textToneMuted
+                        } hover:text-[#C8A97A]`}
+                      style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: active ? 500 : 400 }}
                       aria-haspopup={hasChildren ? "true" : undefined}
                       aria-expanded={hasChildren ? isOpen : undefined}
                     >
@@ -353,84 +356,32 @@ export default function NavBar() {
 
             {/* CTA + Mobile Toggle */}
             <div className="flex items-center gap-4">
-              {/* Profile Dropdown (Desktop) */}
+              {/* Profile Avatar (Desktop) */}
               {status === "authenticated" ? (
-                <div className="relative hidden lg:block" ref={dropdownRef}>
-                  <button
-                    onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                    className="flex items-center gap-2 outline-none focus:ring-2 focus:ring-[#C8A97A]/40 rounded-full cursor-pointer"
-                    aria-label="User menu"
+                <div className="hidden lg:block mr-2">
+                  <Link
+                    href={session.user.role === "admin" ? "/admin" : "/user/profile"}
+                    className="flex items-center gap-2 outline-none focus:ring-2 focus:ring-[#C8A97A]/40 rounded-full cursor-pointer transition-transform hover:scale-105"
+                    aria-label="User Profile Dashboard"
                   >
                     {session.user.image ? (
                       <img
                         src={session.user.image}
                         alt={session.user.name || "User"}
-                        className="w-8 h-8 rounded-full object-cover border border-[#C8A97A]/30"
+                        className="w-8 h-8 rounded-full object-cover border border-[#C8A97A]/30 hover:border-[#C8A97A] transition-colors"
                       />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-[#4A6741] text-white flex items-center justify-center text-sm font-semibold tracking-wide border border-[#C8A97A]/30">
+                      <div className="w-8 h-8 rounded-full bg-[#4A6741] text-white flex items-center justify-center text-sm font-semibold tracking-wide border border-[#C8A97A]/30 hover:border-[#C8A97A] transition-colors">
                         {session.user.name ? session.user.name.charAt(0).toUpperCase() : "U"}
                       </div>
                     )}
-                  </button>
-
-                  <AnimatePresence>
-                    {profileDropdownOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute right-0 mt-2.5 w-56 bg-[#FAF7F2] border border-[#E8DDD0] rounded-2xl shadow-xl py-2 z-50 text-left"
-                      >
-                        <div className="px-4 py-2 border-b border-[#ECE6DF] mb-1">
-                          <p className="text-[10px] text-[#9E9088] font-medium uppercase tracking-wider">Signed in as</p>
-                          <p className="text-sm font-semibold text-[#1C1C1A] truncate">{session.user.name}</p>
-                          <p className="text-[11px] text-[#6B6560] truncate">{session.user.email}</p>
-                        </div>
-                        {session.user.role === "admin" && (
-                          <Link
-                            href="/admin"
-                            onClick={() => setProfileDropdownOpen(false)}
-                            className="block px-4 py-2 text-xs font-semibold text-[#4A6741] hover:bg-[#FAF7F2] hover:bg-black/5 transition-colors"
-                          >
-                            Admin Panel
-                          </Link>
-                        )}
-                        <Link
-                          href="/user/profile"
-                          onClick={() => setProfileDropdownOpen(false)}
-                          className="block px-4 py-2 text-xs text-[#1C1C1A] hover:bg-[#FAF7F2] hover:bg-black/5 transition-colors"
-                        >
-                          My Profile
-                        </Link>
-                        <Link
-                          href="/user/saved"
-                          onClick={() => setProfileDropdownOpen(false)}
-                          className="block px-4 py-2 text-xs text-[#1C1C1A] hover:bg-[#FAF7F2] hover:bg-black/5 transition-colors"
-                        >
-                          Saved Products
-                        </Link>
-                        <hr className="border-[#ECE6DF] my-1" />
-                        <button
-                          onClick={() => {
-                            setProfileDropdownOpen(false);
-                            signOut({ callbackUrl: "/" });
-                          }}
-                          className="w-full text-left px-4 py-2 text-xs text-red-600 hover:bg-red-50 hover:bg-red-500/10 transition-colors font-medium cursor-pointer"
-                        >
-                          Logout
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  </Link>
                 </div>
               ) : status === "unauthenticated" ? (
                 <div className="hidden lg:block mr-2">
                   <Link
                     href="/login"
-                    className={`text-sm font-semibold tracking-wide outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-[#C8A97A]/50 rounded-sm ${scrolled ? "text-[#1C1C1A]" : "text-white"
-                      } hover:text-[#C8A97A]`}
+                    className={`text-sm tracking-[0.08em] uppercase outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-[#C8A97A]/50 rounded-sm ${textTone} hover:text-[#C8A97A]`}
                     style={{ fontFamily: "'DM Sans', sans-serif" }}
                   >
                     Sign In
@@ -438,6 +389,33 @@ export default function NavBar() {
                 </div>
               ) : (
                 <div className="hidden lg:block w-8 h-8 rounded-full bg-white/10 animate-pulse mr-2" />
+              )}
+
+              {/* Saved Products Icon (Desktop) */}
+              {status === "authenticated" && (
+                <Link
+                  href="/user/saved"
+                  className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${textTone} hover:text-[#C8A97A] hover:bg-white/5`}
+                  aria-label="Saved Products"
+                >
+                  <Heart size={20} strokeWidth={1.5} />
+                </Link>
+              )}
+
+              {/* Cart Icon (Desktop) */}
+              {isLoaded && (
+                <Link
+                  href="/user/quote-cart"
+                  className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${textTone} hover:text-[#C8A97A] hover:bg-white/5`}
+                  aria-label="Quote Cart"
+                >
+                  <ShoppingCart size={20} strokeWidth={1.5} />
+                  {cartCount > 0 && (
+                    <span className="absolute top-1 right-1 flex items-center justify-center w-4 h-4 bg-[#4A6741] text-white text-[10px] font-bold rounded-full">
+                      {cartCount}
+                    </span>
+                  )}
+                </Link>
               )}
 
               <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} className="hidden lg:block">
@@ -462,17 +440,17 @@ export default function NavBar() {
                 aria-controls="mobile-drawer"
               >
                 <motion.span
-                  className={`block w-6 h-0.5 rounded transition-colors duration-300 ${scrolled ? "bg-[#1C1C1A]" : "bg-white"}`}
+                  className="block w-6 h-0.5 rounded bg-white transition-colors duration-300"
                   animate={{ rotate: mobileOpen ? 45 : 0, y: mobileOpen ? 6 : 0 }}
                   transition={{ duration: 0.25 }}
                 />
                 <motion.span
-                  className={`block w-6 h-0.5 rounded transition-colors duration-300 ${scrolled ? "bg-[#1C1C1A]" : "bg-white"}`}
+                  className="block w-6 h-0.5 rounded bg-white transition-colors duration-300"
                   animate={{ opacity: mobileOpen ? 0 : 1 }}
                   transition={{ duration: 0.15 }}
                 />
                 <motion.span
-                  className={`block w-6 h-0.5 rounded transition-colors duration-300 ${scrolled ? "bg-[#1C1C1A]" : "bg-white"}`}
+                  className="block w-6 h-0.5 rounded bg-white transition-colors duration-300"
                   animate={{ rotate: mobileOpen ? -45 : 0, y: mobileOpen ? -6 : 0 }}
                   transition={{ duration: 0.25 }}
                 />
@@ -715,6 +693,25 @@ export default function NavBar() {
                     Sign In
                   </Link>
                 )}
+              </div>
+
+              {/* Cart Button (Mobile) */}
+              <div className="mt-4">
+                <Link
+                  href="/user/quote-cart"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center justify-between w-full py-3 px-4 bg-white border border-[#ECE6DF] rounded-xl text-[#1C1C1A] shadow-sm active:scale-95 transition-transform"
+                >
+                  <div className="flex items-center gap-3">
+                    <ShoppingCart size={18} className="text-[#4A6741]" />
+                    <span className="text-sm font-semibold">Quote Cart</span>
+                  </div>
+                  {isLoaded && cartCount > 0 && (
+                    <span className="bg-[#4A6741] text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                      {cartCount} items
+                    </span>
+                  )}
+                </Link>
               </div>
 
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.42 }} className="mt-auto">

@@ -9,9 +9,9 @@ const sans = "'DM Sans', sans-serif";
 
 // ⚠️ Update these with your real business details
 const COMPANY = {
-  phone: "+919999999999", // used for the "Call Us" button
-  whatsapp: "919999999999", // used for the WhatsApp button (no + or spaces)
-  email: "bulk@krisluxeco.com",
+  phone: "+62025895952", // used for the "Call Us" button
+  whatsapp: "6202585952", // used for the WhatsApp button (no + or spaces)
+  email: "krisluxeco@gmail.com",
 };
 
 function Eyebrow({ children }) {
@@ -179,13 +179,51 @@ function BulkOrderForm() {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.phone) return;
 
-    const text = encodeURIComponent(
-      `Bulk Order Enquiry\n\nName: ${form.name}\nEmail: ${form.email}\nPhone: ${form.phone}\nProduct Category: ${form.category || "Not specified"}\nEstimated Quantity: ${form.quantity || "Not specified"}\nMessage: ${form.message || "—"}`
-    );
+    // Track quote request (fire and forget)
+    fetch("/api/user/track-quote", { method: "POST" }).catch(() => { });
+
+    const waMessage = `🌿 *NEW BULK ORDER INQUIRY* 🌿
+    
+📦 *ORDER DETAILS*
+▪️ *Category:* ${form.category || "Not specified"}
+▪️ *Estimated Quantity:* ${form.quantity || "Not specified"}
+
+👤 *CONTACT INFO*
+▪️ *Name:* ${form.name}
+▪️ *Phone:* ${form.phone}
+▪️ *Email:* ${form.email}
+
+📝 *MESSAGE*
+${form.message || '_No message provided._'}
+
+-----------------------------------
+_Sent via KrisluxECO Bulk Orders Page_`;
+
+    const text = encodeURIComponent(waMessage);
+
+    // Send Email via our API
+    try {
+      await fetch("/api/user/send-quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productName: form.category || "General Bulk Inquiry",
+          companyName: "Not specified (Bulk Page)",
+          contactPerson: form.name,
+          email: form.email,
+          phone: form.phone,
+          quantity: form.quantity || "Not specified",
+          additionalInfo: form.message
+        }),
+      });
+    } catch (err) {
+      console.error("Failed to send email", err);
+    }
+
     window.open(`https://wa.me/${COMPANY.whatsapp}?text=${text}`, "_blank");
     setStatus("sent");
   };

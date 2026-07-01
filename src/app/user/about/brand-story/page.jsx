@@ -49,82 +49,34 @@ const mono = "'IBM Plex Mono', monospace";
 const CHAPTERS = [
   {
     id: "origin",
-    eyebrow: "Chapter One — The Lake",
-    title: "A wetland, disappearing under a flower",
-    line: "Three rivers and a lake in Begusarai, Bihar — choking under a plant that looked almost decorative.",
-    img: "https://loremflickr.com/1600/2000/wetland,lake,india?lock=101",
+    eyebrow: "Chapter One — The Vision",
+    title: "A commitment to the earth",
+    line: "KrisluxECO was born from a simple belief: luxury does not have to come at the expense of our planet.",
+    img: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1600&q=80",
     align: "left",
   },
   {
     id: "discovery",
-    eyebrow: "Chapter Two — The Stem",
-    title: "Split by hand, in a hostel room",
-    line: "A fibre stronger than jute, softer than cane — hiding inside the weed nobody wanted.",
-    img: "https://loremflickr.com/1600/2000/plant,fiber,hands?lock=102",
+    eyebrow: "Chapter Two — The Craft",
+    title: "Carved by master hands",
+    line: "Every bamboo comb and wooden bowl is meticulously hand-crafted by skilled artisans, preserving centuries of heritage.",
+    img: "/images/artisan_crafting.png",
     align: "right",
   },
   {
     id: "research",
-    eyebrow: "Chapter Three — The Protocol",
-    title: "Eighteen months of failed batches",
-    line: "Retting times, drying angles, dye absorption — tested until the process could be taught, not just performed.",
-    img: "https://loremflickr.com/1600/2000/laboratory,notebook,research?lock=103",
-    align: "left",
-  },
-  {
-    id: "harvest",
-    eyebrow: "Chapter Four — The Harvest",
-    title: "By hand, by boat, at peak biomass",
-    line: "A closed loop with zero fossil fuel and zero grid power — nature was already doing the work.",
-    img: "https://loremflickr.com/1600/2000/boat,harvest,river?lock=104",
-    align: "right",
-  },
-  {
-    id: "drying",
-    eyebrow: "Chapter Five — The Sun",
-    title: "Ten days on bamboo racks",
-    line: "Moisture falls from 92% to under 12%. The fibre curls, toughens, remembers its shape.",
-    img: "https://loremflickr.com/1600/2000/bamboo,drying,sun?lock=105",
-    align: "left",
-  },
-  {
-    id: "training",
-    eyebrow: "Chapter Six — The Hands",
-    title: "190+ women, three blocks, sixty days",
-    line: "A skill they already had, finally given a market — fibre delivered to their doorstep.",
-    img: "https://loremflickr.com/1600/2000/women,craft,workshop?lock=106",
-    align: "right",
-  },
-  {
-    id: "weaving",
-    eyebrow: "Chapter Seven — The Loom",
-    title: "No two baskets leave identical",
-    line: "Each artisan chooses her own pattern. The loom room hums from sunrise to last light.",
-    img: "https://loremflickr.com/1600/2000/basket,weaving,craft?lock=107",
-    align: "left",
-  },
-  {
-    id: "trust",
-    eyebrow: "Chapter Eight — The Passport",
-    title: "142 grams of carbon, traced",
-    line: "Harvest source, drying method, artisan's name — compliant with EU CSDDD & CBAM before it ever ships.",
-    img: "https://loremflickr.com/1600/2000/handwoven,basket,product?lock=108",
-    align: "right",
-  },
-  {
-    id: "reach",
-    eyebrow: "Chapter Nine — The Fair",
-    title: "From a stall at EPCH Delhi",
-    line: "320+ B2B orders later, a river weed is a line item on a boutique's shelf in Paris and Tokyo.",
-    img: "https://loremflickr.com/1600/2000/market,export,crates?lock=109",
+    eyebrow: "Chapter Three — The Material",
+    title: "Sustainably sourced, naturally beautiful",
+    line: "We use only highly renewable resources like bamboo, neem wood, and organic cotton. No plastics. No compromises.",
+    img: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?auto=format&fit=crop&w=1600&q=80",
     align: "left",
   },
   {
     id: "vision",
-    eyebrow: "Chapter Ten — The Shelf",
-    title: "This is KrisluxECO",
-    line: "The film doesn't end here. It continues with every order placed.",
-    img: "https://loremflickr.com/1600/2000/boutique,shop,display?lock=110",
+    eyebrow: "Chapter Four — The Experience",
+    title: "Redefining hotel luxury",
+    line: "Our eco-friendly amenities elevate the guest experience, bringing warm, earthy elegance to the finest hotel bathrooms.",
+    img: "/images/luxury_amenities.png",
     align: "right",
   },
 ];
@@ -182,7 +134,7 @@ const ImageStoryStyles = () => (
   `}</style>
 );
 
-export default function ImageStory() {
+function ImageStory() {
   const trackRef = useRef(null);
   const frameRefs = useRef([]);
   const copyRefs = useRef([]);
@@ -287,6 +239,43 @@ export default function ImageStory() {
           <div className="is-counter" ref={counterRef}>01 / {String(N).padStart(2, "0")} — {CHAPTERS[0].id.toUpperCase()}</div>
         </div>
       </div>
+    </div>
+  );
+}
+
+export default function BrandStoryPage() {
+  return (
+    <div className="bg-[#050505] min-h-screen">
+      {/* Video Hero Section */}
+      <section className="relative w-full h-screen flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover filter brightness-[0.65] contrast-[1.1]"
+          >
+            {/* Cinematic nature/forest stock video */}
+            <source src="https://videos.pexels.com/video-files/3209211/3209211-uhd_2560_1440_25fps.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-[#050505] z-1" />
+        </div>
+        
+        <div className="relative z-10 text-center px-6 max-w-4xl mx-auto flex flex-col items-center">
+          <h2 className="text-[10px] md:text-xs font-mono tracking-[0.3em] uppercase text-[#C8A97A] mb-6">Our Heritage</h2>
+          <h1 className="text-4xl md:text-7xl font-serif text-white font-light tracking-wide leading-tight mb-8">
+            Nature, <span className="italic">refined.</span>
+          </h1>
+          <p className="text-sm md:text-lg text-white/80 font-sans max-w-2xl mx-auto leading-relaxed font-light mb-12">
+            KrisluxECO bridges the gap between organic sustainability and uncompromising hotel luxury. Watch our journey unfold.
+          </p>
+          <div className="w-[1px] h-24 bg-gradient-to-b from-[#C8A97A] to-transparent animate-pulse" />
+        </div>
+      </section>
+
+      {/* GSAP Story Chapters */}
+      <ImageStory />
     </div>
   );
 }

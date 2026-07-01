@@ -33,6 +33,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           throw new Error("User does not exist");
         }
 
+        if (user.isBlocked) {
+          throw new Error("Your account has been suspended.");
+        }
+
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
@@ -44,8 +48,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (role === "admin" && user.role !== "admin") {
           user.role = "admin";
-          await user.save();
         }
+        
+        user.lastLogin = new Date();
+        await user.save();
 
         return {
           id: user._id.toString(),
@@ -78,10 +84,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               image: user.image,
               role: email === ADMIN_EMAIL ? "admin" : "user",
             });
-          } else if (email === ADMIN_EMAIL && dbUser.role !== "admin") {
-            dbUser.role = "admin";
-            await dbUser.save();
+          } else {
+            if (dbUser.isBlocked) {
+              console.error("Blocked user attempted to login via Google:", email);
+              return false; // Reject sign in
+            }
+            if (email === ADMIN_EMAIL && dbUser.role !== "admin") {
+              dbUser.role = "admin";
+            }
           }
+          
+          dbUser.lastLogin = new Date();
+          await dbUser.save();
 
           user.id = dbUser._id.toString();
           user.role = dbUser.role;
