@@ -28,12 +28,12 @@ import { motion, useInView, AnimatePresence } from "framer-motion";
  */
 
 const badgeStyles = {
-  "BEST SELLER": "bg-[#4A6741] text-white",
-  "ECO CHOICE": "bg-[#8FBD84] text-[#1C1C1A]",
+  "BEST SELLER": "bg-[#C8A97A] text-white",
+  "ECO CHOICE": "bg-[#FAF7F2] text-[#1C1C1A] border border-[#1C1C1A]/10",
   "NEW": "bg-[#1C1C1A] text-white",
   "POPULAR": "bg-[#C8A97A] text-white",
-  "SPECIAL OFFER": "bg-[#D98C5F] text-white",
-  "OUT OF STOCK": "bg-[#1C1C1A]/60 text-white",
+  "SPECIAL OFFER": "bg-[#1C1C1A] text-white",
+  "OUT OF STOCK": "bg-white/90 text-[#1C1C1A]",
 };
 
 const CARD_WIDTH = 296; // card width + gap, used for arrow-button paging
@@ -46,9 +46,9 @@ function LikeBurst() {
       animate={{ opacity: 1, y: -26, scale: 1 }}
       exit={{ opacity: 0, y: -38 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="pointer-events-none absolute -top-1 right-0 text-[#4A6741]"
+      className="pointer-events-none absolute -top-1 right-0 text-[#C8A97A]"
     >
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="#4A6741">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="#C8A97A">
         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
       </svg>
     </motion.div>
@@ -160,16 +160,16 @@ function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggle
         }}
         onPointerLeave={resetTilt}
         style={{ transformStyle: "preserve-3d" }}
-        className="relative bg-white rounded-2xl overflow-hidden border border-[#E8DDD0] group-hover:border-[#4A6741]/30 shadow-[0_2px_10px_rgba(0,0,0,0.04)] group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.12)] transition-[border-color,box-shadow] duration-300"
+        className="relative bg-white rounded-sm overflow-hidden border border-[#E8DDD0] group-hover:border-[#C8A97A]/40 shadow-[0_2px_10px_rgba(0,0,0,0.04)] group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.12)] transition-[border-color,box-shadow] duration-500"
       >
         {/* Image */}
-        <div className="relative h-[200px] w-full overflow-hidden bg-[#F6F2EC]">
+        <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#FAF7F2]">
           <motion.span
             initial={{ opacity: 0, scale: 0.5, x: -10 }}
             animate={inView ? { opacity: 1, scale: 1, x: 0 } : {}}
             transition={{ delay: index * 0.09 + 0.25, type: "spring", stiffness: 300, damping: 16 }}
-            className={`absolute top-3 left-3 z-10 text-[10px] font-semibold tracking-wider px-2.5 py-1 rounded-full whitespace-nowrap shadow-sm ${
-              badgeStyles[badgeText] ?? "bg-[#4A6741] text-white"
+            className={`absolute top-3 left-3 z-10 text-[10px] font-bold tracking-[0.2em] px-2.5 py-1 uppercase shadow-sm ${
+              badgeStyles[badgeText] ?? "bg-[#1C1C1A] text-white"
             }`}
           >
             {badgeText === "BEST SELLER" || badgeText === "NEW" ? (
@@ -232,14 +232,11 @@ function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggle
           </h3>
 
           <div className="flex items-center justify-between mb-4 text-xs gap-2">
-            <span className="flex items-center gap-1.5 text-[#9E9088] whitespace-nowrap">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
-                <circle cx="12" cy="12" r="9" />
-              </svg>
+            <span className="flex items-center gap-1.5 text-[#9E9088] whitespace-nowrap uppercase tracking-widest text-[9px] font-bold">
               MOQ: {product.minOrderQty || 1}
             </span>
-            <span className="text-[#4A6741] font-semibold whitespace-nowrap">
-              ₹{displayPrice.toLocaleString()} <span className="text-[#9E9088] font-normal">onwards</span>
+            <span className="text-[#1C1C1A] font-medium whitespace-nowrap">
+              ₹{displayPrice.toLocaleString()} <span className="text-[#9E9088] font-light italic">onwards</span>
             </span>
           </div>
 
@@ -249,10 +246,10 @@ function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggle
               className="flex-1"
             >
               <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.96 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                className="w-full relative flex items-center justify-center bg-[#1C1C1A] hover:bg-[#4A6741] text-white text-xs tracking-wide py-2.5 rounded-full transition-colors overflow-hidden cursor-pointer"
+                className="w-full relative flex items-center justify-center bg-white border border-[#1C1C1A] hover:bg-[#1C1C1A] hover:text-white text-[#1C1C1A] text-[10px] font-bold tracking-[0.2em] uppercase py-3 transition-colors overflow-hidden cursor-pointer"
               >
                 REQUEST QUOTE
               </motion.button>
@@ -263,15 +260,15 @@ function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggle
               aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
               whileTap={{ scale: 0.8 }}
               whileHover={{ scale: 1.08 }}
-              className="relative w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-full border border-[#E8DDD0] hover:border-[#4A6741] transition-colors cursor-pointer"
+              className="relative w-10 h-10 flex-shrink-0 flex items-center justify-center border border-[#ECE6DF] hover:border-[#C8A97A] transition-colors cursor-pointer"
             >
               <AnimatePresence>{showBurst && <LikeBurst />}</AnimatePresence>
               <motion.svg
                 width="14"
                 height="14"
                 viewBox="0 0 24 24"
-                fill={liked ? "#4A6741" : "none"}
-                stroke={liked ? "#4A6741" : "#9E9088"}
+                fill={liked ? "#C8A97A" : "none"}
+                stroke={liked ? "#C8A97A" : "#9E9088"}
                 strokeWidth="2"
                 animate={liked ? { scale: [1, 1.4, 1] } : { scale: 1 }}
                 transition={{ duration: 0.35, ease: "easeOut" }}
@@ -463,14 +460,14 @@ export default function FeaturedProducts({ products = [], savedProductIds = [] }
               initial={{ opacity: 0, y: 18 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.28 }}
-              className="relative inline-block font-bold text-[#4A6741]"
+              className="relative inline-block font-normal italic text-[#C8A97A]"
             >
               Products
               <motion.span
                 initial={{ scaleX: 0 }}
                 animate={inView ? { scaleX: 1 } : {}}
                 transition={{ duration: 0.6, delay: 0.55, ease: "easeOut" }}
-                className="absolute left-0 -bottom-1 h-[2px] w-full bg-[#C8A97A] origin-left"
+                className="absolute left-0 -bottom-1 h-[1px] w-full bg-[#C8A97A]/40 origin-left"
               />
             </motion.span>
           </h2>
@@ -492,10 +489,10 @@ export default function FeaturedProducts({ products = [], savedProductIds = [] }
             disabled={atStart}
             aria-label="Scroll left"
             animate={{ opacity: atStart ? 0.35 : 1 }}
-            whileHover={atStart ? {} : { scale: 1.08, backgroundColor: "#DCE8D8" }}
+            whileHover={atStart ? {} : { scale: 1.08, backgroundColor: "#FAF7F2" }}
             whileTap={atStart ? {} : { scale: 0.92 }}
             transition={{ type: "spring", stiffness: 400, damping: 20 }}
-            className="w-10 h-10 rounded-full border border-[#E8DDD0] flex items-center justify-center hover:border-[#4A6741] disabled:cursor-not-allowed transition-colors"
+            className="w-10 h-10 rounded-full border border-[#E8DDD0] flex items-center justify-center hover:border-[#1C1C1A] disabled:cursor-not-allowed transition-colors"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1C1C1A" strokeWidth="2">
               <path d="M15 18l-6-6 6-6" />
@@ -506,10 +503,10 @@ export default function FeaturedProducts({ products = [], savedProductIds = [] }
             disabled={atEnd}
             aria-label="Scroll right"
             animate={{ opacity: atEnd ? 0.35 : 1 }}
-            whileHover={atEnd ? {} : { scale: 1.08, backgroundColor: "#DCE8D8" }}
+            whileHover={atEnd ? {} : { scale: 1.08, backgroundColor: "#FAF7F2" }}
             whileTap={atEnd ? {} : { scale: 0.92 }}
             transition={{ type: "spring", stiffness: 400, damping: 20 }}
-            className="w-10 h-10 rounded-full border border-[#E8DDD0] flex items-center justify-center hover:border-[#4A6741] disabled:cursor-not-allowed transition-colors"
+            className="w-10 h-10 rounded-full border border-[#E8DDD0] flex items-center justify-center hover:border-[#1C1C1A] disabled:cursor-not-allowed transition-colors"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1C1C1A" strokeWidth="2">
               <path d="M9 18l6-6-6-6" />
@@ -554,9 +551,9 @@ export default function FeaturedProducts({ products = [], savedProductIds = [] }
         </div>
 
         {/* Live scroll-progress indicator */}
-        <div className="relative h-[3px] w-full max-w-[220px] mx-auto mt-1 bg-[#E8DDD0] rounded-full overflow-hidden">
+        <div className="relative h-[2px] w-full max-w-[220px] mx-auto mt-1 bg-[#E8DDD0] overflow-hidden">
           <motion.div
-            className="absolute left-0 top-0 h-full w-[30%] bg-[#4A6741] rounded-full"
+            className="absolute left-0 top-0 h-full w-[30%] bg-[#1C1C1A]"
             animate={{ x: `${scrollProgress * 233}%` }}
             transition={{ type: "spring", stiffness: 300, damping: 30, mass: 0.3 }}
           />
@@ -569,7 +566,7 @@ export default function FeaturedProducts({ products = [], savedProductIds = [] }
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.6 }}
             whileHover={{ x: 4 }}
-            className="inline-flex items-center gap-2 text-sm text-[#4A6741] tracking-wide border-b border-[#4A6741]/40 pb-0.5 hover:border-[#4A6741] transition-colors mt-8"
+            className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] font-bold text-[#1C1C1A] border-b border-[#1C1C1A]/40 pb-0.5 hover:border-[#1C1C1A] transition-colors mt-8"
           >
             View all products
             <motion.span

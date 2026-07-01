@@ -42,24 +42,20 @@ function LikeBurst() {
 // Checkbox row used in the sidebar facets (Categories / Material)
 function FacetCheckbox({ label, count, checked, onChange }) {
   return (
-    <label className="flex items-center justify-between gap-2 py-1.5 cursor-pointer group select-none">
-      <span className="flex items-center gap-2.5">
+    <label className="flex items-center justify-between gap-3 py-2 cursor-pointer group select-none">
+      <span className="flex items-center gap-3">
         <span
-          className={`relative h-4 w-4 rounded-[4px] border flex items-center justify-center transition-colors ${checked
-              ? "bg-[#4A6741] border-[#4A6741]"
-              : "bg-white border-[#D9CFC2] group-hover:border-[#4A6741]/50"
+          className={`relative h-3.5 w-3.5 rounded-full border flex items-center justify-center transition-all duration-300 ${checked
+              ? "bg-[#1C1C1A] border-[#1C1C1A]"
+              : "bg-transparent border-[#D9CFC2] group-hover:border-[#1C1C1A]/40"
             }`}
         >
           {checked && (
-            <svg width="9" height="9" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M5 13l4 4L19 7"
-                stroke="white"
-                strokeWidth="3.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+             <motion.div
+               initial={{ scale: 0 }}
+               animate={{ scale: 1 }}
+               className="w-1.5 h-1.5 bg-[#C8A97A] rounded-full"
+             />
           )}
         </span>
         <input
@@ -69,14 +65,14 @@ function FacetCheckbox({ label, count, checked, onChange }) {
           className="sr-only"
         />
         <span
-          className={`text-[13px] transition-colors ${checked ? "text-[#1C1C1A] font-medium" : "text-[#6B6560] group-hover:text-[#1C1C1A]"
+          className={`text-[13px] tracking-wide transition-colors ${checked ? "text-[#1C1C1A] font-medium" : "text-[#6B6560] group-hover:text-[#1C1C1A]"
             }`}
         >
           {label}
         </span>
       </span>
       {typeof count === "number" && (
-        <span className="text-[11px] text-[#B0A89D]">{count}</span>
+        <span className="text-[11px] text-[#9E9088] font-light">{count}</span>
       )}
     </label>
   );
@@ -86,20 +82,20 @@ function FacetCheckbox({ label, count, checked, onChange }) {
 function FacetSection({ title, children, defaultOpen = true }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="border-b border-[#ECE6DF] py-5 first:pt-0">
+    <div className="border-b border-[#ECE6DF]/60 py-6 first:pt-0">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between mb-1"
+        className="w-full flex items-center justify-between mb-2 group"
       >
         <span
-          className="text-[13px] font-semibold tracking-wide text-[#1C1C1A]"
+          className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#1C1C1A]"
           style={{ fontFamily: sans }}
         >
           {title}
         </span>
         <ChevronDown
           size={14}
-          className={`text-[#9E9088] transition-transform duration-300 ${open ? "rotate-180" : ""
+          className={`text-[#9E9088] transition-transform duration-500 ease-out group-hover:text-[#1C1C1A] ${open ? "rotate-180" : ""
             }`}
         />
       </button>
@@ -109,7 +105,7 @@ function FacetSection({ title, children, defaultOpen = true }) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
             <div className="pt-2">{children}</div>
@@ -178,14 +174,14 @@ export function StorefrontProductCard({ product, onQuickView, isLiked = false, o
 
   // Badge priority: out of stock > best seller > new > limited > special offer > eco choice
   const getBadge = () => {
-    if (isOutOfStock) return { text: "OUT OF STOCK", style: "bg-[#1C1C1A] text-white" };
-    if (product.isBestSeller) return { text: "BEST SELLER", style: "bg-[#1C1C1A] text-white" };
-    if (product.isNew) return { text: "NEW", style: "bg-[#4A6741] text-white" };
-    if (product.stock > 0 && product.stock <= 5) return { text: "LIMITED", style: "bg-[#D98C5F] text-white" };
+    if (isOutOfStock) return { text: "OUT OF STOCK", style: "bg-[#1C1C1A] text-white border-transparent" };
+    if (product.isBestSeller) return { text: "BEST SELLER", style: "bg-white/80 backdrop-blur-md text-[#1C1C1A] border-white/40" };
+    if (product.isNew) return { text: "NEW ARRIVAL", style: "bg-white/80 backdrop-blur-md text-[#1C1C1A] border-white/40" };
+    if (product.stock > 0 && product.stock <= 5) return { text: "LIMITED", style: "bg-[#C8A97A] text-white border-transparent" };
     if (product.discountPrice !== null && product.discountPrice !== undefined)
-      return { text: "SPECIAL OFFER", style: "bg-[#8FBD84] text-[#1C1C1A]" };
+      return { text: "SPECIAL OFFER", style: "bg-[#1C1C1A] text-[#C8A97A] border-[#1C1C1A]" };
     if (product.category === "Eco & Sustainable")
-      return { text: "ECO CHOICE", style: "bg-[#4A6741] text-white" };
+      return { text: "ECO CHOICE", style: "bg-white/80 backdrop-blur-md text-[#4A6741] border-white/40" };
     return null;
   };
 
@@ -194,18 +190,18 @@ export function StorefrontProductCard({ product, onQuickView, isLiked = false, o
   return (
     <Link href={`/user/products/${product._id}`}>
       <motion.div
-        className="group relative flex-shrink-0 w-full select-none text-left cursor-pointer"
+        className="group relative flex-shrink-0 w-full select-none text-left cursor-pointer flex flex-col h-full"
       >
         <motion.div
-          whileHover={{ y: -4 }}
-          transition={{ type: "spring", stiffness: 240, damping: 20 }}
-          className="relative bg-white rounded-2xl overflow-hidden border border-[#ECE6DF] group-hover:border-[#4A6741]/30 shadow-[0_2px_12px_rgba(28,28,26,0.03)] group-hover:shadow-[0_16px_36px_rgba(28,28,26,0.1)] transition-[border-color,box-shadow] duration-300 flex flex-col h-full"
+          whileHover={{ y: -8 }}
+          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          className="relative bg-white flex flex-col h-full"
         >
           {/* Image */}
-          <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#F6F2EC] border-b border-[#ECE6DF]/50">
+          <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#F8F6F3]">
             {badge && (
               <span
-                className={`absolute top-3 left-3 z-10 text-[9px] font-semibold tracking-wider px-2.5 py-1 rounded-full shadow-sm ${badge.style}`}
+                className={`absolute top-4 left-4 z-10 text-[8px] font-bold tracking-[0.2em] px-3 py-1.5 border shadow-sm ${badge.style}`}
               >
                 {badge.text}
               </span>
@@ -215,64 +211,62 @@ export function StorefrontProductCard({ product, onQuickView, isLiked = false, o
               <img
                 src={coverImg}
                 alt={product.name}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[1.2s] ease-out"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-[#9E9088]">
                 <Package size={32} className="stroke-1" />
               </div>
             )}
+            
+            {/* Elegant inner shadow/overlay */}
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500 pointer-events-none" />
 
-            {/* Quick View overlay button, fades in on hover */}
-            <div className="absolute inset-x-0 bottom-3 flex justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+            {/* Quick View overlay button */}
+            <div className="absolute inset-x-0 bottom-6 flex justify-center opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 ease-out z-20">
               <button
                 onClick={handleQuickView}
-                className="flex items-center gap-1.5 bg-white text-[#1C1C1A] text-xs font-semibold px-4 py-2 rounded-full shadow-md hover:bg-[#4A6741] hover:text-white transition-colors"
+                className="flex items-center gap-2 bg-white/90 backdrop-blur-md text-[#1C1C1A] text-[10px] font-bold tracking-[0.15em] uppercase px-6 py-3 shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:bg-[#1C1C1A] hover:text-white transition-all duration-300"
               >
-                <Eye size={13} /> Quick View
+                <Eye size={12} /> Quick View
               </button>
             </div>
           </div>
 
           {/* Details */}
-          <div className="p-4 flex-1 flex flex-col justify-between">
-            <div className="space-y-1">
+          <div className="pt-6 pb-2 flex-1 flex flex-col justify-between">
+            <div className="space-y-1.5 flex-1">
               <span
-                className="italic text-[11px] tracking-wide text-[#C8A97A] font-medium"
-                style={{ fontFamily: serif }}
+                className="block text-[9px] uppercase tracking-[0.2em] text-[#C8A97A] font-bold"
+                style={{ fontFamily: sans }}
               >
                 {product.category}
               </span>
               <h4
-                className="font-semibold text-[#1C1C1A] text-lg mt-0.5 leading-snug line-clamp-2 group-hover:text-[#4A6741] transition-colors"
+                className="font-medium text-[#1C1C1A] text-xl leading-snug line-clamp-2 group-hover:text-[#C8A97A] transition-colors duration-300"
                 style={{ fontFamily: serif }}
               >
                 {product.name}
               </h4>
             </div>
 
-            <div className="mt-3 flex items-center justify-between text-xs text-[#6B6560]">
-              <span className="flex items-center gap-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#C8A97A]" />
-                MOQ: {product.minOrderQty || 1}
-              </span>
-              <span className="font-semibold text-[#1C1C1A]">
-                ₹{displayPrice.toLocaleString()}{" "}
-                <span className="font-normal text-[#9E9088]">onwards</span>
-              </span>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-[#ECE6DF]/50 flex items-center gap-2">
-              <button className="flex-1 bg-[#1C1C1A] text-white hover:bg-[#4A6741] text-[11px] font-semibold uppercase tracking-wider py-2.5 rounded-xl transition shadow-sm text-center">
-                Request Quote
-              </button>
+            <div className="mt-4 flex items-end justify-between">
+              <div className="space-y-1">
+                 <div className="text-[10px] uppercase tracking-wider text-[#9E9088] font-medium">
+                   MOQ: {product.minOrderQty || 1} units
+                 </div>
+                 <div className="font-semibold text-[#1C1C1A] text-sm tracking-wide">
+                   ₹{displayPrice.toLocaleString()}{" "}
+                   <span className="font-normal text-[#9E9088] text-xs">/ unit</span>
+                 </div>
+              </div>
 
               <button
                 onClick={handleLikeClick}
-                className="w-9 h-9 shrink-0 rounded-full border border-[#ECE6DF] hover:border-[#4A6741]/30 flex items-center justify-center bg-white text-[#9E9088] hover:text-[#4A6741] transition-colors relative shadow-sm"
+                className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center bg-transparent text-[#9E9088] hover:bg-[#FAF7F2] hover:text-[#1C1C1A] transition-colors relative"
                 aria-label="Add to wishlist"
               >
-                <Heart size={13} className={liked ? "fill-[#4A6741] stroke-[#4A6741]" : ""} />
+                <Heart size={16} className={liked ? "fill-[#1C1C1A] stroke-[#1C1C1A]" : ""} strokeWidth={1.5} />
                 <AnimatePresence>{showBurst && <LikeBurst />}</AnimatePresence>
               </button>
             </div>
@@ -384,12 +378,12 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
   /* ------------------------------- Sidebar content, reused for mobile drawer */
   const SidebarContent = () => (
     <>
-      <div className="flex items-center justify-between mb-1">
+      <div className="flex items-center justify-between mb-4">
         <h3
-          className="flex items-center gap-2 text-lg font-semibold text-[#1C1C1A]"
-          style={{ fontFamily: serif }}
+          className="flex items-center gap-2 text-[10px] tracking-[0.2em] uppercase font-bold text-[#1C1C1A]"
+          style={{ fontFamily: sans }}
         >
-          <SlidersHorizontal size={16} className="text-[#4A6741]" />
+          <SlidersHorizontal size={12} className="text-[#C8A97A]" />
           Filters
         </h3>
         {activeFilterCount > 0 && (
@@ -474,18 +468,13 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
   );
 
   return (
-    <main className="relative min-h-screen bg-[#FAF7F2] text-[#1C1C1A]" style={{ fontFamily: sans }}>
-      {/* Slim decorative band under the nav */}
-      <div className="relative h-24 bg-[#1C1C1A] overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-[0.07]"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle, #fff 1px, transparent 1px)",
-            backgroundSize: "18px 18px",
-          }}
-        />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(74,103,65,0.25)_0%,transparent_70%)]" />
+    <main className="relative min-h-screen bg-white text-[#1C1C1A]" style={{ fontFamily: sans }}>
+      {/* Decorative band */}
+      <div className="relative h-20 bg-[#1C1C1A] flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/noise-pattern-with-subtle-cross-lines.png')" }}></div>
+        <div className="text-[#C8A97A] text-[9px] tracking-[0.3em] uppercase font-bold z-10">
+          The Art of Fine Living
+        </div>
       </div>
 
       <section className="max-w-7xl mx-auto px-6 py-10">
@@ -599,13 +588,13 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
                 </p>
                 <button
                   onClick={clearAllFilters}
-                  className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#E8DDD0] bg-white px-5 py-2 text-xs font-semibold text-[#1C1C1A] hover:bg-[#FAF7F2] transition"
+                  className="mt-6 inline-flex items-center gap-2 border-b border-[#1C1C1A] bg-transparent px-2 py-1 text-xs font-bold tracking-[0.1em] uppercase text-[#1C1C1A] hover:text-[#C8A97A] hover:border-[#C8A97A] transition-colors"
                 >
                   Reset All Filters
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-16">
                 {filteredProducts.map((product) => (
                   <StorefrontProductCard
                     key={product._id}

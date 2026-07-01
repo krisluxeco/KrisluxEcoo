@@ -66,7 +66,7 @@ export default function CategoryCard({ cat, index, featured = false }) {
                 bg-white/15 backdrop-blur-md
                 flex items-center justify-center
                 text-white text-sm
-                group-hover:bg-[#4A6741] group-hover:rotate-45
+                group-hover:bg-[#1C1C1A] group-hover:rotate-45
                 transition-all duration-400
               "
             >

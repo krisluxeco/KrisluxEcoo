@@ -153,12 +153,12 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
 
   return (
     <main
-      className="min-h-screen bg-[#FAF7F2] text-[#1C1C1A] pb-24 pt-6"
+      className="min-h-screen bg-white text-[#1C1C1A] pb-24 pt-6"
       style={{ fontFamily: sans }}
     >
       <div className="max-w-7xl mx-auto px-6">
-        {/* Breadcrumbs matching video */}
-        <div className="flex items-center gap-2 text-xs text-[#9E9088] mb-8 border-b border-[#ECE6DF]/60 pb-4">
+        {/* Breadcrumbs */}
+        <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-bold text-[#9E9088] mb-12 border-b border-[#ECE6DF]/60 pb-6">
           <Link href="/" className="hover:text-[#4A6741] transition">
             Home
           </Link>
@@ -173,10 +173,38 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
         </div>
 
         {/* Dynamic Split details */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start bg-white rounded-3xl border border-[#ECE6DF] p-6 sm:p-8 shadow-[0_4px_24px_rgba(28,28,26,0.02)]">
-          {/* Left Column: Image showcase with thumbnails */}
-          <div className="lg:col-span-6 flex flex-col gap-4">
-            <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-[#F6F2EC] border border-[#ECE6DF]/50 flex items-center justify-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+          {/* Left Column: Vertical thumbnails + Main Image */}
+          <div className="lg:col-span-6 flex flex-col-reverse md:flex-row gap-4 lg:sticky lg:top-12">
+            
+            {/* Thumbnails (vertical on desktop) */}
+            {images.length > 0 && (
+              <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto md:w-20 shrink-0 py-1 scrollbar-hide">
+                {images.map((img, index) => {
+                  const active = index === activeImageIndex;
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => setActiveImageIndex(index)}
+                      className={`relative w-20 md:w-full h-20 md:h-24 shrink-0 rounded-sm overflow-hidden bg-[#F8F6F3] border transition-all ${
+                        active
+                          ? "border-[#1C1C1A] ring-1 ring-[#1C1C1A]/20"
+                          : "border-transparent hover:border-[#ECE6DF]"
+                      }`}
+                    >
+                      <img
+                        src={img.url}
+                        alt={`Preview ${index + 1}`}
+                        className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity"
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Main Image */}
+            <div className="relative aspect-[3/4] w-full bg-[#F8F6F3] flex items-center justify-center overflow-hidden rounded-sm">
               {activeImage ? (
                 <AnimatePresence mode="wait">
                   <motion.img
@@ -186,53 +214,27 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.98 }}
-                    transition={{ duration: 0.35, ease: "easeOut" }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
                     className="w-full h-full object-cover"
                   />
                 </AnimatePresence>
               ) : (
                 <div className="text-[#9E9088] flex flex-col items-center gap-2">
                   <Package size={48} className="stroke-1" />
-                  <span className="text-xs">No image preview available</span>
+                  <span className="text-[10px] uppercase tracking-wider">No Preview</span>
                 </div>
               )}
             </div>
-
-            {/* Thumbnails row */}
-            {images.length > 0 && (
-              <div className="flex gap-3 overflow-x-auto py-1">
-                {images.map((img, index) => {
-                  const active = index === activeImageIndex;
-                  return (
-                    <button
-                      key={index}
-                      onClick={() => setActiveImageIndex(index)}
-                      className={`relative w-20 h-16 rounded-xl overflow-hidden bg-[#F6F2EC] border transition-all ${
-                        active
-                          ? "border-[#4A6741] ring-2 ring-[#4A6741]/10"
-                          : "border-[#ECE6DF] hover:border-[#9E9088]"
-                      }`}
-                    >
-                      <img
-                        src={img.url}
-                        alt={`Preview ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </button>
-                  );
-                })}
-              </div>
-            )}
           </div>
 
           {/* Right Column: Copy and B2B ordering options */}
-          <div className="lg:col-span-6 flex flex-col space-y-6">
-            <div className="space-y-3">
-              <span className="text-xs tracking-wider uppercase text-[#C8A97A] font-semibold">
+          <div className="lg:col-span-6 flex flex-col space-y-8 pt-2 lg:pl-8">
+            <div className="space-y-4">
+              <span className="block text-[10px] tracking-[0.25em] uppercase text-[#C8A97A] font-bold">
                 {product.category}
               </span>
               <h1
-                className="text-3xl sm:text-4xl font-semibold text-[#1C1C1A] leading-tight"
+                className="text-4xl sm:text-5xl font-medium text-[#1C1C1A] leading-[1.15]"
                 style={{ fontFamily: serif }}
               >
                 {product.name}
@@ -277,10 +279,10 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
             </p>
 
             {/* B2B Action Buttons Row */}
-            <div className="flex items-center gap-3 pt-2">
+            <div className="flex items-center gap-4 pt-4">
               <button
                 onClick={() => setShowQuoteModal(true)}
-                className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[#4A6741] hover:bg-[#3a5233] text-white py-3.5 text-xs font-semibold uppercase tracking-wider transition-colors shadow-sm"
+                className="flex-1 inline-flex items-center justify-center gap-2 bg-[#1C1C1A] hover:bg-[#C8A97A] text-white py-4 px-6 text-[11px] font-bold uppercase tracking-[0.15em] transition-colors duration-300"
               >
                 <MessageSquare size={14} /> Request Quote
               </button>
@@ -307,14 +309,13 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
                     console.error("Error toggling saved status:", err);
                   }
                 }}
-                className={`px-5 py-3.5 rounded-xl border flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wider transition ${
+                className={`w-14 h-[52px] shrink-0 border flex items-center justify-center transition-colors duration-300 ${
                   liked
-                    ? "bg-red-50 border-red-200 text-red-600 hover:bg-red-100"
-                    : "bg-white border-[#E8DDD0] text-[#6B6560] hover:bg-[#FAF7F2]"
+                    ? "border-[#1C1C1A] bg-[#1C1C1A] text-white"
+                    : "border-[#ECE6DF] bg-transparent text-[#1C1C1A] hover:bg-[#FAF7F2]"
                 }`}
               >
-                <Heart size={14} className={liked ? "fill-red-600 stroke-red-600" : ""} />
-                {liked ? "Saved" : "Save"}
+                <Heart size={16} className={liked ? "fill-white stroke-white" : ""} strokeWidth={1.5} />
               </button>
             </div>
 
@@ -329,9 +330,9 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
             </div>
 
             {/* Interactive Tabs specifications panel */}
-            <div className="pt-6">
+            <div className="pt-10">
               {/* Tab Header Buttons */}
-              <div className="flex border-b border-[#ECE6DF] text-xs font-semibold tracking-wider text-[#9E9088] mb-4">
+              <div className="flex gap-6 border-b border-[#ECE6DF]/60 text-[10px] font-bold tracking-[0.15em] uppercase text-[#9E9088] mb-6 relative">
                 {[
                   { id: "description", label: "DESCRIPTION" },
                   { id: "specifications", label: "SPECIFICATIONS" },
@@ -341,13 +342,21 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`pb-3 pr-4 sm:pr-6 border-b-2 transition relative ${
+                    className={`pb-4 relative transition-colors ${
                       activeTab === tab.id
-                        ? "text-[#1C1C1A] border-[#4A6741]"
-                        : "border-transparent hover:text-[#1C1C1A]"
+                        ? "text-[#1C1C1A]"
+                        : "hover:text-[#1C1C1A]"
                     }`}
                   >
                     {tab.label}
+                    {activeTab === tab.id && (
+                      <motion.div
+                        layoutId="activeTabIndicator"
+                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C8A97A]"
+                        initial={false}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      />
+                    )}
                   </button>
                 ))}
               </div>

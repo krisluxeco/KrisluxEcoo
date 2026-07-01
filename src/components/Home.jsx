@@ -57,7 +57,7 @@ function SectionHeading({ light, accent, dark = false }) {
 function Leaf({ style }) {
   return (
     <motion.div
-      className="absolute pointer-events-none select-none text-[#4A6741]"
+      className="absolute pointer-events-none select-none text-[#C8A97A]"
       style={style}
       animate={{
         y: ["0%", "-120vh"],
@@ -172,7 +172,7 @@ function MarqueeStrip() {
         {doubled.map((item, i) => (
           <span
             key={i}
-            className="text-xs tracking-[0.22em] uppercase text-[#4A6741] font-medium flex-shrink-0"
+            className="text-xs tracking-[0.25em] uppercase text-[#1C1C1A] font-bold flex-shrink-0"
             style={{ fontFamily: sans }}
           >
             {item}
@@ -315,7 +315,7 @@ function TestimonialCarousel() {
           <button
             key={i}
             onClick={() => setCurrent(i)}
-            className={`rounded-full transition-all duration-300 ${i === current ? "w-6 h-2 bg-[#4A6741]" : "w-2 h-2 bg-[#E8DDD0]"
+            className={`rounded-full transition-all duration-300 ${i === current ? "w-6 h-2 bg-[#1C1C1A]" : "w-2 h-2 bg-[#E8DDD0]"
               }`}
           />
         ))}
@@ -390,7 +390,7 @@ function HeroSlideshow() {
             onClick={() => goTo(i)}
             aria-label={`Slide ${i + 1}`}
             className={`rounded-full transition-all duration-500 ${i === current
-              ? "w-6 h-2 bg-[#4A6741]"
+              ? "w-6 h-2 bg-[#C8A97A]"
               : "w-2 h-2 bg-white/40 hover:bg-white/70"
               }`}
           />
@@ -523,13 +523,13 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
               className="flex flex-wrap gap-4"
             >
               <motion.a
-                href="/products"
+                href="/user/products"
                 whileHover={{
-                  scale: 1.04,
-                  boxShadow: "0 8px 30px rgba(74,103,65,0.4)",
+                  scale: 1.02,
+                  boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
                 }}
-                whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-2 bg-[#4A6741] text-white px-8 py-3.5 rounded-full text-sm tracking-wide transition-all"
+                whileTap={{ scale: 0.98 }}
+                className="inline-flex items-center gap-2 bg-white text-[#1C1C1A] px-8 py-4 text-[11px] font-bold tracking-[0.15em] uppercase transition-all"
               >
                 Explore Products
                 <svg
@@ -544,10 +544,10 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
                 </svg>
               </motion.a>
               <motion.a
-                href="/contact"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-2 border border-white/30 text-white px-8 py-3.5 rounded-full text-sm tracking-wide hover:border-white hover:bg-white/10 transition-all"
+                href="/user/contact"
+                whileHover={{ scale: 1.02, backgroundColor: "rgba(255,255,255,0.1)" }}
+                whileTap={{ scale: 0.98 }}
+                className="inline-flex items-center gap-2 border border-white/50 text-white px-8 py-4 text-[11px] font-bold tracking-[0.15em] uppercase transition-all"
               >
                 Request B2B Quote
               </motion.a>
@@ -587,14 +587,13 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
           ].map((stat, i) => (
             <FadeUp key={i} delay={i * 0.1} className="text-center">
               <div
-                className="text-4xl md:text-5xl font-light text-[#4A6741] mb-2"
+                className="text-4xl md:text-5xl font-light text-[#1C1C1A] mb-2"
                 style={{ fontFamily: serif }}
               >
                 <CountUp target={stat.value} suffix={stat.suffix} />
               </div>
               <p
-                className="text-[#9E9088] tracking-widest uppercase"
-                style={{ fontSize: "0.72rem", letterSpacing: "0.12em" }}
+                className="text-[#9E9088] tracking-[0.2em] font-bold uppercase text-[10px]"
               >
                 {stat.label}
               </p>
@@ -621,17 +620,16 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
 
             {/* Heading */}
             <h2
-              className="text-[clamp(2rem,4vw,3.2rem)] font-light leading-tight text-[#1C1C1A]"
+              className="text-[clamp(2.5rem,5vw,4rem)] font-light leading-tight text-[#1C1C1A]"
               style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
             >
-              <span className="inline-block font-bold">
+              <span className="inline-block font-normal">
                 Crafted{" "}
               </span>
 
-              <span className="relative inline-block font-bold text-[#4A6741]">
+              <span className="relative inline-block font-normal italic text-[#C8A97A]">
                 Living
-
-                <span className="absolute left-0 -bottom-1 h-[2px] w-full bg-[#C8A97A]" />
+                <span className="absolute left-0 -bottom-1 h-[1px] w-full bg-[#C8A97A]/40" />
               </span>
             </h2>
 
@@ -746,7 +744,7 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
         "
             >
               <div
-                className="text-3xl font-bold text-[#4A6741]"
+                className="text-4xl font-light text-[#1C1C1A]"
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
                 }}
@@ -754,11 +752,11 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
                 100%
               </div>
 
-              <p className="mt-2 text-[#1C1C1A] font-medium">
+              <p className="mt-3 text-[#1C1C1A] font-semibold text-sm uppercase tracking-widest">
                 Natural Materials
               </p>
 
-              <p className="mt-2 text-[13px] text-[#6B6560] leading-relaxed">
+              <p className="mt-2 text-[12px] text-[#6B6560] leading-relaxed">
                 Responsibly sourced eco-friendly resources with
                 minimal environmental impact.
               </p>
@@ -768,20 +766,18 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
             <div
               className="
           lg:col-span-4
-          bg-white/80
+          bg-white/90
           backdrop-blur-xl
           border border-[#ECE6DF]
-          rounded-[22px]
-          p-6
-          shadow-sm
+          p-8
           hover:-translate-y-1
-          hover:shadow-lg
+          hover:shadow-2xl
           transition-all
           duration-500
         "
             >
               <div
-                className="text-3xl font-bold text-[#4A6741]"
+                className="text-4xl font-light text-[#1C1C1A]"
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
                 }}
@@ -789,11 +785,11 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
                 ISO
               </div>
 
-              <p className="mt-2 text-[#1C1C1A] font-medium">
+              <p className="mt-3 text-[#1C1C1A] font-semibold text-sm uppercase tracking-widest">
                 Quality Assured
               </p>
 
-              <p className="mt-2 text-[13px] text-[#6B6560] leading-relaxed">
+              <p className="mt-2 text-[12px] text-[#6B6560] leading-relaxed">
                 Consistent manufacturing standards and premium
                 quality control processes.
               </p>

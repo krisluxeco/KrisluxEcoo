@@ -1,17 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@100..900&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-serif: "Cormorant Garamond", serif;
-  --font-sans: "Outfit", sans-serif;
+  --font-serif: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-dm-sans), "DM Sans", system-ui, sans-serif;
   
-  --color-brand-cream: #FDFCF7;
-  --color-brand-forest: #122415;
-  --color-brand-forest-light: #1b3320;
-  --color-brand-moss: #2A4B34;
-  --color-brand-sage: #5C7F67;
-  --color-brand-sand: #EAE4D9;
-  --color-brand-terracotta: #D4A373;
+  --color-brand-cream: #FAF7F2;
+  --color-brand-forest: #1C1C1A;
+  --color-brand-forest-light: #2A2A28;
+  --color-brand-moss: #4A6741;
+  --color-brand-sage: #8FBD84;
+  --color-brand-sand: #E8DDD0;
+  --color-brand-terracotta: #D98C5F;
+  --color-brand-gold: #C8A97A;
 }
 
 .no-scrollbar::-webkit-scrollbar {

@@ -5,6 +5,7 @@ import NavBar from "./NavBar";
 
 import { SessionProvider } from "next-auth/react";
 import Footer from "./Footer";
+import { ReactLenis } from "lenis/react";
 
 export default function LayoutWrapper({ children }) {
   const pathname = usePathname();
@@ -16,9 +17,11 @@ export default function LayoutWrapper({ children }) {
 
   return (
     <SessionProvider>
-      {!hideNavbar && <NavBar />}
-      {children}
-      {!hideNavbar && <Footer />}
+      <ReactLenis root options={{ lerp: 0.08, duration: 1.2, smoothTouch: false }}>
+        {!hideNavbar && <NavBar />}
+        {children}
+        {!hideNavbar && <Footer />}
+      </ReactLenis>
     </SessionProvider>
   );
 }
