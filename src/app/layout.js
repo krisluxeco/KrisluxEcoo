@@ -17,9 +17,42 @@ const dmSans = DM_Sans({
 });
 
 export const metadata = {
-  title: "KrisluxEco | Premium Sustainable Handcrafted Products",
+  title: "KrisluxECO | Premium Sustainable Handcrafted Products",
   description:
-    "KrisluxEco combines traditional craftsmanship with environmental responsibility. We develop high-quality, eco-friendly handcrafted products using natural, recyclable, and sustainable materials.",
+    "KrisluxECO combines traditional craftsmanship with environmental responsibility. We develop high-quality, eco-friendly handcrafted products using natural, recyclable, and sustainable materials.",
+  keywords: [
+    "Sustainable luxury",
+    "Handcrafted products",
+    "Eco-friendly home decor",
+    "Corporate gifting",
+    "Biodegradable amenities",
+    "Bihar artisans",
+    "Water hyacinth craft",
+  ],
+  openGraph: {
+    title: "KrisluxECO | Premium Sustainable Handcrafted Products",
+    description:
+      "KrisluxECO combines traditional craftsmanship with environmental responsibility. Discover high-quality, eco-friendly handcrafted products.",
+    url: "https://krisluxeco.com",
+    siteName: "KrisluxECO",
+    images: [
+      {
+        url: "/images/hero_hotel.png", // Example default sharing image
+        width: 1200,
+        height: 630,
+        alt: "KrisluxECO Premium Sustainable Products",
+      },
+    ],
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "KrisluxECO | Premium Sustainable Handcrafted Products",
+    description:
+      "Discover high-quality, eco-friendly handcrafted products by KrisluxECO.",
+    images: ["/images/hero_hotel.png"],
+  },
 };
 
 export default function RootLayout({ children }) {

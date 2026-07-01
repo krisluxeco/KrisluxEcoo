@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trash2, ShoppingCart, ArrowRight, Check } from "lucide-react";
@@ -12,6 +14,8 @@ const sans = "'DM Sans', sans-serif";
 const COMPANY_WHATSAPP = "6202585952"; // Replace with your real business WhatsApp number
 
 export default function QuoteCartPage() {
+  const router = useRouter();
+  const { status } = useSession();
   const { cartItems, removeFromCart, updateQuantity, clearCart, isLoaded } = useCart();
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -38,6 +42,9 @@ export default function QuoteCartPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (status !== "authenticated") {
+      return router.push("/login");
+    }
     if (cartItems.length === 0) return;
     setSubmitting(true);
 

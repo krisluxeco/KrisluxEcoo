@@ -332,6 +332,7 @@ _Sent via KrisluxECO B2B Portal_`;
             <div className="flex flex-wrap items-center gap-3 pt-4">
               <button
                 onClick={() => {
+                  if (status !== "authenticated") return router.push("/login");
                   setModalMode("quote");
                   setShowQuoteModal(true);
                 }}
@@ -342,6 +343,7 @@ _Sent via KrisluxECO B2B Portal_`;
 
               <button
                 onClick={() => {
+                  if (status !== "authenticated") return router.push("/login");
                   setModalMode("cart");
                   setShowQuoteModal(true);
                 }}
@@ -384,6 +386,7 @@ _Sent via KrisluxECO B2B Portal_`;
             <div className="flex gap-4 pt-2">
               <button
                 onClick={() => {
+                  if (status !== "authenticated") return router.push("/login");
                   addToCart(product, 1, "");
                   setModalMode("cart");
                   setQuoteSubmitted(true);
