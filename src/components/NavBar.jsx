@@ -5,11 +5,36 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { useSession, signOut } from "next-auth/react";
-import { ShoppingCart, Heart } from "lucide-react";
+import { ShoppingCart, Heart, User } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 
 const navLinks = [
-  { label: "Products", href: "/user/products" },
+  { 
+    label: "Products", 
+    href: "/user/products",
+    children: [
+      {
+        label: "All Products",
+        href: "/user/products",
+        desc: "Browse our full catalog",
+      },
+      {
+        label: "Home & Living",
+        href: "/user/products?category=Home%20%26%20Living",
+        desc: "Eco-friendly decor and essentials",
+      },
+      {
+        label: "Eco & Sustainable",
+        href: "/user/products?category=Eco%20%26%20Sustainable",
+        desc: "Products with minimal footprint",
+      },
+      {
+        label: "Home Decor",
+        href: "/user/products?category=Home%20Decor",
+        desc: "Handcrafted interior decor",
+      },
+    ]
+  },
   {
     label: "About",
     href: "/user/about",
@@ -29,7 +54,7 @@ const navLinks = [
   { label: "Sustainability", href: "/user/sustainability" },
   { label: "Partners", href: "/user/partners" },
   { label: "Blog", href: "/blog" },
-
+  { label: "Custom Design", href: "/user/custom-design" },
 ];
 
 const utilityMessages = [
@@ -310,39 +335,46 @@ export default function NavBar() {
                       <AnimatePresence>
                         {isOpen && (
                           <motion.div
-                            initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                            initial={{ opacity: 0, y: 15, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 8, scale: 0.98 }}
-                            transition={{ duration: 0.18, ease: "easeOut" }}
+                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                            transition={{ type: "spring", stiffness: 350, damping: 25 }}
                             onMouseEnter={() => openDropdownNow(link.label)}
                             onMouseLeave={() => closeDropdownSoon()}
-                            className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-64 rounded-2xl border border-[#E8DDD0] bg-[#FAF7F2] shadow-xl p-2 z-50"
+                            className="absolute left-1/2 -translate-x-1/2 top-full mt-4 w-72 rounded-none border border-[#E8DDD0] bg-white shadow-[0_24px_48px_-12px_rgba(28,28,26,0.2)] p-2 z-50 overflow-hidden"
                           >
-                            {link.children.map((child) => {
+                            {link.children.map((child, i) => {
                               const childActive = isActive(child.href);
                               return (
-                                <Link
+                                <motion.div
                                   key={child.label}
-                                  href={child.href}
-                                  className="group flex items-start gap-3 rounded-xl px-3 py-2.5 hover:bg-white transition-colors"
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ delay: i * 0.04 + 0.05 }}
                                 >
-                                  <span
-                                    className={`mt-1.5 h-1.5 w-1.5 rounded-full flex-shrink-0 transition-colors ${childActive ? "bg-[#4A6741]" : "bg-[#C8A97A] group-hover:bg-[#4A6741]"
-                                      }`}
-                                  />
-                                  <span>
+                                  <Link
+                                    href={child.href}
+                                    onClick={() => setOpenDropdown(null)}
+                                    className="group flex items-start gap-3.5 rounded-none px-4 py-3 hover:bg-black/5 transition-all duration-300 relative overflow-hidden"
+                                  >
                                     <span
-                                      className={`block text-sm font-medium transition-colors ${childActive ? "text-[#4A6741]" : "text-[#1C1C1A] group-hover:text-[#4A6741]"
+                                      className={`mt-2 h-1.5 w-1.5 flex-shrink-0 transition-colors duration-300 ${childActive ? "bg-[#4A6741]" : "bg-[#C8A97A]/40 group-hover:bg-[#4A6741]"
                                         }`}
-                                      style={{ fontFamily: "'DM Sans', sans-serif" }}
-                                    >
-                                      {child.label}
+                                    />
+                                    <span className="relative z-10">
+                                      <span
+                                        className={`block text-[13px] tracking-wide font-medium transition-colors duration-300 ${childActive ? "text-[#4A6741]" : "text-[#1C1C1A] group-hover:text-[#4A6741]"
+                                          }`}
+                                        style={{ fontFamily: "'DM Sans', sans-serif" }}
+                                      >
+                                        {child.label}
+                                      </span>
+                                      <span className="block text-[11px] text-[#9E9088] mt-1 leading-snug group-hover:text-[#6B6560] transition-colors duration-300">
+                                        {child.desc}
+                                      </span>
                                     </span>
-                                    <span className="block text-[11px] text-[#9E9088] mt-0.5 leading-snug">
-                                      {child.desc}
-                                    </span>
-                                  </span>
-                                </Link>
+                                  </Link>
+                                </motion.div>
                               );
                             })}
                           </motion.div>
@@ -381,10 +413,10 @@ export default function NavBar() {
                 <div className="hidden lg:block mr-2">
                   <Link
                     href="/login"
-                    className={`text-sm tracking-[0.08em] uppercase outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-[#C8A97A]/50 rounded-sm ${textTone} hover:text-[#C8A97A]`}
-                    style={{ fontFamily: "'DM Sans', sans-serif" }}
+                    className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${textTone} hover:text-[#C8A97A] hover:bg-white/5 outline-none focus-visible:ring-2 focus-visible:ring-[#C8A97A]/50`}
+                    aria-label="Sign In"
                   >
-                    Sign In
+                    <User size={20} strokeWidth={1.5} />
                   </Link>
                 </div>
               ) : (
@@ -688,9 +720,10 @@ export default function NavBar() {
                   <Link
                     href="/login"
                     onClick={() => setMobileOpen(false)}
-                    className="text-sm font-semibold text-[#1C1C1A] hover:text-[#4A6741] transition-colors"
+                    className="flex items-center gap-3 w-full py-3 px-4 bg-white border border-[#ECE6DF] rounded-xl text-[#1C1C1A] shadow-sm active:scale-95 transition-transform"
                   >
-                    Sign In
+                    <User size={18} className="text-[#4A6741]" />
+                    <span className="text-sm font-semibold">Sign In</span>
                   </Link>
                 )}
               </div>

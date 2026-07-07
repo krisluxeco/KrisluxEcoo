@@ -83,11 +83,10 @@ function FloatField({ label, type = "text", icon, name, autoComplete }) {
   return (
     <div className="relative">
       <div
-        className={`relative flex items-center gap-3 rounded-2xl border bg-white/70 backdrop-blur-sm px-5 transition-all duration-300 ${
-          focused
+        className={`relative flex items-center gap-3 rounded-2xl border bg-white/70 backdrop-blur-sm px-5 transition-all duration-300 ${focused
             ? "border-[#4A6741] shadow-[0_0_0_4px_rgba(74,103,65,0.08)]"
             : "border-[#E8DDD0]"
-        }`}
+          }`}
         style={{ height: 58 }}
       >
         <span
@@ -136,11 +135,10 @@ function PasswordField({ label, name }) {
 
   return (
     <div
-      className={`relative flex items-center gap-3 rounded-2xl border bg-white/70 backdrop-blur-sm px-5 transition-all duration-300 ${
-        focused
+      className={`relative flex items-center gap-3 rounded-2xl border bg-white/70 backdrop-blur-sm px-5 transition-all duration-300 ${focused
           ? "border-[#4A6741] shadow-[0_0_0_4px_rgba(74,103,65,0.08)]"
           : "border-[#E8DDD0]"
-      }`}
+        }`}
       style={{ height: 58 }}
     >
       <span

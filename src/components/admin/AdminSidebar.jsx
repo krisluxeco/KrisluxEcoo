@@ -24,8 +24,8 @@ const navItems = [
   { label: "Products", href: "/admin/products", icon: Package },
   { label: "Orders", href: "/admin/orders", icon: ShoppingCart },
   { label: "Customers", href: "/admin/customers", icon: Users },
-  // { label: "Categories", href: "/admin/categories", icon: Tags },
   { label: "Blog", href: "/admin/blog", icon: FileText },
+  { label: "Custom Designs", href: "/admin/custom-designs", icon: MessageSquare },
   { label: "Profile", href: "/admin/profile", icon: User },
   // { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
@@ -71,11 +71,10 @@ export default function AdminSidebar({
               key={item.href}
               href={item.href}
               onClick={() => setMobileOpen(false)}
-              className={`group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all ${
-                active
+              className={`group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all ${active
                   ? "bg-[#4A6741] text-white"
                   : "text-white/60 hover:text-white hover:bg-white/5"
-              }`}
+                }`}
             >
               <Icon size={18} className="flex-shrink-0" />
               {!collapsed && <span className="whitespace-nowrap">{item.label}</span>}

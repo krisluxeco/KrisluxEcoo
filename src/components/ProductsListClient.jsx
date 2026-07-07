@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -282,10 +282,28 @@ export function StorefrontProductCard({ product, onQuickView, isLiked = false, o
 /* ----------------------------------------------------------------------- */
 
 export default function ProductsListClient({ initialProducts = [], savedProductIds = [] }) {
+  const searchParams = useSearchParams();
+  const initialCategory = searchParams.get("category");
+
   const [products] = useState(initialProducts);
 
   const [search, setSearch] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState(
+    initialCategory ? [initialCategory] : []
+  );
+  
+  // Re-sync category filter if the URL changes without unmounting (e.g., when clicking nav links on the same page)
+  useEffect(() => {
+    if (initialCategory) {
+      setSelectedCategories((prev) => {
+        if (!prev.includes(initialCategory)) {
+          return [initialCategory]; // or [...prev, initialCategory] depending on desired behavior (replace vs append)
+        }
+        return prev;
+      });
+    }
+  }, [initialCategory]);
+
   const [selectedMaterials, setSelectedMaterials] = useState([]);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [hideOutOfStock, setHideOutOfStock] = useState(false);

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Mail, Phone, Check, Loader2, Camera, LayoutDashboard, History, Settings, FileText, Package, Clock, TrendingUp, LogOut, ArrowLeft, X, Menu, Printer, Download } from "lucide-react";
+import { User, Mail, Phone, Check, Loader2, Camera, LayoutDashboard, History, Settings, FileText, Package, Clock, TrendingUp, LogOut, ArrowLeft, X, Menu, Printer, Download, Palette } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import Link from "next/link";
 
@@ -36,6 +36,11 @@ export default function UserProfilePage() {
   const [loadingQuotes, setLoadingQuotes] = useState(true);
   const [selectedQuote, setSelectedQuote] = useState(null);
 
+  // Custom Designs states
+  const [customDesigns, setCustomDesigns] = useState([]);
+  const [loadingCustomDesigns, setLoadingCustomDesigns] = useState(true);
+  const [selectedCustomDesign, setSelectedCustomDesign] = useState(null);
+
   // Status feedback states
   const [message, setMessage] = useState({ type: "", text: "" });
 
@@ -48,6 +53,7 @@ export default function UserProfilePage() {
     if (status === "authenticated") {
       fetchProfile();
       fetchQuotes();
+      fetchCustomDesigns();
     }
   }, [status, router]);
 
@@ -86,6 +92,19 @@ export default function UserProfilePage() {
       console.error(err);
     } finally {
       setLoadingQuotes(false);
+    }
+  };
+
+  const fetchCustomDesigns = async () => {
+    try {
+      setLoadingCustomDesigns(true);
+      const res = await fetch("/api/user/custom-design", { cache: "no-store" });
+      const data = await res.json();
+      if (res.ok) setCustomDesigns(data.requests || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingCustomDesigns(false);
     }
   };
 
@@ -159,7 +178,7 @@ export default function UserProfilePage() {
     }
   };
 
-  if (status === "loading" || (loading && loadingQuotes)) {
+  if (status === "loading" || (loading && loadingQuotes && loadingCustomDesigns)) {
     return (
       <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
@@ -202,6 +221,7 @@ export default function UserProfilePage() {
   const tabItems = [
     { id: "dashboard", label: "Overview", icon: LayoutDashboard },
     { id: "orders", label: "Order History", icon: History },
+    { id: "customDesigns", label: "Custom Designs", icon: Palette },
     { id: "profile", label: "Profile Settings", icon: Settings },
   ];
 
@@ -526,6 +546,57 @@ export default function UserProfilePage() {
               </motion.div>
             )}
 
+            {activeTab === "customDesigns" && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+                <div className="mb-8 border-b border-[#ECE6DF] pb-6">
+                  <h1 className="text-4xl font-light text-[#1C1C1A] mb-2" style={{ fontFamily: serif }}>
+                    Custom <span className="font-semibold italic text-[#4A6741]">Designs</span>
+                  </h1>
+                  <p className="text-sm text-[#6B6560]">Track the status of your bespoke design requests.</p>
+                </div>
+
+                {loadingCustomDesigns ? (
+                  <div className="py-24 text-center text-sm text-[#9E9088]">Loading designs...</div>
+                ) : customDesigns.length === 0 ? (
+                  <div className="bg-white rounded-3xl border border-[#ECE6DF] p-24 text-center shadow-sm">
+                    <p className="text-[#6B6560]">You haven't requested any custom designs yet.</p>
+                    <Link href="/user/custom-design" className="mt-4 inline-block text-[10px] font-bold text-[#4A6741] border border-[#4A6741] hover:bg-[#4A6741] hover:text-white px-6 py-3 rounded-xl uppercase tracking-widest transition-colors">Request a Design</Link>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {customDesigns.map(design => (
+                      <div key={design._id} className="bg-white rounded-3xl border border-[#ECE6DF] p-8 shadow-sm hover:shadow-lg transition-shadow duration-300">
+                        <div className="flex justify-between items-start border-b border-[#ECE6DF] pb-6 mb-6">
+                          <div>
+                            <p className="text-[10px] text-[#9E9088] uppercase tracking-widest mb-2">Requested on {new Date(design.createdAt).toLocaleDateString()}</p>
+                            <h4 className="font-bold text-[#1C1C1A] text-xl font-serif">Custom Request</h4>
+                          </div>
+                          <span className={`text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full ${
+                            design.status === 'Pending' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                            design.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                            'bg-blue-50 text-blue-700 border border-blue-200'
+                          }`}>
+                            {design.status}
+                          </span>
+                        </div>
+                        <div className="mb-6">
+                          <p className="text-sm text-[#1C1C1A] whitespace-pre-wrap line-clamp-3">{design.description}</p>
+                        </div>
+                        <div className="flex justify-end pt-4 border-t border-[#ECE6DF]">
+                          <button 
+                            onClick={() => setSelectedCustomDesign(design)}
+                            className="text-[10px] font-bold text-[#4A6741] border border-[#4A6741] hover:bg-[#4A6741] hover:text-white px-6 py-3 rounded-xl uppercase tracking-widest transition-colors inline-flex items-center gap-2 shadow-sm"
+                          >
+                            <FileText size={16} /> View Details
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            )}
+
             {activeTab === "profile" && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
                 <div className="mb-8 border-b border-[#ECE6DF] pb-6">
@@ -824,6 +895,83 @@ export default function UserProfilePage() {
                       <p className="text-[10px] text-[#9E9088] uppercase tracking-widest">KrisluxECO • support@krisluxeco.com • +91 6202585952</p>
                     </div>
 
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Custom Design Details Modal */}
+            {selectedCustomDesign && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+                <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+                  <div className="px-6 py-4 border-b border-[#ECE6DF] flex items-center justify-between bg-[#FAF7F2]">
+                    <h3 className="text-lg font-semibold text-[#1C1C1A]" style={{ fontFamily: serif }}>
+                      Custom Design Request Details
+                    </h3>
+                    <button
+                      onClick={() => setSelectedCustomDesign(null)}
+                      className="text-[#9E9088] hover:text-red-500 transition-colors"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+                  
+                  <div className="p-6 overflow-y-auto">
+                    <div className="grid grid-cols-2 gap-6 mb-8">
+                      <div>
+                        <p className="text-xs uppercase tracking-wider text-[#9E9088] font-semibold mb-1">Status</p>
+                        <span className={`inline-block text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full ${
+                            selectedCustomDesign.status === 'Pending' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                            selectedCustomDesign.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                            'bg-blue-50 text-blue-700 border border-blue-200'
+                          }`}>
+                            {selectedCustomDesign.status}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-wider text-[#9E9088] font-semibold mb-1">Submitted On</p>
+                        <p className="text-[#1C1C1A] font-medium">{new Date(selectedCustomDesign.createdAt).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-wider text-[#9E9088] font-semibold mb-1">Email Linked</p>
+                        <p className="text-[#6B6560]">{selectedCustomDesign.email}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-wider text-[#9E9088] font-semibold mb-1">Phone Linked</p>
+                        <p className="text-[#6B6560]">{selectedCustomDesign.phone || "Not provided"}</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-6">
+                      <div>
+                        <p className="text-xs uppercase tracking-wider text-[#9E9088] font-semibold mb-2">Design Description & Requirements</p>
+                        <div className="bg-[#FAF7F2] border border-[#ECE6DF] p-5 rounded-xl text-[#1C1C1A] text-sm whitespace-pre-wrap leading-relaxed">
+                          {selectedCustomDesign.description}
+                        </div>
+                      </div>
+
+                      {selectedCustomDesign.imageUrl && (
+                        <div>
+                          <p className="text-xs uppercase tracking-wider text-[#9E9088] font-semibold mb-2">Reference Image</p>
+                          <div className="rounded-xl overflow-hidden border border-[#ECE6DF] inline-block">
+                            <img 
+                              src={selectedCustomDesign.imageUrl} 
+                              alt="Reference" 
+                              className="max-w-full max-h-64 object-contain"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="px-6 py-4 border-t border-[#ECE6DF] bg-gray-50 flex justify-end">
+                    <button
+                      onClick={() => setSelectedCustomDesign(null)}
+                      className="px-6 py-2.5 bg-[#1C1C1A] text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-black transition-colors"
+                    >
+                      Close Details
+                    </button>
                   </div>
                 </div>
               </div>

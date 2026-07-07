@@ -3,6 +3,7 @@ import Product from "@/models/product.model";
 import User from "@/models/user.model";
 import ProductsListClient from "@/components/ProductsListClient";
 import { auth } from "@/auth";
+import { Suspense } from "react";
 
 export const metadata = {
   title: "Shop Sustainable Handcrafted Products | KrisluxEco",
@@ -30,9 +31,11 @@ export default async function UserProductsPage() {
   const serializedProducts = JSON.parse(JSON.stringify(products));
 
   return (
-    <ProductsListClient
-      initialProducts={serializedProducts}
-      savedProductIds={savedProductIds}
-    />
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen text-[#4A6741]">Loading...</div>}>
+      <ProductsListClient
+        initialProducts={serializedProducts}
+        savedProductIds={savedProductIds}
+      />
+    </Suspense>
   );
 }
