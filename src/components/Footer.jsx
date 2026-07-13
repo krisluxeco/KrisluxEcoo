@@ -85,22 +85,11 @@ const socialLinks = [
   },
 ];
 
-/* Same self-drawing leaf mark used in the navbar, kept static here for footer weight. */
+/* Signature mark — using the provided logo image. */
 function LeafMark() {
   return (
-    <div className="relative w-9 h-9 flex items-center justify-center flex-shrink-0">
-      <svg width="36" height="36" viewBox="0 0 36 36" className="absolute inset-0" aria-hidden="true">
-        <circle cx="18" cy="18" r="16.5" fill="none" stroke="#C8A97A" strokeWidth="1" strokeDasharray="2 3" />
-      </svg>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path
-          d="M12 2C6.5 2 3 7 3 12c0 4 2.5 7.5 6 9l1-3c-2-1.5-3-4-3-6 0-3 2-6 5-7.5V22h2V4.5C17 6 19 9 19 12c0 2-1 4.5-3 6l1 3c3.5-1.5 6-5 6-9 0-5-3.5-10-9-10z"
-          stroke="#4A6741"
-          strokeWidth="0.5"
-          fill="#4A6741"
-          fillOpacity={0.85}
-        />
-      </svg>
+    <div className="relative w-12 h-12 flex items-center justify-center flex-shrink-0 bg-white rounded-full overflow-hidden shadow-sm">
+      <img src="/logos.jpg" alt="KrisluxECO Logo" className="w-full h-full object-contain scale-[0.85]" />
     </div>
   );
 }

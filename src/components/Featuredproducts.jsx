@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
+import { Package } from "lucide-react";
 
 /**
  * ─── FEATURED PRODUCTS ──────────────────────────────────────────────────────

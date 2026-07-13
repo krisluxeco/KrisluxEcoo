@@ -1,13 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  AnimatePresence,
-  useInView,
-} from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import FeaturedProducts from "./Featuredproducts";
 import Link from "next/link";
 
@@ -15,44 +10,32 @@ import Link from "next/link";
 const serif = "'Cormorant Garamond', Georgia, serif";
 const sans = "'DM Sans', sans-serif";
 
-function FadeUp({ children, delay = 0, className = "" }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
-  return (
-    <motion.div
-      ref={ref}
-      className={className}
-      initial={{ opacity: 0, y: 40 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.9, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-// ─── Number Counter ────────────────────────────────────────────────────────────
+// ─── Number Counter (GSAP) ───────────────────────────────────────────────────
 function CountUp({ target, suffix = "", prefix = "" }) {
   const [count, setCount] = useState(0);
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const counterRef = useRef(null);
+  const targetRef = useRef({ val: 0 });
 
   useEffect(() => {
-    if (!inView) return;
-    let start = 0;
-    const duration = 2000;
-    const step = (timestamp) => {
-      if (!start) start = timestamp;
-      const progress = Math.min((timestamp - start) / duration, 1);
-      const ease = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(ease * target));
-      if (progress < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }, [inView, target]);
+    let ctx = gsap.context(() => {
+      gsap.to(targetRef.current, {
+        val: target,
+        duration: 2,
+        ease: "power3.out",
+        onUpdate: () => {
+          setCount(Math.floor(targetRef.current.val));
+        },
+        scrollTrigger: {
+          trigger: counterRef.current,
+          start: "top 85%"
+        }
+      });
+    }, counterRef);
+    return () => ctx.revert();
+  }, [target]);
 
   return (
-    <span ref={ref}>
+    <span ref={counterRef}>
       {prefix}
       {count.toLocaleString()}
       {suffix}
@@ -62,29 +45,30 @@ function CountUp({ target, suffix = "", prefix = "" }) {
 
 // ─── Marquee ───────────────────────────────────────────────────────────────────
 const marqueeItems = [
-  "Sustainable Luxury",
-  "·",
-  "Zero Waste",
-  "·",
-  "Artisan Crafted",
-  "·",
-  "B2B Bulk Orders",
-  "·",
-  "Eco-Friendly Materials",
-  "·",
-  "Corporate Gifting",
-  "·",
+  "Sustainable Luxury", "·", "Zero Waste", "·", "Artisan Crafted", "·",
+  "B2B Bulk Orders", "·", "Eco-Friendly Materials", "·", "Corporate Gifting", "·"
 ];
 
 function MarqueeStrip() {
+  const marqueeRef = useRef(null);
+
+  useEffect(() => {
+    let ctx = gsap.context(() => {
+      const q = gsap.utils.selector(marqueeRef);
+      gsap.to(q(".marquee-content"), {
+        xPercent: -50,
+        ease: "none",
+        duration: 20,
+        repeat: -1
+      });
+    }, marqueeRef);
+    return () => ctx.revert();
+  }, []);
+
   const doubled = [...marqueeItems, ...marqueeItems];
   return (
-    <div className="overflow-hidden border-y border-[#E8DDD0] bg-[#FAF7F2] py-5">
-      <motion.div
-        className="flex gap-12 whitespace-nowrap"
-        animate={{ x: ["0%", "-50%"] }}
-        transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
-      >
+    <div ref={marqueeRef} className="overflow-hidden border-y border-[#E8DDD0] bg-[#FAF7F2] py-5">
+      <div className="marquee-content flex gap-12 whitespace-nowrap w-max">
         {doubled.map((item, i) => (
           <span
             key={i}
@@ -94,25 +78,16 @@ function MarqueeStrip() {
             {item}
           </span>
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 }
 
 // ─── Hero Slideshow ────────────────────────────────────────────────────────────
 const heroSlides = [
-  {
-    url: "/images/hero_baskets.png",
-    caption: "Handcrafted ceramics & baskets",
-  },
-  {
-    url: "/images/hero_hotel.png",
-    caption: "Luxury eco-friendly amenities",
-  },
-  {
-    url: "/images/artisan_crafting.png",
-    caption: "Sustainably Sourced Craft",
-  },
+  { url: "/images/hero_baskets.png", caption: "Handcrafted ceramics & baskets" },
+  { url: "/images/hero_hotel.png", caption: "Luxury eco-friendly amenities" },
+  { url: "/images/artisan_crafting.png", caption: "Sustainably Sourced Craft" },
 ];
 
 function HeroSlideshow() {
@@ -125,188 +100,146 @@ function HeroSlideshow() {
     return () => clearInterval(t);
   }, []);
 
-  const goTo = (i) => setCurrent(i);
-
   return (
-    <>
-      <div className="absolute inset-0 z-0">
-        {heroSlides.map((slide, i) => (
-          <motion.div
-            key={slide.url}
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${slide.url})` }}
-            initial={false}
-            animate={{
-              opacity: i === current ? 1 : 0,
-              scale: i === current ? 1.0 : 1.07,
-            }}
-            transition={{
-              opacity: { duration: 1.4, ease: "easeInOut" },
-              scale: { duration: 7, ease: "easeOut" },
-            }}
-          />
-        ))}
-        {/* Gradient overlays for text legibility */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1C1C1A]/80 via-[#1C1C1A]/40 to-transparent z-10 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1A]/80 via-transparent to-transparent z-10 pointer-events-none" />
-      </div>
+    <div className="absolute inset-0 z-0">
+      {heroSlides.map((slide, i) => (
+        <div
+          key={slide.url}
+          className="absolute inset-0 bg-cover bg-center transition-all duration-[1.5s] ease-in-out"
+          style={{ 
+            backgroundImage: `url(${slide.url})`,
+            opacity: i === current ? 1 : 0,
+            transform: i === current ? "scale(1)" : "scale(1.05)"
+          }}
+        />
+      ))}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#1C1C1A]/80 via-[#1C1C1A]/40 to-transparent z-10 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1A]/80 via-transparent to-transparent z-10 pointer-events-none" />
 
       <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
         {heroSlides.map((_, i) => (
           <button
             key={i}
-            onClick={() => goTo(i)}
+            onClick={() => setCurrent(i)}
             aria-label={`Slide ${i + 1}`}
-            className={`rounded-full transition-all duration-500 ${i === current
-                ? "w-6 h-2 bg-[#C8A97A]"
-                : "w-2 h-2 bg-white/40 hover:bg-white/70"
-              }`}
+            className={`rounded-full transition-all duration-500 ${i === current ? "w-6 h-2 bg-[#C8A97A]" : "w-2 h-2 bg-white/40 hover:bg-white/70"}`}
           />
         ))}
       </div>
-
-      <AnimatePresence mode="wait">
-        <motion.p
-          key={current}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -6 }}
-          transition={{ duration: 0.5 }}
-          className="absolute bottom-10 right-8 z-20 text-[10px] tracking-[0.22em] uppercase text-white/70 hidden md:block"
-          style={{ fontFamily: sans }}
-        >
-          {heroSlides[current].caption}
-        </motion.p>
-      </AnimatePresence>
-    </>
+    </div>
   );
 }
 
 // ─── Categories Data ──────────────────────────────────────────────────────────
 const categories = [
-  {
-    slug: "home-living",
-    name: "Home & Living",
-    tag: "Everyday Rituals",
-    image: "/images/home_storage.png",
-    aspect: "aspect-[3/4]",
-  },
-  {
-    slug: "kitchen-dining",
-    name: "Kitchen & Dining",
-    tag: "Reclaimed Woodware",
-    image: "/images/kitchen_dining.png",
-    aspect: "aspect-[4/3]",
-  },
-  {
-    slug: "eco-living",
-    name: "Eco Amenities",
-    tag: "Zero-Waste Luxury",
-    image: "/images/hero_hotel.png",
-    aspect: "aspect-square",
-  },
-  {
-    slug: "business-wholesale",
-    name: "Wholesale",
-    tag: "Corporate Supply",
-    image: "/images/corporate_gifting.png",
-    aspect: "aspect-[3/4]",
-  },
+  { slug: "home-living", name: "Home & Living", tag: "Everyday Rituals", image: "/images/home_storage.png", aspect: "aspect-[3/4]" },
+  { slug: "kitchen-dining", name: "Kitchen & Dining", tag: "Reclaimed Woodware", image: "/images/kitchen_dining.png", aspect: "aspect-[4/3]" },
+  { slug: "eco-living", name: "Eco Amenities", tag: "Zero-Waste Luxury", image: "/images/hero_hotel.png", aspect: "aspect-square" },
+  { slug: "business-wholesale", name: "Wholesale", tag: "Corporate Supply", image: "/images/corporate_gifting.png", aspect: "aspect-[3/4]" },
 ];
 
 // ─── Video Reels Data ────────────────────────────────────────────────────────
 const reels = [
-  {
-    id: 1,
-    url: "https://cdn.coverr.co/videos/coverr-weaving-a-basket-5254/1080p.mp4",
-    title: "Hand Woven Baskets"
-  },
-  {
-    id: 2,
-    url: "https://cdn.coverr.co/videos/coverr-a-woman-making-a-clay-pot-5246/1080p.mp4",
-    title: "Artisan Pottery"
-  },
-  {
-    id: 3,
-    url: "https://videos.pexels.com/video-files/3209211/3209211-uhd_2560_1440_25fps.mp4",
-    title: "Nature & Origins"
-  }
+  { id: 1, url: "https://cdn.coverr.co/videos/coverr-weaving-a-basket-5254/1080p.mp4", title: "Hand Woven Baskets" },
+  { id: 2, url: "https://cdn.coverr.co/videos/coverr-a-woman-making-a-clay-pot-5246/1080p.mp4", title: "Artisan Pottery" },
+  { id: 3, url: "https://videos.pexels.com/video-files/3209211/3209211-uhd_2560_1440_25fps.mp4", title: "Nature & Origins" }
 ];
 
 // ─── Main Home Page Component ──────────────────────────────────────────────────
 export default function Home({ featuredProducts = [], savedProductIds = [] }) {
   const containerRef = useRef(null);
 
-  const { scrollYProgress: heroProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"],
-  });
-  const heroY = useTransform(heroProgress, [0, 1], ["0%", "40%"]);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      gsap.registerPlugin(ScrollTrigger);
+      
+      let ctx = gsap.context(() => {
+        // 1. Hero Text Reveal
+        gsap.fromTo(".hero-element", 
+          { opacity: 0, y: 30 }, 
+          { opacity: 1, y: 0, duration: 1.2, stagger: 0.15, ease: "power3.out", delay: 0.2 }
+        );
+
+        // 2. Collection Header Reveal
+        gsap.fromTo(".collection-header",
+          { opacity: 0, y: 40 },
+          { opacity: 1, y: 0, duration: 1.2, ease: "power3.out",
+            scrollTrigger: { trigger: ".collection-header", start: "top 80%" }
+          }
+        );
+
+        // 3. Collection Asymmetric Grid Cards Stagger
+        gsap.utils.toArray(".category-card").forEach((card) => {
+          gsap.fromTo(card,
+            { opacity: 0, y: 80 },
+            { opacity: 1, y: 0, duration: 1.2, ease: "power3.out",
+              scrollTrigger: { trigger: card, start: "top 85%" }
+            }
+          );
+        });
+
+        // 4. Reels Stagger
+        gsap.fromTo(".reel-header",
+          { opacity: 0, y: 40 },
+          { opacity: 1, y: 0, duration: 1, scrollTrigger: { trigger: ".reel-header", start: "top 85%" } }
+        );
+
+        gsap.fromTo(".reel-card",
+          { opacity: 0, y: 60 },
+          { opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: "power3.out",
+            scrollTrigger: { trigger: ".reel-container", start: "top 80%" }
+          }
+        );
+
+        // 5. Impact Section Reveal
+        gsap.fromTo(".impact-content",
+          { opacity: 0, y: 40 },
+          { opacity: 1, y: 0, duration: 1, scrollTrigger: { trigger: ".impact-section", start: "top 75%" } }
+        );
+
+        // 6. Impact Video Parallax
+        gsap.to(".impact-video", {
+          y: "20%",
+          ease: "none",
+          scrollTrigger: { trigger: ".impact-section", start: "top bottom", end: "bottom top", scrub: true }
+        });
+
+      }, containerRef);
+
+      return () => ctx.revert();
+    }
+  }, []);
 
   return (
-    <main
-      ref={containerRef}
-      className="bg-[#FAF7F2] text-[#1C1C1A] overflow-x-hidden"
-      style={{ fontFamily: sans }}
-    >
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:wght@300;400;500;600&display=swap');
-      `}</style>
-
+    <main ref={containerRef} className="bg-[#FAF7F2] text-[#1C1C1A] overflow-x-hidden" style={{ fontFamily: sans }}>
+      
       {/* ─── HERO SECTION ────────────────────────────────────────────────────── */}
       <section className="relative w-full h-[110vh] flex flex-col justify-end overflow-hidden pb-32">
-        <motion.div
-          style={{ y: heroY }}
-          className="absolute inset-0 z-0"
-        >
-          <HeroSlideshow />
-        </motion.div>
+        <HeroSlideshow />
 
         <div className="relative z-20 max-w-7xl mx-auto px-6 w-full md:flex md:items-end justify-between">
           <div className="max-w-3xl">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white text-xs tracking-widest uppercase px-4 py-2 rounded-full mb-8"
-            >
+            <div className="hero-element inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white text-xs tracking-widest uppercase px-4 py-2 rounded-full mb-8">
               <span className="w-1.5 h-1.5 rounded-full bg-[#8FBD84] animate-pulse" />
               Sustainable · Handcrafted
-            </motion.div>
+            </div>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="text-[clamp(3.5rem,8vw,7rem)] font-light leading-[0.9] mb-8 text-white"
-              style={{ fontFamily: serif }}
-            >
+            <h1 className="hero-element text-[clamp(3.5rem,8vw,7rem)] font-light leading-[0.9] mb-8 text-white" style={{ fontFamily: serif }}>
               Nature, <br />
               <span className="italic text-white/80">Crafted</span> By Hand.
-            </motion.h1>
+            </h1>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              className="flex flex-col sm:flex-row gap-6"
-            >
-              <Link
-                href="/user/products"
-                className="group flex items-center justify-center gap-3 bg-[#C8A97A] text-[#1C1C1A] px-8 py-4 rounded-full text-xs tracking-[0.2em] uppercase font-bold hover:bg-white transition-all shadow-lg"
-              >
+            <div className="hero-element flex flex-col sm:flex-row gap-6">
+              <Link href="/user/products" className="group flex items-center justify-center gap-3 bg-[#C8A97A] text-[#1C1C1A] px-8 py-4 rounded-full text-xs tracking-[0.2em] uppercase font-bold hover:bg-white transition-all shadow-lg">
                 Explore Collection
                 <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
               </Link>
-              <Link
-                href="/user/bulk-order"
-                className="group flex items-center justify-center gap-3 border border-white/30 text-white px-8 py-4 rounded-full text-xs tracking-[0.2em] uppercase hover:border-white transition-all backdrop-blur-sm bg-white/5"
-              >
+              <Link href="/user/bulk-order" className="group flex items-center justify-center gap-3 border border-white/30 text-white px-8 py-4 rounded-full text-xs tracking-[0.2em] uppercase hover:border-white transition-all backdrop-blur-sm bg-white/5">
                 Request B2B Quote
               </Link>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -317,29 +250,29 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
       {/* ─── EDITORIAL CATEGORIES (Asymmetric Grid) ─────────────────────────── */}
       <section className="py-32 px-6 bg-[#FAF7F2]">
         <div className="max-w-7xl mx-auto">
-          <FadeUp className="mb-28 flex flex-col md:flex-row justify-between items-end gap-10">
-            <div>
-              <div className="flex items-center gap-4 mb-6">
-                <span className="w-8 h-[1px] bg-[#C8A97A]" />
-                <p className="text-[#C8A97A] text-[9px] tracking-[0.4em] uppercase">The Collection</p>
-              </div>
-              <h2 className="text-[clamp(3rem,5vw,5.5rem)] font-[300] leading-[1.05] tracking-tight text-[#1C1C1A]" style={{ fontFamily: serif }}>
-                A curation of <br />
-                <span className="italic text-[#1C1C1A]/70">sustainable</span> elegance.
-              </h2>
+          {/* Cinematic Centered Header */}
+          <div className="collection-header flex flex-col items-center text-center mb-28">
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <span className="w-12 h-[1px] bg-[#C8A97A]/40" />
+              <p className="text-[#C8A97A] text-[10px] tracking-[0.4em] uppercase font-medium">The Collection</p>
+              <span className="w-12 h-[1px] bg-[#C8A97A]/40" />
             </div>
-            <p className="text-[#6B6560] text-xs md:text-sm max-w-sm leading-loose font-light">
+            
+            <h2 className="text-[clamp(3rem,6vw,5.5rem)] font-light leading-[1] tracking-tight mb-6" style={{ fontFamily: serif }}>
+              A curation of <span className="italic text-[#C8A97A]">sustainable</span> elegance.
+            </h2>
+            
+            <p className="text-[#6B6560] text-sm md:text-base max-w-lg font-light leading-relaxed">
               Every piece in our collection is born from highly renewable materials,
               designed to elevate spaces while respecting the earth. Beauty without compromise.
             </p>
-          </FadeUp>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-x-8 gap-y-32 md:gap-y-0">
             {categories.map((cat, i) => (
-              <FadeUp
+              <div
                 key={cat.slug}
-                delay={i * 0.15}
-                className={`group cursor-pointer ${
+                className={`category-card group cursor-pointer ${
                   i === 0 ? "md:col-span-6 md:pr-12 md:mt-0" :
                   i === 1 ? "md:col-span-5 md:col-start-8 md:mt-64" :
                   i === 2 ? "md:col-span-5 md:pl-12 md:-mt-32" :
@@ -350,22 +283,13 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
                   <div className="w-full bg-white p-4 md:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.03)] transition-transform duration-1000 group-hover:-translate-y-2">
                     <div className={`relative w-full overflow-hidden ${cat.aspect}`}>
                       <div className="absolute inset-0 bg-[#C8A97A]/0 group-hover:bg-[#C8A97A]/10 transition-colors duration-1000 z-10 mix-blend-overlay" />
-                      <img
-                        src={cat.image}
-                        alt={cat.name}
-                        className="w-full h-full object-cover transition-transform duration-[2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
-                      />
+                      <img src={cat.image} alt={cat.name} className="w-full h-full object-cover transition-transform duration-[2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" />
                     </div>
                   </div>
-                  
                   <div className="mt-8 flex justify-between items-start px-2">
                     <div>
-                      <h3 className="text-3xl font-[300] text-[#1C1C1A] mb-3" style={{ fontFamily: serif }}>
-                        {cat.name}
-                      </h3>
-                      <p className="text-[#1C1C1A]/40 text-[9px] tracking-[0.3em] uppercase">
-                        {cat.tag}
-                      </p>
+                      <h3 className="text-3xl font-[300] text-[#1C1C1A] mb-3" style={{ fontFamily: serif }}>{cat.name}</h3>
+                      <p className="text-[#1C1C1A]/40 text-[9px] tracking-[0.3em] uppercase">{cat.tag}</p>
                     </div>
                     <div className="w-10 h-10 flex items-center justify-center text-[#1C1C1A]/30 group-hover:text-[#C8A97A] transition-colors duration-500">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
@@ -374,7 +298,7 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
                     </div>
                   </div>
                 </Link>
-              </FadeUp>
+              </div>
             ))}
           </div>
         </div>
@@ -383,27 +307,21 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
       {/* ─── INSTAGRAM / VIDEO REELS ────────────────────────────────────────── */}
       <section className="py-24 px-6 bg-white border-y border-[#E8DDD0]">
         <div className="max-w-7xl mx-auto">
-          <FadeUp className="text-center mb-16">
+          <div className="reel-header text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-light text-[#1C1C1A] mb-4" style={{ fontFamily: serif }}>
               Behind the <span className="italic text-[#C8A97A]">Craft</span>
             </h2>
             <p className="text-[#6B6560] text-sm">Follow our journey and see how each piece is made.</p>
-          </FadeUp>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {reels.map((reel, i) => (
-              <FadeUp key={reel.id} delay={i * 0.1} className="group relative aspect-[9/16] rounded-[24px] overflow-hidden bg-black/5">
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                >
+          <div className="reel-container grid grid-cols-1 md:grid-cols-3 gap-6">
+            {reels.map((reel) => (
+              <div key={reel.id} className="reel-card group relative aspect-[9/16] rounded-[24px] overflow-hidden bg-black/5">
+                <video autoPlay loop muted playsInline className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
                   <source src={reel.url} type="video/mp4" />
                 </video>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-80" />
-
+                
                 {/* Play Icon */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                   <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/40">
@@ -414,7 +332,7 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
                 <div className="absolute bottom-6 left-6 right-6">
                   <p className="text-white font-medium text-lg" style={{ fontFamily: serif }}>{reel.title}</p>
                 </div>
-              </FadeUp>
+              </div>
             ))}
           </div>
         </div>
@@ -426,20 +344,13 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
       </div>
 
       {/* ─── STATS / PROMISE ────────────────────────────────────────────────── */}
-      <section className="relative py-32 px-6 bg-[#1C1C1A] overflow-hidden">
-        {/* Subtle grid background */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: "linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)",
-            backgroundSize: "64px 64px"
-          }}
-        />
+      <section className="impact-section relative py-32 px-6 bg-[#1C1C1A] overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)", backgroundSize: "64px 64px" }} />
 
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid md:grid-cols-2 gap-20 items-center">
-
-            <FadeUp>
+            
+            <div className="impact-content">
               <h2 className="text-[clamp(2.5rem,4vw,4.5rem)] font-light leading-[1.1] mb-8 text-white" style={{ fontFamily: serif }}>
                 Impact <br />
                 <span className="italic text-[#8FBD84]">Measured.</span>
@@ -475,30 +386,25 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
                   <p className="text-[#C8A97A] text-[10px] tracking-[0.2em] uppercase">Plastics Replaced</p>
                 </div>
               </div>
-            </FadeUp>
+            </div>
 
-            <FadeUp delay={0.2} className="relative aspect-[4/5] rounded-[24px] overflow-hidden border border-white/10">
-              <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="absolute inset-0 w-full h-full object-cover filter brightness-[0.7]"
-              >
-                <source src="https://cdn.coverr.co/videos/coverr-a-woman-making-a-clay-pot-5246/1080p.mp4" type="video/mp4" />
-              </video>
-              <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1A] via-transparent to-transparent opacity-90" />
-              <div className="absolute bottom-8 left-8 right-8">
+            <div className="relative aspect-[4/5] rounded-[24px] overflow-hidden border border-white/10">
+              <div className="impact-video absolute top-[-20%] left-0 w-full h-[140%]">
+                <video autoPlay loop muted playsInline className="w-full h-full object-cover filter brightness-[0.7]">
+                  <source src="https://cdn.coverr.co/videos/coverr-a-woman-making-a-clay-pot-5246/1080p.mp4" type="video/mp4" />
+                </video>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1A] via-transparent to-transparent opacity-90 pointer-events-none" />
+              <div className="absolute bottom-8 left-8 right-8 z-10 pointer-events-none">
                 <p className="text-white/90 font-light text-xl italic" style={{ fontFamily: serif }}>
                   "True luxury is knowing exactly where your products come from, and the hands that shaped them."
                 </p>
               </div>
-            </FadeUp>
+            </div>
 
           </div>
         </div>
       </section>
-
     </main>
   );
 }

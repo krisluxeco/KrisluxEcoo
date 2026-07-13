@@ -48,36 +48,60 @@ const mono = "'IBM Plex Mono', monospace";
 
 const CHAPTERS = [
   {
-    id: "origin",
-    eyebrow: "Chapter One — The Vision",
-    title: "A commitment to the earth",
-    line: "KrisluxECO was born from a simple belief: luxury does not have to come at the expense of our planet.",
-    img: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1600&q=80",
+    id: "crisis",
+    eyebrow: "Chapter One — The Crisis",
+    title: "A silent ecological emergency",
+    line: "In Bihar, our waterways faced a disaster. Over 2.5 lakh hectares of vital wetlands became choked by invasive water hyacinth—killing local fish populations, destroying the livelihoods of traditional fishermen, and releasing harmful methane as it decayed.",
+    img: "https://images.unsplash.com/photo-1621272036047-bc0f829f0e8f?auto=format&fit=crop&w=1600&q=80",
     align: "left",
   },
   {
-    id: "discovery",
-    eyebrow: "Chapter Two — The Craft",
-    title: "Carved by master hands",
-    line: "Every bamboo comb and wooden bowl is meticulously hand-crafted by skilled artisans, preserving centuries of heritage.",
-    img: "/images/artisan_crafting.png",
+    id: "impact",
+    eyebrow: "Chapter Two — The Human Cost",
+    title: "Exploited and marginalized",
+    line: "Simultaneously, traditional craft was dying due to a lack of market access. Rural artisans—80% of whom are economically vulnerable women—earned below subsistence levels while middlemen captured over 80% of the value they created.",
+    img: "https://images.unsplash.com/photo-1596406981156-f0330dc372f7?auto=format&fit=crop&w=1600&q=80",
     align: "right",
   },
   {
-    id: "research",
-    eyebrow: "Chapter Three — The Material",
-    title: "Sustainably sourced, naturally beautiful",
-    line: "We use only highly renewable resources like bamboo, neem wood, and organic cotton. No plastics. No compromises.",
+    id: "innovation",
+    eyebrow: "Chapter Three — The Innovation",
+    title: "Turning pollution into premium",
+    line: "We saw a bridge between these two crises. By harvesting the free, abundant water hyacinth directly from dying wetlands, we eliminated raw material costs and turned a climate threat into a sustainable design solution.",
+    img: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=1600&q=80",
+    align: "left",
+  },
+  {
+    id: "craft",
+    eyebrow: "Chapter Four — The Craft",
+    title: "Heritage meets modern design",
+    line: "Collaborating with the National Institute of Design (NID), we combined traditional weaving heritage with modern ergonomics to craft export-ready, eco-luxury products.",
+    img: "https://images.unsplash.com/photo-1601004825966-2391ce4248be?auto=format&fit=crop&w=1600&q=80",
+    align: "right",
+  },
+  {
+    id: "restoration",
+    eyebrow: "Chapter Five — Restoring Nature",
+    title: "Healing our wetlands",
+    line: "Today, we actively remove methane-emitting hyacinth, helping restore wetland biodiversity and clean up Bihar's aquatic ecosystems.",
+    img: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1600&q=80",
+    align: "left",
+  },
+  {
+    id: "empowerment",
+    eyebrow: "Chapter Six — Empowering Creators",
+    title: "Independence and prosperity",
+    line: "By eliminating middlemen, we ensure artisans earn over three times more income, transforming rural weavers into independent entrepreneurs.",
+    img: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1600&q=80",
+    align: "right",
+  },
+  {
+    id: "heritage",
+    eyebrow: "Chapter Seven — Global Heritage",
+    title: "Bihar’s greatest export story",
+    line: "We are taking authentic Bihar handicraft—backed by a Geographical Indication (GI) Tag—from local wetlands to world shelves.",
     img: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?auto=format&fit=crop&w=1600&q=80",
     align: "left",
-  },
-  {
-    id: "vision",
-    eyebrow: "Chapter Four — The Experience",
-    title: "Redefining hotel luxury",
-    line: "Our eco-friendly amenities elevate the guest experience, bringing warm, earthy elegance to the finest hotel bathrooms.",
-    img: "/images/luxury_amenities.png",
-    align: "right",
   },
 ];
 
@@ -107,8 +131,8 @@ const ImageStoryStyles = () => (
     .img-story .is-eyebrow { font-family: ${mono}; font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase;
       color: #C8A97A; margin-bottom: 1rem; }
     .img-story .is-title { font-family: ${serif}; font-weight: 300; font-size: clamp(1.7rem, 3.4vw, 2.7rem);
-      color: #F5F1E7; line-height: 1.18; margin-bottom: 1rem; }
-    .img-story .is-line { font-family: ${sans}; font-size: 1rem; line-height: 1.7; color: rgba(240,235,227,0.72); max-width: 46ch; }
+      color: #F5F1E7; line-height: 1.18; margin-bottom: 1.25rem; }
+    .img-story .is-line { font-family: ${sans}; font-size: 1.1rem; line-height: 1.7; color: rgba(240,235,227,0.8); max-width: 52ch; font-weight: 300; }
     .img-story .is-frame.align-right .is-line { margin-left: auto; }
 
     .img-story .is-thread-track { position: absolute; right: 2.4rem; top: 12%; bottom: 12%; width: 1px;
@@ -268,7 +292,7 @@ export default function BrandStoryPage() {
             Nature, <span className="italic">refined.</span>
           </h1>
           <p className="text-sm md:text-lg text-white/80 font-sans max-w-2xl mx-auto leading-relaxed font-light mb-12">
-            KrisluxECO bridges the gap between organic sustainability and uncompromising hotel luxury. Watch our journey unfold.
+            KrisluxECO bridges the gap between organic sustainability and uncompromising eco-luxury. Scroll down to watch our journey unfold.
           </p>
           <div className="w-[1px] h-24 bg-gradient-to-b from-[#C8A97A] to-transparent animate-pulse" />
         </div>

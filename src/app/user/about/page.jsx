@@ -1,646 +1,261 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useInView,
-  AnimatePresence,
-} from "framer-motion";
+import { useRef, useEffect } from "react";
 import Link from "next/link";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-// ─── Shared Typography Helpers ──────────────────────────────────────────────
 const serif = "'Cormorant Garamond', Georgia, serif";
 const sans = "'DM Sans', sans-serif";
 
 function Eyebrow({ children, dark = false }) {
   return (
-    <div className="flex items-center justify-center gap-3 mb-3">
+    <div className="flex items-center justify-start gap-3 mb-6">
       <span className={`h-px w-8 ${dark ? "bg-[#C8A97A]/40" : "bg-[#C8A97A]/60"}`} />
       <p
-        className="text-xs tracking-[0.25em] uppercase text-[#C8A97A]"
+        className={`text-xs tracking-[0.25em] uppercase ${dark ? "text-[#C8A97A]" : "text-[#C8A97A]"}`}
         style={{ fontFamily: sans }}
       >
         {children}
       </p>
-      <span className={`h-px w-8 ${dark ? "bg-[#C8A97A]/40" : "bg-[#C8A97A]/60"}`} />
     </div>
   );
 }
 
-function FadeUp({ children, delay = 0, className = "" }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
-  return (
-    <motion.div
-      ref={ref}
-      className={className}
-      initial={{ opacity: 0, y: 36 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.75, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-// ─── Hero Slideshow ────────────────────────────────────────────────────────────
-const aboutSlides = [
-  { url: "/images/artisan_crafting.png", caption: "Preserving Heritage" },
-  { url: "/images/home_storage.png", caption: "Natural Materials" },
-  { url: "/images/luxury_amenities.png", caption: "Elevated Living" },
-];
-
-function AboutSlideshow() {
-  const [current, setCurrent] = useState(0);
-
-  useEffect(() => {
-    const t = setInterval(() => {
-      setCurrent((c) => (c + 1) % aboutSlides.length);
-    }, 5000);
-    return () => clearInterval(t);
-  }, []);
-
-  const goTo = (i) => setCurrent(i);
-
-  return (
-    <>
-      <div className="absolute inset-0 z-0">
-        {aboutSlides.map((slide, i) => (
-          <motion.div
-            key={slide.url}
-            className="absolute inset-0 bg-cover bg-center mix-blend-multiply"
-            style={{ backgroundImage: `url(${slide.url})` }}
-            initial={false}
-            animate={{
-              opacity: i === current ? 0.8 : 0,
-              scale: i === current ? 1.0 : 1.07,
-            }}
-            transition={{
-              opacity: { duration: 1.4, ease: "easeInOut" },
-              scale: { duration: 7, ease: "easeOut" },
-            }}
-          />
-        ))}
-        {/* Dark gradient overlays for text legibility */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1C1C1A]/80 via-[#1C1C1A]/40 to-transparent z-10 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1A]/80 via-transparent to-transparent z-10 pointer-events-none" />
-      </div>
-
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
-        {aboutSlides.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => goTo(i)}
-            aria-label={`Slide ${i + 1}`}
-            className={`rounded-full transition-all duration-500 ${i === current
-                ? "w-6 h-2 bg-[#C8A97A]"
-                : "w-2 h-2 bg-white/40 hover:bg-white/70"
-              }`}
-          />
-        ))}
-      </div>
-
-      <AnimatePresence mode="wait">
-        <motion.p
-          key={current}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -6 }}
-          transition={{ duration: 0.5 }}
-          className="absolute bottom-10 right-8 z-20 text-[10px] tracking-[0.22em] uppercase text-white/70 hidden md:block"
-          style={{ fontFamily: sans }}
-        >
-          {aboutSlides[current].caption}
-        </motion.p>
-      </AnimatePresence>
-    </>
-  );
-}
-
-// ─── Ticker items ────────────────────────────────────────────────────────────
-const TICKER_ITEMS = [
-  "Water Hyacinth",
-  "Natural Clay",
-  "Reclaimed Timber",
-  "Plant Fibre",
-  "Zero Synthetics",
-  "100% Biodegradable",
-  "Bihar's Wetlands",
-];
-
-// ─── Product data ────────────────────────────────────────────────────────────
 const products = [
   {
-    img: "/images/home_storage.png",
     name: "Home & Storage",
-    desc: "Everyday objects made to last a decade — baskets, trays, organisers, and lampshades from water hyacinth and natural fibre.",
-    tags: ["Baskets", "Trays", "Organisers", "Lampshades"],
-    margin: "68% gross margin",
-    price: "₹350–₹2,800",
-    buyer: "Eco home décor · NRI gifting",
+    tags: "Baskets, Trays, Organizers, Lampshades",
+    desc: "Designed for eco-conscious home decor and functional living.",
+    img: "/images/home_storage.png"
   },
   {
-    img: "/images/fashion_bags.png",
     name: "Fashion & Bags",
-    desc: "Wearable craft — handbags, clutches, wallets, and totes designed for sustainable fashion buyers and boutique retail.",
-    tags: ["Handbags", "Clutches", "Wallets", "Totes"],
-    margin: "72% gross margin",
-    price: "₹800–₹5,500",
-    buyer: "Sustainable fashion buyers",
+    tags: "Handbags, Clutches, Wallets, Totes",
+    desc: "Ergonomic, durable, and styled for the sustainable fashion market.",
+    img: "/images/fashion_bags.png"
   },
   {
-    img: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=80",
     name: "Furniture & Décor",
-    desc: "Statement pieces — stools, mirror frames, and wall art that serve luxury interior and hospitality buyers at scale.",
-    tags: ["Stools", "Mirror Frames", "Wall Art"],
-    margin: "65% gross margin",
-    price: "₹1,200–₹18,000",
-    buyer: "Luxury interiors · hotel chains",
+    tags: "Stools, Mirror Frames, Wall Art",
+    desc: "Premium statement pieces built for luxury interiors and hotel chains.",
+    img: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=80"
   },
   {
-    img: "/images/corporate_gifting.png",
     name: "Corporate Gifting",
-    desc: "Branded hampers, coasters, and stationery — our fastest-growing B2B revenue stream, tailored for bulk ESG-aligned gifting.",
-    tags: ["Hampers", "Coasters", "Stationery"],
-    margin: "70% gross margin",
-    price: "₹500–₹3,000/unit",
-    buyer: "B2B bulk · fastest revenue",
-  },
+    tags: "Branded Hampers, Coasters, Stationery",
+    desc: "High-impact, zero-waste gifting solutions aligned with ESG goals.",
+    img: "/images/corporate_gifting.png"
+  }
 ];
 
-// ─── SDG impact data ─────────────────────────────────────────────────────────
 const sdgs = [
-  {
-    num: "SDG 1",
-    code: "No Poverty",
-    title: "Artisan income",
-    impact: "3× the standard middleman rate, paid directly to craft families",
-  },
-  {
-    num: "SDG 5",
-    code: "Gender Equality",
-    title: "Women-led workforce",
-    impact: "80% of partner artisans are women, formally employed",
-  },
-  {
-    num: "SDG 8",
-    code: "Decent Work",
-    title: "Formal employment",
-    impact: "Pehchan IDs and fair-wage contracts for every artisan partner",
-  },
-  {
-    num: "SDG 12",
-    code: "Responsible Production",
-    title: "Zero waste",
-    impact: "100% biodegradable materials, zero plastic in any shipment",
-  },
-  {
-    num: "SDG 13",
-    code: "Climate Action",
-    title: "Methane removal",
-    impact: "Harvesting water hyacinth removes a major wetland methane source",
-  },
-  {
-    num: "SDG 14",
-    code: "Life Below Water",
-    title: "Wetland health",
-    impact: "Restores Bihar's wetland biodiversity through hyacinth clearance",
-  },
-  {
-    num: "SDG 17",
-    code: "Partnerships",
-    title: "Institutional backing",
-    impact: "Bihar Govt · UMSAS · Khadi Mall — formal public-sector partners",
-  },
+  { num: "SDG 1", code: "No Poverty", impact: "Tripling artisan household incomes compared to traditional middleman systems." },
+  { num: "SDG 5", code: "Gender Equality", impact: "Formally employing and empowering an 80% female workforce." },
+  { num: "SDG 8", code: "Decent Work & Economic Growth", impact: "Providing formal wages and official Pehchan identification." },
+  { num: "SDG 12", code: "Responsible Production", impact: "Ensuring a 100% biodegradable, zero-waste manufacturing cycle." },
+  { num: "SDG 13", code: "Climate Action", impact: "Removing rotting, methane-emitting water hyacinth from waterways." },
+  { num: "SDG 14", code: "Life Below Water", impact: "Actively restoring natural freshwater biodiversity in Bihar's wetlands." },
+  { num: "SDG 17", code: "Partnerships for the Goals", impact: "Working closely with the Bihar Government, UMSAS, Bihar Khadi Mall, and international export pipelines." }
 ];
 
-// ─── Main Page ───────────────────────────────────────────────────────────────
-export default function AboutWhatWeDoPage() {
-  const heroRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-  const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+export default function AboutPage() {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    let ctx = gsap.context(() => {
+      // Hero Animation
+      gsap.fromTo(".hero-text", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 1.5, stagger: 0.2, ease: "power3.out" });
+
+      // Split Pin Section (Who We Are)
+      ScrollTrigger.create({
+        trigger: ".split-section",
+        start: "top top",
+        end: "bottom bottom",
+        pin: ".split-left",
+        pinSpacing: false
+      });
+
+      gsap.utils.toArray(".workforce-card").forEach((card, i) => {
+        gsap.fromTo(card, { opacity: 0, y: 50 }, {
+          opacity: 1, y: 0, duration: 1,
+          scrollTrigger: {
+            trigger: card,
+            start: "top 80%",
+            toggleActions: "play none none reverse"
+          }
+        });
+      });
+
+      // Horizontal Scroll Section (What We Make)
+      const hSections = gsap.utils.toArray(".h-card");
+      gsap.to(hSections, {
+        xPercent: -100 * (hSections.length - 1),
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".h-scroll-container",
+          pin: true,
+          scrub: 1,
+          end: () => "+=" + document.querySelector(".h-scroll-container").offsetWidth
+        }
+      });
+
+      // SDG Grid Reveal
+      gsap.utils.toArray(".sdg-card").forEach((card, i) => {
+        gsap.fromTo(card, { opacity: 0, scale: 0.9 }, {
+          opacity: 1, scale: 1, duration: 0.8,
+          delay: (i % 4) * 0.1,
+          scrollTrigger: {
+            trigger: card,
+            start: "top 85%"
+          }
+        });
+      });
+
+      // Vision Reveal
+      gsap.fromTo(".vision-text",
+        { opacity: 0, y: 30, scale: 0.95 },
+        {
+          opacity: 1, y: 0, scale: 1,
+          duration: 1.5, ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".vision-container",
+            start: "top 75%"
+          }
+        }
+      );
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <main
-      className="bg-[#FAF7F2] text-[#1C1C1A] overflow-x-hidden"
-      style={{ fontFamily: sans }}
-    >
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
-        @keyframes ticker {
-          from { transform: translateX(0); }
-          to   { transform: translateX(-50%); }
-        }
-        .ticker-track { animation: ticker 24s linear infinite; }
-      `}</style>
+    <main ref={containerRef} className="bg-[#FAF7F2] text-[#1C1C1A] overflow-x-hidden">
+      {/* 1. Hero Section */}
+      <section className="relative w-full h-[80vh] flex flex-col justify-center px-6 md:px-16 overflow-hidden">
+        <div className="absolute inset-0 bg-cover bg-center opacity-10 mix-blend-multiply" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1621272036047-bc0f829f0e8f?auto=format&fit=crop&w=2000&q=80')" }} />
+        <div className="relative z-10 max-w-4xl">
+          <Eyebrow dark>About Us</Eyebrow>
+          <h1 className="hero-text text-[clamp(3.5rem,8vw,6rem)] font-[300] leading-[0.95] mb-8 text-[#1C1C1A]" style={{ fontFamily: serif }}>
+            Building for <br /> <span className="italic text-[#4A6741]">Bihar & beyond.</span>
+          </h1>
+          <p className="hero-text text-[#1C1C1A]/70 text-lg md:text-xl max-w-2xl font-light leading-relaxed">
+            We operate on a simple yet powerful mission: We turn pollution into premium, and we turn artisans into entrepreneurs.
+          </p>
+        </div>
+      </section>
 
-      {/* ─── HERO ──────────────────────────────────────────────────────────── */}
-      <section className="relative w-full h-[110vh] flex flex-col justify-end overflow-hidden pb-32 border-b border-[#1C1C1A]/5">
-        <motion.div style={{ y: heroY }} className="absolute inset-0 z-0">
-          <AboutSlideshow />
-        </motion.div>
+      {/* 2. Who We Are / Split Pin */}
+      <section className="split-section relative w-full flex flex-col md:flex-row border-t border-[#1C1C1A]/10">
+        <div className="split-left w-full md:w-1/2 h-[50vh] md:h-screen flex flex-col justify-center px-6 md:px-16 bg-[#4A6741] text-white">
+          <Eyebrow dark>Who We Are</Eyebrow>
+          <h2 className="text-[clamp(2.5rem,5vw,4.5rem)] font-light leading-tight mb-8" style={{ fontFamily: serif }}>
+            Founded in Begusarai, Bihar in 2023
+          </h2>
+          <p className="text-white/80 text-lg md:text-xl font-light leading-relaxed max-w-lg">
+            We are an artisan-led, zero-waste, and export-ready eco-luxury brand. We build a formal, sustainable ecosystem that sources free raw materials from wetlands, trains rural artisans, and connects their premium creations directly to conscious consumers and global buyers.
+          </p>
+        </div>
 
-        <div className="relative z-20 max-w-7xl mx-auto px-6 w-full md:flex md:items-end justify-between">
-          <div className="max-w-3xl">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white text-xs tracking-widest uppercase px-4 py-2 rounded-full mb-8"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-[#8FBD84] animate-pulse" />
-              What We Do
-            </motion.div>
+        <div className="split-right w-full md:w-1/2 bg-[#FAF7F2] py-24 md:py-48 px-6 md:px-16">
+          <h3 className="text-3xl font-medium mb-16 text-[#1C1C1A]" style={{ fontFamily: serif }}>Our Workforce & Social Commitment</h3>
+          <p className="text-[#1C1C1A]/70 text-lg mb-20 leading-relaxed font-light">
+            We believe that true luxury is ethical and inclusive. Our ecosystem is built from the ground up to empower those who need it most:
+          </p>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="text-[clamp(3.5rem,8vw,7.5rem)] font-[300] leading-[0.9] mb-8 text-white"
-              style={{ fontFamily: serif }}
-            >
-              Handcrafted goods <br/> <span className="italic text-white/80">that pay it forward.</span>
-            </motion.h1>
+          <div className="workforce-card mb-24">
+            <h4 className="text-[4rem] md:text-[6rem] leading-none text-[#C8A97A] font-light mb-4" style={{ fontFamily: serif }}>200+</h4>
+            <h5 className="text-xl font-medium mb-3">Artisans Onboarded</h5>
+            <p className="text-[#1C1C1A]/70 leading-relaxed font-light">We have formally trained and onboarded artisans across Begusarai, Madhubani, and Gaya.</p>
+          </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              className="flex flex-col sm:flex-row gap-6"
-            >
-              <p className="text-white/80 text-sm md:text-base max-w-lg font-light leading-loose">
-                KrisluxECO makes eco-friendly handcrafted products from Bihar's
-                natural materials — built through traditional craft, sold directly
-                to businesses, and designed so every link in the chain benefits.
-              </p>
-            </motion.div>
+          <div className="workforce-card mb-24">
+            <h4 className="text-[4rem] md:text-[6rem] leading-none text-[#C8A97A] font-light mb-4" style={{ fontFamily: serif }}>80%</h4>
+            <h5 className="text-xl font-medium mb-3">Women-Led</h5>
+            <p className="text-[#1C1C1A]/70 leading-relaxed font-light">Our workforce is predominantly driven by women, giving our brand the strongest gender-lens credentials.</p>
+          </div>
+
+          <div className="workforce-card pb-24">
+            <h4 className="text-4xl md:text-5xl leading-tight text-[#C8A97A] font-light mb-6" style={{ fontFamily: serif }}>Pehchan ID</h4>
+            <h5 className="text-xl font-medium mb-3">Formal Identity & Security</h5>
+            <p className="text-[#1C1C1A]/70 leading-relaxed font-light">Every artisan receives a Pehchan ID card, ensuring formal employment status, fair wages, and access to social security benefits.</p>
           </div>
         </div>
       </section>
 
-      {/* ─── PROBLEM / SOLUTION ────────────────────────────────────────────── */}
-      <section className="py-24 px-6">
-        <div className="max-w-5xl mx-auto">
-          <FadeUp className="text-center mb-12">
-            <Eyebrow>The Problem We Solve</Eyebrow>
-            <h2
-              className="text-[clamp(2rem,4vw,2.8rem)] font-light leading-tight text-[#1C1C1A]"
-              style={{ fontFamily: serif }}
-            >
-              A broken trade,{" "}
-              <span className="italic text-[#4A6741]">rebuilt by hand</span>
-            </h2>
-            <div className="h-[2px] w-14 bg-[#C8A97A] mt-4 mx-auto" />
-            <p className="text-[#5C5650] mt-5 max-w-xl mx-auto leading-relaxed text-sm md:text-base">
-              India's craft sector produces extraordinary goods — and pays
-              extraordinary artisans almost nothing for them. Middlemen extract
-              the margin; the maker absorbs the cost. We built a direct path out.
-            </p>
-          </FadeUp>
+      {/* 3. Horizontal Scroll (What We Make) */}
+      <section className="h-scroll-container w-full h-screen bg-[#1C1C1A] text-white overflow-hidden flex flex-col justify-center">
+        <div className="absolute top-16 left-6 md:left-16 z-20">
+          <Eyebrow dark>What We Make</Eyebrow>
+          <p className="text-white/60 text-sm max-w-sm mt-4 font-light">
+            The intersection of traditional Indian craftsmanship and global sustainability standards. 100% biodegradable, zero synthetics, naturally pest-resistant.
+          </p>
+        </div>
 
-          <div className="grid md:grid-cols-2 gap-5">
-            {/* Problem card */}
-            <FadeUp delay={0.08}>
-              <div className="h-full rounded-[22px] bg-white border border-[#E7E1DA] p-8">
-                <p
-                  className="text-[10px] tracking-[0.22em] uppercase text-[#9E9088] mb-4"
-                  style={{ fontFamily: sans }}
-                >
-                  The Problem
-                </p>
-                <h3
-                  className="text-xl font-medium text-[#1C1C1A] mb-3 leading-snug"
-                  style={{ fontFamily: serif }}
-                >
-                  What the industry looks like today
-                </h3>
-                <p className="text-sm text-[#6B6560] leading-relaxed mb-5">
-                  Skilled artisans — many women, most informal — make goods that
-                  travel through 3–5 middlemen before reaching a buyer. Each layer
-                  clips the price. The maker earns a fraction.
-                </p>
-                <ul className="flex flex-col gap-3">
-                  {[
-                    "Artisans earn 8–15% of final sale price",
-                    "No formal contracts, wages, or identity",
-                    "Synthetic materials displace local, natural ones",
-                    "Methane-emitting water hyacinth left unprocessed in Bihar's wetlands",
-                  ].map((item) => (
-                    <li
-                      key={item}
-                      className="flex gap-3 items-start text-sm text-[#6B6560] leading-relaxed"
-                    >
-                      <span className="mt-[7px] flex-shrink-0 w-1.5 h-1.5 rounded-full bg-[#C8A97A]" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </FadeUp>
-
-            {/* Solution card */}
-            <FadeUp delay={0.14}>
-              <div className="h-full rounded-[22px] bg-[#4A6741] relative overflow-hidden p-8">
-                <div className="absolute inset-0 opacity-[0.06] bg-gradient-to-br from-white to-transparent" />
-                <div className="relative">
-                  <p
-                    className="text-[10px] tracking-[0.22em] uppercase text-white/55 mb-4"
-                    style={{ fontFamily: sans }}
-                  >
-                    Our Answer
-                  </p>
-                  <h3
-                    className="text-xl font-medium text-[#E9D9B8] italic mb-3 leading-snug"
-                    style={{ fontFamily: serif }}
-                  >
-                    Direct, formal, and traceable
-                  </h3>
-                  <p className="text-sm text-white/72 leading-relaxed mb-5">
-                    We contract artisans directly with formal wages and Pehchan
-                    IDs. We source from Bihar's wetlands — turning invasive water
-                    hyacinth into export-quality craft. No middlemen. No plastic.
-                  </p>
-                  <ul className="flex flex-col gap-3">
-                    {[
-                      "3× the standard middleman rate, direct to artisan",
-                      "Formal employment — 80% women-led households",
-                      "100% natural, biodegradable, traceable materials",
-                      "Removes methane-emitting hyacinth from wetlands",
-                    ].map((item) => (
-                      <li
-                        key={item}
-                        className="flex gap-3 items-start text-sm text-white/82 leading-relaxed"
-                      >
-                        <span className="mt-[7px] flex-shrink-0 w-1.5 h-1.5 rounded-full bg-[#8FBD84]" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
+        <div className="h-wrap flex w-[400vw] h-[60vh] mt-24">
+          {products.map((p, i) => (
+            <div key={i} className="h-card w-[100vw] h-full flex items-center justify-center px-6 md:px-16 flex-shrink-0">
+              <div className="w-full max-w-5xl h-full flex flex-col md:flex-row items-center gap-12">
+                <div className="w-full md:w-1/2 h-64 md:h-[90%] overflow-hidden rounded-[2rem]">
+                  <img src={p.img} alt={p.name} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" />
+                </div>
+                <div className="w-full md:w-1/2">
+                  <span className="text-[10px] tracking-[0.2em] uppercase text-[#C8A97A] mb-4 block" style={{ fontFamily: sans }}>Category {i + 1}</span>
+                  <h3 className="text-4xl md:text-6xl font-light mb-6" style={{ fontFamily: serif }}>{p.name}</h3>
+                  <p className="text-white/50 text-sm tracking-wider uppercase mb-6" style={{ fontFamily: sans }}>{p.tags}</p>
+                  <p className="text-white/80 text-lg md:text-xl font-light leading-relaxed">{p.desc}</p>
                 </div>
               </div>
-            </FadeUp>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── PRODUCTS ──────────────────────────────────────────────────────── */}
-      <section className="py-24 px-6 bg-[#F6F2EC]">
-        <div className="max-w-6xl mx-auto">
-          <FadeUp className="text-center mb-12">
-            <Eyebrow>What We Make</Eyebrow>
-            <h2
-              className="text-[clamp(2rem,4vw,2.8rem)] font-light leading-tight text-[#1C1C1A]"
-              style={{ fontFamily: serif }}
-            >
-              Four categories,{" "}
-              <span className="italic text-[#4A6741]">one supply chain</span>
-            </h2>
-            <div className="h-[2px] w-14 bg-[#C8A97A] mt-4 mx-auto" />
-            <p className="text-[#6B6560] mt-4 text-sm max-w-lg mx-auto leading-relaxed">
-              All B2B — corporate gifting, retail buyers, hotel chains, and export
-              customers. Every SKU 100% biodegradable, zero synthetic materials.
-            </p>
-          </FadeUp>
-
-          <div className="grid sm:grid-cols-2 gap-5">
-            {products.map((p, i) => (
-              <FadeUp key={p.name} delay={i * 0.08}>
-                <div className="h-full bg-white border border-[#E7E1DA] rounded-[22px] overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-500 group">
-                  <div className="relative w-full h-48 overflow-hidden bg-[#FAF7F2]">
-                    <img 
-                      src={p.img} 
-                      alt={p.name}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="p-7 flex flex-col gap-3 flex-grow">
-                    <h3
-                      className="text-xl font-medium text-[#1C1C1A]"
-                      style={{ fontFamily: serif }}
-                    >
-                      {p.name}
-                    </h3>
-                    <p className="text-sm text-[#6B6560] leading-relaxed">{p.desc}</p>
-                    <div className="flex flex-wrap gap-2 mt-1">
-                      {p.tags.map((t) => (
-                        <span
-                          key={t}
-                          className="text-[11px] bg-[#F0EBE3] text-[#6B6560] rounded-full px-3 py-1"
-                        >
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="mt-auto pt-4 border-t border-[#ECE6DF] flex items-center justify-between">
-                      <span className="text-xs font-semibold text-[#4A6741] tracking-wide">
-                        {p.margin} · {p.price}
-                      </span>
-                    </div>
-                    <p
-                      className="text-[11px] text-[#9E9088] uppercase tracking-widest mt-1"
-                      style={{ fontFamily: sans }}
-                    >
-                      {p.buyer}
-                    </p>
-                  </div>
-                </div>
-              </FadeUp>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── MISSION QUOTE ─────────────────────────────────────────────────── */}
-      <section className="py-24 px-6 bg-white border-y border-[#E7E1DA]">
-        <div className="max-w-3xl mx-auto text-center">
-          <FadeUp>
-            <Eyebrow>Our Mission</Eyebrow>
-            <div className="relative px-8 mt-2">
-              <span
-                className="absolute -top-4 left-0 text-[5rem] leading-none text-[#4A6741]/08 pointer-events-none select-none"
-                style={{ fontFamily: serif }}
-              >
-                "
-              </span>
-              <p
-                className="text-[clamp(1.2rem,2.8vw,1.75rem)] font-light italic text-[#1C1C1A] leading-relaxed"
-                style={{ fontFamily: serif }}
-              >
-                We promote sustainable living by supporting skilled artisans and
-                preserving traditional craft — creating products that make a
-                positive impact on people and planet, one handmade piece at a time.
-              </p>
-              <span
-                className="absolute -bottom-6 right-0 text-[5rem] leading-none text-[#4A6741]/08 pointer-events-none select-none"
-                style={{ fontFamily: serif }}
-              >
-                "
-              </span>
             </div>
-            <p
-              className="mt-8 text-xs text-[#9E9088] tracking-[0.14em] uppercase"
-              style={{ fontFamily: sans }}
-            >
-              KrisluxECO — Jaipur &amp; Bihar, India
-            </p>
-          </FadeUp>
-        </div>
-      </section>
-
-      {/* ─── MATERIALS TICKER ──────────────────────────────────────────────── */}
-      <div className="bg-[#4A6741] py-4 overflow-hidden">
-        <div className="ticker-track flex gap-8 whitespace-nowrap w-max">
-          {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (
-            <span
-              key={i}
-              className="text-white/70 text-xs tracking-[0.2em] uppercase flex-shrink-0 flex items-center gap-2"
-              style={{ fontFamily: sans }}
-            >
-              <span className="text-[#C8A97A]">✦</span>
-              {item}
-            </span>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* ─── SDG IMPACT ────────────────────────────────────────────────────── */}
-      <section className="relative py-24 px-6 bg-[#1C1C1A] overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage:
-              "linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-          }}
-        />
-        <div className="relative max-w-6xl mx-auto z-10">
-          <FadeUp className="text-center mb-12">
-            <Eyebrow dark>Impact</Eyebrow>
-            <h2
-              className="text-[clamp(2rem,4vw,3rem)] font-light leading-tight text-white"
-              style={{ fontFamily: serif }}
-            >
-              7 UN Goals,{" "}
-              <span className="italic text-[#8FBD84]">one supply chain</span>
+      {/* 4. Global Impact SDGs */}
+      <section className="py-32 px-6 md:px-16 bg-[#FAF7F2]">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-24">
+            <Eyebrow dark>Our Global Impact</Eyebrow>
+            <h2 className="text-[clamp(2.5rem,4vw,4rem)] font-light leading-tight text-[#1C1C1A]" style={{ fontFamily: serif }}>
+              Aligned with 7 UN Sustainable Development Goals
             </h2>
-            <div className="h-[2px] w-14 bg-[#C8A97A] mt-4 mx-auto" />
-            <p className="text-white/55 mt-4 text-sm max-w-lg mx-auto leading-relaxed">
-              Every B2B order creates measurable, trackable social and
-              environmental impact across seven Sustainable Development Goals.
+            <div className="h-[2px] w-14 bg-[#C8A97A] mt-6 mx-auto" />
+            <p className="text-[#1C1C1A]/70 mt-6 max-w-xl mx-auto text-lg font-light leading-relaxed">
+              Every product crafted in our ecosystem creates measurable, trackable impact.
             </p>
-          </FadeUp>
-
-          {/* Top 4 */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-            {sdgs.slice(0, 4).map((s, i) => (
-              <FadeUp key={s.num} delay={i * 0.07}>
-                <div className="h-full border border-white/10 bg-white/[0.03] rounded-[18px] p-5 text-center">
-                  <div
-                    className="text-[2rem] font-light text-[#8FBD84] leading-none mb-1"
-                    style={{ fontFamily: serif }}
-                  >
-                    {s.num}
-                  </div>
-                  <div
-                    className="text-[10px] tracking-[0.18em] text-white/35 uppercase mb-3"
-                    style={{ fontFamily: sans }}
-                  >
-                    {s.code}
-                  </div>
-                  <div className="text-sm font-medium text-white/80 mb-2">
-                    {s.title}
-                  </div>
-                  <div className="text-xs text-white/50 leading-relaxed">
-                    {s.impact}
-                  </div>
-                </div>
-              </FadeUp>
-            ))}
           </div>
 
-          {/* Bottom 3 */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {sdgs.slice(4).map((s, i) => (
-              <FadeUp key={s.num} delay={i * 0.07 + 0.28}>
-                <div className="h-full border border-white/10 bg-white/[0.03] rounded-[18px] p-5 text-center">
-                  <div
-                    className="text-[2rem] font-light text-[#8FBD84] leading-none mb-1"
-                    style={{ fontFamily: serif }}
-                  >
-                    {s.num}
-                  </div>
-                  <div
-                    className="text-[10px] tracking-[0.18em] text-white/35 uppercase mb-3"
-                    style={{ fontFamily: sans }}
-                  >
-                    {s.code}
-                  </div>
-                  <div className="text-sm font-medium text-white/80 mb-2">
-                    {s.title}
-                  </div>
-                  <div className="text-xs text-white/50 leading-relaxed">
-                    {s.impact}
-                  </div>
-                </div>
-              </FadeUp>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {sdgs.map((s, i) => (
+              <div key={i} className="sdg-card bg-white border border-[#1C1C1A]/10 rounded-[2rem] p-8 shadow-sm">
+                <div className="text-3xl font-light text-[#4A6741] mb-2" style={{ fontFamily: serif }}>{s.num}</div>
+                <div className="text-[11px] tracking-[0.15em] uppercase text-[#C8A97A] font-semibold mb-6" style={{ fontFamily: sans }}>{s.code}</div>
+                <p className="text-[#1C1C1A]/80 text-sm leading-relaxed font-light">{s.impact}</p>
+              </div>
             ))}
+            <div className="sdg-card bg-[#4A6741] text-white rounded-[2rem] p-8 flex items-center justify-center text-center shadow-lg">
+              <p className="text-lg font-medium italic" style={{ fontFamily: serif }}>
+                "Building a formal, sustainable ecosystem."
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ─── CTA ───────────────────────────────────────────────────────────── */}
-      <section className="relative py-24 px-6 bg-[#4A6741] overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-[0.06]"
-          style={{
-            backgroundImage:
-              "linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)",
-            backgroundSize: "56px 56px",
-          }}
-        />
-        <FadeUp className="relative max-w-3xl mx-auto text-center">
-          <h2
-            className="text-[clamp(1.8rem,3.5vw,2.8rem)] leading-tight text-white font-light mb-4"
-            style={{ fontFamily: serif }}
-          >
-            Ready to source{" "}
-            <span className="italic text-[#E9D9B8]">differently?</span>
+      {/* 5. Vision for the future */}
+      <section className="vision-container relative py-48 px-6 md:px-16 bg-[#1C1C1A] text-white text-center overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)", backgroundSize: "64px 64px" }} />
+        <div className="relative z-10 max-w-5xl mx-auto vision-text">
+          <Eyebrow dark>Our Vision For The Future</Eyebrow>
+          <h2 className="text-3xl md:text-5xl lg:text-7xl font-light leading-[1.1] mb-12" style={{ fontFamily: serif }}>
+            We are not just building a business; <br />
+            <span className="text-[#C8A97A] italic">we are building for Bihar.</span>
           </h2>
-          <p className="text-white/75 mb-9 max-w-xl mx-auto leading-relaxed text-sm md:text-base">
-            Explore our B2B catalogue or talk to us about a corporate gifting or
-            bulk order that creates real, traceable impact.
+          <p className="text-white/70 text-xl md:text-2xl font-light leading-relaxed max-w-3xl mx-auto">
+            As we expand our export pipelines to the <span className="text-white font-medium">UK, Germany, and Japan</span>, our goal is to scale our network to empower over <span className="text-white font-medium">10,000 artisans</span> while establishing Bihar's first globally recognized eco-luxury brand.
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link
-              href="/user/products"
-              className="inline-flex items-center gap-2 bg-white text-[#4A6741] px-8 py-3.5 rounded-full text-sm tracking-wide font-medium hover:bg-[#FAF7F2] transition-colors"
-            >
-              View Product Catalogue
-              <svg
-                width="13"
-                height="13"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </Link>
-            <Link
-              href="/user/bulk-order"
-              className="inline-flex items-center gap-2 border border-white/40 text-white px-8 py-3.5 rounded-full text-sm tracking-wide hover:border-white hover:bg-white/10 transition-all"
-            >
-              Discuss a B2B Order
-            </Link>
-          </div>
-        </FadeUp>
+        </div>
       </section>
     </main>
   );
