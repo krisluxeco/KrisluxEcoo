@@ -106,7 +106,7 @@ function HeroSlideshow() {
         <div
           key={slide.url}
           className="absolute inset-0 bg-cover bg-center transition-all duration-[1.5s] ease-in-out"
-          style={{ 
+          style={{
             backgroundImage: `url(${slide.url})`,
             opacity: i === current ? 1 : 0,
             transform: i === current ? "scale(1)" : "scale(1.05)"
@@ -152,18 +152,19 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
   useEffect(() => {
     if (typeof window !== "undefined") {
       gsap.registerPlugin(ScrollTrigger);
-      
+
       let ctx = gsap.context(() => {
         // 1. Hero Text Reveal
-        gsap.fromTo(".hero-element", 
-          { opacity: 0, y: 30 }, 
+        gsap.fromTo(".hero-element",
+          { opacity: 0, y: 30 },
           { opacity: 1, y: 0, duration: 1.2, stagger: 0.15, ease: "power3.out", delay: 0.2 }
         );
 
         // 2. Collection Header Reveal
         gsap.fromTo(".collection-header",
           { opacity: 0, y: 40 },
-          { opacity: 1, y: 0, duration: 1.2, ease: "power3.out",
+          {
+            opacity: 1, y: 0, duration: 1.2, ease: "power3.out",
             scrollTrigger: { trigger: ".collection-header", start: "top 80%" }
           }
         );
@@ -172,7 +173,8 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
         gsap.utils.toArray(".category-card").forEach((card) => {
           gsap.fromTo(card,
             { opacity: 0, y: 80 },
-            { opacity: 1, y: 0, duration: 1.2, ease: "power3.out",
+            {
+              opacity: 1, y: 0, duration: 1.2, ease: "power3.out",
               scrollTrigger: { trigger: card, start: "top 85%" }
             }
           );
@@ -186,7 +188,8 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
 
         gsap.fromTo(".reel-card",
           { opacity: 0, y: 60 },
-          { opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: "power3.out",
+          {
+            opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: "power3.out",
             scrollTrigger: { trigger: ".reel-container", start: "top 80%" }
           }
         );
@@ -212,7 +215,7 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
 
   return (
     <main ref={containerRef} className="bg-[#FAF7F2] text-[#1C1C1A] overflow-x-hidden" style={{ fontFamily: sans }}>
-      
+
       {/* ─── HERO SECTION ────────────────────────────────────────────────────── */}
       <section className="relative w-full h-[110vh] flex flex-col justify-end overflow-hidden pb-32">
         <HeroSlideshow />
@@ -257,11 +260,11 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
               <p className="text-[#C8A97A] text-[10px] tracking-[0.4em] uppercase font-medium">The Collection</p>
               <span className="w-12 h-[1px] bg-[#C8A97A]/40" />
             </div>
-            
+
             <h2 className="text-[clamp(3rem,6vw,5.5rem)] font-light leading-[1] tracking-tight mb-6" style={{ fontFamily: serif }}>
               A curation of <span className="italic text-[#C8A97A]">sustainable</span> elegance.
             </h2>
-            
+
             <p className="text-[#6B6560] text-sm md:text-base max-w-lg font-light leading-relaxed">
               Every piece in our collection is born from highly renewable materials,
               designed to elevate spaces while respecting the earth. Beauty without compromise.
@@ -272,12 +275,11 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
             {categories.map((cat, i) => (
               <div
                 key={cat.slug}
-                className={`category-card group cursor-pointer ${
-                  i === 0 ? "md:col-span-6 md:pr-12 md:mt-0" :
+                className={`category-card group cursor-pointer ${i === 0 ? "md:col-span-6 md:pr-12 md:mt-0" :
                   i === 1 ? "md:col-span-5 md:col-start-8 md:mt-64" :
-                  i === 2 ? "md:col-span-5 md:pl-12 md:-mt-32" :
-                  "md:col-span-6 md:col-start-7 md:mt-32"
-                }`}
+                    i === 2 ? "md:col-span-5 md:pl-12 md:-mt-32" :
+                      "md:col-span-6 md:col-start-7 md:mt-32"
+                  }`}
               >
                 <Link href={`/user/products?category=${cat.slug}`}>
                   <div className="w-full bg-white p-4 md:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.03)] transition-transform duration-1000 group-hover:-translate-y-2">
@@ -321,7 +323,7 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
                   <source src={reel.url} type="video/mp4" />
                 </video>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-80" />
-                
+
                 {/* Play Icon */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                   <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/40">
@@ -349,7 +351,7 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
 
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid md:grid-cols-2 gap-20 items-center">
-            
+
             <div className="impact-content">
               <h2 className="text-[clamp(2.5rem,4vw,4.5rem)] font-light leading-[1.1] mb-8 text-white" style={{ fontFamily: serif }}>
                 Impact <br />

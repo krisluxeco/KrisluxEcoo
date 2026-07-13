@@ -256,11 +256,7 @@ export function StorefrontProductCard({ product, isLiked = false, onToggleSaved 
             </span>
           )}
 
-          <motion.div
-            className="absolute inset-0"
-            whileHover={{ scale: 1.12 }}
-            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-          >
+          <div className="absolute inset-0">
             {coverImg ? (
               <img
                 src={coverImg}
@@ -272,7 +268,7 @@ export function StorefrontProductCard({ product, isLiked = false, onToggleSaved 
                 <Package size={32} className="stroke-1" />
               </div>
             )}
-          </motion.div>
+          </div>
 
           <motion.div
             className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent pointer-events-none"
@@ -611,7 +607,7 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
       </section>
 
       {/* ─── Top Utility Bar ────────────────────────────────────────────── */}
-      <div className="sticky top-[90px] lg:top-[110px] z-30 bg-[#FAF7F2]/90 backdrop-blur-md border-b border-[#E8DDD0] py-4 px-6 shadow-sm">
+      <div className="bg-[#FAF7F2] border-b border-[#E8DDD0] py-4 px-6 relative">
         <div className="max-w-[1400px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           
           <div className="flex items-center gap-4 w-full sm:w-auto">

@@ -1,4 +1,5 @@
 import LayoutWrapper from "@/components/LayoutWrapper";
+import GoToTop from "@/components/GoToTop";
 import "./globals.css";
 import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 
@@ -61,6 +62,7 @@ export default function RootLayout({ children }) {
       <LayoutWrapper>
         <body className="min-h-full flex flex-col font-sans bg-[#FAF7F2] text-[#1C1C1A]">
           {children}
+          <GoToTop />
         </body>
       </LayoutWrapper>
     </html>

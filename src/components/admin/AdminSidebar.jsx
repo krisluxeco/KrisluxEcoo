@@ -16,6 +16,7 @@ import {
   LogOut,
   FileText,
   MessageSquare,
+  Star,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 
@@ -25,6 +26,8 @@ const navItems = [
   { label: "Orders", href: "/admin/orders", icon: ShoppingCart },
   { label: "Customers", href: "/admin/customers", icon: Users },
   { label: "Blog", href: "/admin/blog", icon: FileText },
+  { label: "Reviews", href: "/admin/reviews", icon: Star },
+  { label: "Promos", href: "/admin/promos", icon: Tags },
   { label: "Custom Designs", href: "/admin/custom-designs", icon: MessageSquare },
   { label: "Profile", href: "/admin/profile", icon: User },
   // { label: "Settings", href: "/admin/settings", icon: Settings },

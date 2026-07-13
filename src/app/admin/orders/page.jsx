@@ -124,71 +124,71 @@ export default function AdminQuotesPage() {
               {quotes
                 .filter(quote => activeTab === "deleted" ? quote.status === "Rejected" : quote.status !== "Rejected")
                 .filter(quote => {
-                   if (!search) return true;
-                   const searchLower = search.toLowerCase();
-                   const company = quote.customerDetails?.companyName?.toLowerCase() || "";
-                   const name = quote.customerDetails?.contactPerson?.toLowerCase() || "";
-                   const email = quote.customerDetails?.email?.toLowerCase() || "";
-                   return company.includes(searchLower) || name.includes(searchLower) || email.includes(searchLower);
+                  if (!search) return true;
+                  const searchLower = search.toLowerCase();
+                  const company = quote.customerDetails?.companyName?.toLowerCase() || "";
+                  const name = quote.customerDetails?.contactPerson?.toLowerCase() || "";
+                  const email = quote.customerDetails?.email?.toLowerCase() || "";
+                  return company.includes(searchLower) || name.includes(searchLower) || email.includes(searchLower);
                 })
                 .map((quote) => (
-                <tr key={quote._id} className="hover:bg-gray-50 transition">
-                  <td className="px-6 py-4">
-                    <p className="font-medium text-gray-900">{quote.customerDetails.companyName || "N/A"}</p>
-                    <p className="text-xs">{quote.customerDetails.contactPerson}</p>
-                    <p className="text-xs text-gray-400">{quote.customerDetails.email}</p>
-                  </td>
-                  <td className="px-6 py-4">
-                    <p className="font-medium mb-1">{quote.items.length} Product(s)</p>
-                    <div className="flex flex-col gap-1">
-                      {quote.items.map((i, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
-                          <span className="text-xs font-semibold text-gray-500">{i.quantity}x</span>
-                          <span className="text-xs text-gray-700">{i.productName}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <select
-                      value={quote.status}
-                      onChange={(e) => updateStatus(quote._id, e.target.value)}
-                      className={`text-xs font-semibold px-3 py-1 rounded-full border-none focus:ring-0 cursor-pointer ${statusColors[quote.status]}`}
-                    >
-                      {Object.keys(statusColors).map((s) => (
-                        <option key={s} value={s}>{s}</option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="px-6 py-4 text-xs">
-                    {new Date(quote.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 text-right space-x-2 whitespace-nowrap">
-                    <button 
-                      onClick={() => setSelectedQuote(quote)}
-                      className="text-xs border border-[#4A6741] text-[#4A6741] hover:bg-[#4A6741] hover:text-white px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1.5"
-                      title="View Invoice"
-                    >
-                      <FileText size={14} /> View Invoice
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                  <tr key={quote._id} className="hover:bg-gray-50 transition">
+                    <td className="px-6 py-4">
+                      <p className="font-medium text-gray-900">{quote.customerDetails.companyName || "N/A"}</p>
+                      <p className="text-xs">{quote.customerDetails.contactPerson}</p>
+                      <p className="text-xs text-gray-400">{quote.customerDetails.email}</p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <p className="font-medium mb-1">{quote.items.length} Product(s)</p>
+                      <div className="flex flex-col gap-1">
+                        {quote.items.map((i, idx) => (
+                          <div key={idx} className="flex items-center gap-2">
+                            <span className="text-xs font-semibold text-gray-500">{i.quantity}x</span>
+                            <span className="text-xs text-gray-700">{i.productName}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <select
+                        value={quote.status}
+                        onChange={(e) => updateStatus(quote._id, e.target.value)}
+                        className={`text-xs font-semibold px-3 py-1 rounded-full border-none focus:ring-0 cursor-pointer ${statusColors[quote.status]}`}
+                      >
+                        {Object.keys(statusColors).map((s) => (
+                          <option key={s} value={s}>{s}</option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="px-6 py-4 text-xs">
+                      {new Date(quote.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 text-right space-x-2 whitespace-nowrap">
+                      <button
+                        onClick={() => setSelectedQuote(quote)}
+                        className="text-xs border border-[#4A6741] text-[#4A6741] hover:bg-[#4A6741] hover:text-white px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1.5"
+                        title="View Invoice"
+                      >
+                        <FileText size={14} /> View Invoice
+                      </button>
+                    </td>
+                  </tr>
+                ))}
               {quotes
                 .filter(quote => activeTab === "deleted" ? quote.status === "Rejected" : quote.status !== "Rejected")
                 .filter(q => {
-                   if (!search) return true;
-                   const searchLower = search.toLowerCase();
-                   return (q.customerDetails?.companyName?.toLowerCase() || "").includes(searchLower) || 
-                          (q.customerDetails?.contactPerson?.toLowerCase() || "").includes(searchLower) || 
-                          (q.customerDetails?.email?.toLowerCase() || "").includes(searchLower);
+                  if (!search) return true;
+                  const searchLower = search.toLowerCase();
+                  return (q.customerDetails?.companyName?.toLowerCase() || "").includes(searchLower) ||
+                    (q.customerDetails?.contactPerson?.toLowerCase() || "").includes(searchLower) ||
+                    (q.customerDetails?.email?.toLowerCase() || "").includes(searchLower);
                 }).length === 0 && (
-                <tr>
-                  <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
-                    No orders found matching "{search}".
-                  </td>
-                </tr>
-              )}
+                  <tr>
+                    <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
+                      No orders found matching "{search}".
+                    </td>
+                  </tr>
+                )}
             </tbody>
           </table>
         </div>
@@ -196,15 +196,15 @@ export default function AdminQuotesPage() {
 
       {/* Invoice Details Modal */}
       {selectedQuote && (
-        <div 
+        <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
           onClick={() => setSelectedQuote(null)}
         >
-          <div 
+          <div
             className="bg-[#FAF7F2] rounded-xl w-full max-w-3xl max-h-[85vh] overflow-hidden flex flex-col shadow-2xl relative"
             onClick={(e) => e.stopPropagation()}
           >
-            
+
             {/* Modal Controls Bar */}
             <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-[#ECE6DF]">
               <div className="flex items-center gap-3">
@@ -219,10 +219,10 @@ export default function AdminQuotesPage() {
                 <X size={20} />
               </button>
             </div>
-            
+
             {/* The "Paper" Invoice */}
             <div className="overflow-y-auto p-8 sm:p-12 flex-1 bg-white mx-auto w-full">
-              
+
               {/* Branding & Header */}
               <div className="flex justify-between items-start border-b-2 border-[#1C1C1A] pb-8 mb-8">
                 <div>
@@ -250,8 +250,8 @@ export default function AdminQuotesPage() {
                   <h3 className="text-[10px] font-bold text-[#9E9088] uppercase tracking-widest border-b border-[#ECE6DF] pb-2 mb-3">Bill To</h3>
                   <h4 className="text-lg font-bold text-[#1C1C1A] mb-1">{selectedQuote.customerDetails.companyName || "N/A"}</h4>
                   <p className="text-sm text-[#6B6560] leading-relaxed">
-                    {selectedQuote.customerDetails.contactPerson}<br/>
-                    {selectedQuote.customerDetails.email}<br/>
+                    {selectedQuote.customerDetails.contactPerson}<br />
+                    {selectedQuote.customerDetails.email}<br />
                     {selectedQuote.customerDetails.phone}
                   </p>
                   {selectedQuote.customerDetails.gstNumber && (
@@ -260,10 +260,10 @@ export default function AdminQuotesPage() {
                 </div>
                 {selectedQuote.additionalInfo && (
                   <div>
-                     <h3 className="text-[10px] font-bold text-[#9E9088] uppercase tracking-widest border-b border-[#ECE6DF] pb-2 mb-3">Order Notes</h3>
-                     <p className="text-sm text-[#6B6560] italic leading-relaxed bg-[#FAF7F2] p-4 rounded-sm border-l-4 border-[#C8A97A]">
-                       "{selectedQuote.additionalInfo}"
-                     </p>
+                    <h3 className="text-[10px] font-bold text-[#9E9088] uppercase tracking-widest border-b border-[#ECE6DF] pb-2 mb-3">Order Notes</h3>
+                    <p className="text-sm text-[#6B6560] italic leading-relaxed bg-[#FAF7F2] p-4 rounded-sm border-l-4 border-[#C8A97A]">
+                      "{selectedQuote.additionalInfo}"
+                    </p>
                   </div>
                 )}
               </div>
@@ -284,7 +284,7 @@ export default function AdminQuotesPage() {
                       const productPrice = item.productId?.discountPrice || item.productId?.price || 0;
                       const displayPrice = item.targetBudget || productPrice;
                       const lineTotal = displayPrice * item.quantity;
-                      
+
                       return (
                         <tr key={idx} className="group">
                           <td className="py-4 px-2">

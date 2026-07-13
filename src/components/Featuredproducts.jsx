@@ -88,7 +88,7 @@ function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggle
 
   const handleLikeClick = async (e) => {
     e.stopPropagation();
-    
+
     if (status !== "authenticated") {
       router.push("/login");
       return;
@@ -161,7 +161,7 @@ function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggle
         }}
         onPointerLeave={resetTilt}
         style={{ transformStyle: "preserve-3d" }}
-        className="relative bg-white rounded-sm overflow-hidden border border-[#E8DDD0] group-hover:border-[#C8A97A]/40 shadow-[0_2px_10px_rgba(0,0,0,0.04)] group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.12)] transition-[border-color,box-shadow] duration-500"
+        className="relative bg-white rounded-sm overflow-hidden border border-[#E8DDD0] group-hover:border-[#1C1C1A] shadow-[0_2px_10px_rgba(0,0,0,0.04)] group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.12)] transition-[border-color,box-shadow] duration-500"
       >
         {/* Image */}
         <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#FAF7F2]">
@@ -169,9 +169,8 @@ function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggle
             initial={{ opacity: 0, scale: 0.5, x: -10 }}
             animate={inView ? { opacity: 1, scale: 1, x: 0 } : {}}
             transition={{ delay: index * 0.09 + 0.25, type: "spring", stiffness: 300, damping: 16 }}
-            className={`absolute top-3 left-3 z-10 text-[10px] font-bold tracking-[0.2em] px-2.5 py-1 uppercase shadow-sm ${
-              badgeStyles[badgeText] ?? "bg-[#1C1C1A] text-white"
-            }`}
+            className={`absolute top-3 left-3 z-10 text-[10px] font-bold tracking-[0.2em] px-2.5 py-1 uppercase shadow-sm ${badgeStyles[badgeText] ?? "bg-[#1C1C1A] text-white"
+              }`}
           >
             {badgeText === "BEST SELLER" || badgeText === "NEW" ? (
               <motion.span
@@ -186,11 +185,7 @@ function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggle
             )}
           </motion.span>
 
-          <motion.div
-            className="absolute inset-0"
-            whileHover={{ scale: 1.12 }}
-            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-          >
+          <div className="absolute inset-0">
             {coverImg ? (
               <Image
                 src={coverImg}
@@ -205,7 +200,7 @@ function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggle
                 <Package size={32} className="stroke-1" />
               </div>
             )}
-          </motion.div>
+          </div>
 
           {/* Soft gradient sheen that sweeps across on hover */}
           <motion.div

@@ -36,9 +36,63 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
     setLiked(isLiked);
   }, [isLiked]);
 
-  const { addToCart } = useCart();
+  const { addToCart, applyPromo, promoCode, discountPercentage } = useCart();
 
   const [modalMode, setModalMode] = useState("cart"); // "cart" or "quote"
+  const [activePromo, setActivePromo] = useState(null);
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoMessage, setPromoMessage] = useState({ text: "", type: "" });
+
+  useEffect(() => {
+    const fetchActivePromo = async () => {
+      try {
+        const res = await fetch("/api/promos/active");
+        if (res.ok) {
+          const data = await res.json();
+          setActivePromo(data.promo);
+        }
+      } catch (err) {
+        console.error("Failed to fetch active promo", err);
+      }
+    };
+    const fetchReviews = async () => {
+      try {
+        const res = await fetch(`/api/reviews?productId=${product._id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setReviews(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch reviews", err);
+      }
+    };
+    fetchActivePromo();
+    fetchReviews();
+  }, [product._id]);
+
+  const handleApplyPromo = async () => {
+    if (!activePromo) return;
+    setPromoLoading(true);
+    setPromoMessage({ text: "", type: "" });
+    try {
+      const res = await fetch("/api/promos/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: activePromo.code }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        applyPromo(data.code, data.discountPercentage);
+        setPromoMessage({ text: `Code applied! ${data.discountPercentage}% off.`, type: "success" });
+      } else {
+        setPromoMessage({ text: data.error, type: "error" });
+      }
+    } catch (err) {
+      setPromoMessage({ text: "Error applying code.", type: "error" });
+    } finally {
+      setPromoLoading(false);
+    }
+  };
 
   // Quote form states
   const [quoteForm, setQuoteForm] = useState({
@@ -53,6 +107,46 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
   });
   const [submittingQuote, setSubmittingQuote] = useState(false);
   const [quoteSubmitted, setQuoteSubmitted] = useState(false);
+
+  // Reviews states
+  const [reviews, setReviews] = useState([]);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: "" });
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (status !== "authenticated") {
+      router.push("/login");
+      return;
+    }
+    setSubmittingReview(true);
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId: product._id,
+          rating: reviewForm.rating,
+          comment: reviewForm.comment,
+        }),
+      });
+      if (res.ok) {
+        const newReview = await res.json();
+        setReviews([newReview, ...reviews]);
+        setShowReviewModal(false);
+        setReviewForm({ rating: 5, comment: "" });
+      } else {
+        const data = await res.json();
+        alert(data.error || "Failed to submit review");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
 
   const images = product.images || [];
   const activeImage = images[activeImageIndex]?.url || "";
@@ -405,95 +499,107 @@ _Sent via KrisluxECO B2B Portal_`;
               ))}
             </div>
 
-            {/* Interactive Tabs specifications panel */}
-            <div className="pt-10">
-              {/* Tab Header Buttons */}
-              <div className="flex gap-6 border-b border-[#ECE6DF]/60 text-[10px] font-bold tracking-[0.15em] uppercase text-[#9E9088] mb-6 relative">
-                {[
-                  { id: "description", label: "DESCRIPTION" },
-                  { id: "specifications", label: "SPECIFICATIONS" },
-                  { id: "applications", label: "APPLICATIONS" },
-                  { id: "reviews", label: "REVIEWS (67)" },
-                ].map((tab) => (
+            {/* Promotional Banner in place of tabs */}
+            {activePromo && (
+              <div className="pt-8 pb-4">
+                <div className="bg-[#FAF7F2] border border-[#C8A97A]/40 rounded-sm p-4 shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-[#ECE6DF]">
+                        <Sparkles size={18} className="text-[#C8A97A]" />
+                      </div>
+                      <div>
+                        <h4 className="text-[#1C1C1A] text-sm font-semibold" style={{ fontFamily: serif }}>Special Corporate Offer</h4>
+                        <p className="text-[#6B6560] text-xs">Use code <span className="font-bold text-[#4A6741]">{activePromo.code}</span> for {activePromo.discountPercentage}% off bulk orders.</p>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={handleApplyPromo}
+                      disabled={promoLoading || promoCode === activePromo.code}
+                      className="text-[10px] uppercase tracking-wider font-bold text-[#C8A97A] border-b border-[#C8A97A] pb-0.5 hover:text-[#1C1C1A] hover:border-[#1C1C1A] transition-colors whitespace-nowrap ml-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {promoLoading ? "Applying..." : (promoCode === activePromo.code ? "Applied" : "Apply Now")}
+                    </button>
+                  </div>
+                  {promoMessage.text && (
+                    <p className={`text-[10px] mt-2 font-medium tracking-wide ${promoMessage.type === "success" ? "text-emerald-600" : "text-red-500"}`}>
+                      {promoMessage.text}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Vertical Stacked Accordions */}
+            <div className="pt-4 border-t border-[#ECE6DF]/50 divide-y divide-[#ECE6DF]/60">
+              {[
+                { id: "description", label: "Description" },
+                { id: "specifications", label: "Specifications" },
+                { id: "applications", label: "Applications" },
+              ].map((acc) => (
+                <div key={acc.id} className="py-4">
                   <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`pb-4 relative transition-colors ${activeTab === tab.id
-                      ? "text-[#1C1C1A]"
-                      : "hover:text-[#1C1C1A]"
-                      }`}
+                    onClick={() => setActiveTab(activeTab === acc.id ? "" : acc.id)}
+                    className="w-full flex items-center justify-between text-left group"
                   >
-                    {tab.label}
-                    {activeTab === tab.id && (
-                      <motion.div
-                        layoutId="activeTabIndicator"
-                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C8A97A]"
-                        initial={false}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                      />
-                    )}
+                    <span className={`text-sm uppercase tracking-widest font-semibold transition-colors ${activeTab === acc.id ? "text-[#C8A97A]" : "text-[#1C1C1A] group-hover:text-[#C8A97A]"}`}>
+                      {acc.label}
+                    </span>
+                    <span className="text-[#9E9088] font-light text-xl transition-transform duration-300" style={{ transform: activeTab === acc.id ? "rotate(45deg)" : "rotate(0deg)" }}>
+                      +
+                    </span>
                   </button>
-                ))}
-              </div>
-
-              {/* Tab Content Display */}
-              <div className="text-xs leading-relaxed text-[#6B6560] min-h-[140px]">
-                {activeTab === "description" && (
-                  <p className="font-light leading-relaxed">{product.description}</p>
-                )}
-
-                {activeTab === "specifications" && (
-                  <div className="border border-[#ECE6DF] rounded-xl overflow-hidden divide-y divide-[#ECE6DF]">
-                    {specs.map((s, i) => (
-                      <div key={i} className="grid grid-cols-3 p-3 bg-white hover:bg-[#FAF7F2]/40 transition">
-                        <span className="text-[#9E9088] font-medium">{s.key}</span>
-                        <span className="col-span-2 text-[#1C1C1A] font-semibold">{s.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {activeTab === "applications" && (
-                  <div className="flex flex-wrap gap-2.5">
-                    {applications.map((app, i) => (
-                      <span
-                        key={i}
-                        className="bg-white border border-[#E8DDD0] rounded-xl px-4 py-2.5 font-medium text-[#1C1C1A] text-xs shadow-sm hover:border-[#4A6741]/40 hover:bg-[#4A6741]/5 transition"
+                  
+                  <AnimatePresence>
+                    {activeTab === acc.id && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                        className="overflow-hidden"
                       >
-                        {app}
-                      </span>
-                    ))}
-                  </div>
-                )}
+                        <div className="pt-4 pb-2 text-xs leading-relaxed text-[#6B6560]">
+                          {acc.id === "description" && (
+                            <p className="font-light leading-relaxed">{product.description}</p>
+                          )}
 
-                {activeTab === "reviews" && (
-                  <div className="space-y-4">
-                    {[
-                      { name: "Amit B.", rating: 5, comment: "Great quality and eco-friendly. Perfect for our office." },
-                      { name: "Sneha R.", rating: 5, comment: "Exceeded expectations. Will order again." },
-                    ].map((rev, i) => (
-                      <div key={i} className="bg-white p-3 rounded-xl border border-[#ECE6DF] space-y-1 shadow-sm">
-                        <div className="flex items-center justify-between">
-                          <span className="font-semibold text-[#1C1C1A]">{rev.name}</span>
-                          <div className="flex text-amber-500">
-                            {Array.from({ length: rev.rating }).map((_, r) => (
-                              <Star key={r} size={10} className="fill-amber-500" />
-                            ))}
-                          </div>
+                          {acc.id === "specifications" && (
+                            <div className="border border-[#ECE6DF] rounded-xl overflow-hidden divide-y divide-[#ECE6DF]">
+                              {specs.map((s, i) => (
+                                <div key={i} className="grid grid-cols-3 p-3 bg-white hover:bg-[#FAF7F2]/40 transition">
+                                  <span className="text-[#9E9088] font-medium">{s.key}</span>
+                                  <span className="col-span-2 text-[#1C1C1A] font-semibold">{s.value}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {acc.id === "applications" && (
+                            <div className="flex flex-wrap gap-2.5">
+                              {applications.map((app, i) => (
+                                <span
+                                  key={i}
+                                  className="bg-white border border-[#E8DDD0] rounded-xl px-4 py-2.5 font-medium text-[#1C1C1A] text-xs shadow-sm"
+                                >
+                                  {app}
+                                </span>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                        <p className="font-light text-[#6B6560]">{rev.comment}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
         {/* Similar Products Recommendation Rail */}
         {similarProducts.length > 0 && (
-          <section className="mt-20 border-t border-[#ECE6DF] pt-12">
+          <section className="mt-20 border-t border-[#ECE6DF] pt-12 pb-8">
             <div className="text-center mb-8">
               <span className="h-px w-8 bg-[#C8A97A]/60 inline-block mr-2 align-middle" />
               <span className="text-[10px] tracking-[0.25em] uppercase text-[#C8A97A] align-middle font-semibold">
@@ -520,6 +626,109 @@ _Sent via KrisluxECO B2B Portal_`;
             </div>
           </section>
         )}
+
+        {/* Why KrisluxEco Strip */}
+        <section className="mt-12 border-y border-[#ECE6DF] bg-[#FAF7F2] py-12 px-6 lg:px-12 text-center flex flex-col items-center">
+          <div className="flex items-center gap-4 mb-4">
+            <span className="w-12 h-px bg-[#C8A97A]/40" />
+            <p className="text-[10px] tracking-[0.4em] uppercase text-[#C8A97A] font-bold">Why KrisluxEco</p>
+            <span className="w-12 h-px bg-[#C8A97A]/40" />
+          </div>
+          <h2 className="text-3xl font-light text-[#1C1C1A] mb-8" style={{ fontFamily: serif }}>
+            Our <span className="italic text-[#4A6741]">Commitment</span> to the Earth
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 w-full max-w-5xl mx-auto text-[#6B6560] font-light">
+            <div className="flex flex-col items-center gap-3">
+              <Sparkles size={24} className="text-[#C8A97A]" strokeWidth={1.5} />
+              <span className="text-sm tracking-wide">100% Biodegradable</span>
+            </div>
+            <div className="flex flex-col items-center gap-3">
+              <Package size={24} className="text-[#C8A97A]" strokeWidth={1.5} />
+              <span className="text-sm tracking-wide">Zero Plastic Packaging</span>
+            </div>
+            <div className="flex flex-col items-center gap-3">
+              <Box size={24} className="text-[#C8A97A]" strokeWidth={1.5} />
+              <span className="text-sm tracking-wide">Carbon Neutral Shipping</span>
+            </div>
+            <div className="flex flex-col items-center gap-3">
+              <Heart size={24} className="text-[#C8A97A]" strokeWidth={1.5} />
+              <span className="text-sm tracking-wide">Ethically Crafted</span>
+            </div>
+          </div>
+        </section>
+
+        {/* Global Reviews Section */}
+        <section className="mt-20 max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row items-center md:items-end justify-between mb-8 border-b border-[#ECE6DF] pb-4 text-center md:text-left gap-4">
+            <div>
+              <h3 className="text-3xl font-semibold text-[#1C1C1A]" style={{ fontFamily: serif }}>
+                Customer <span className="italic text-[#C8A97A]">Reviews</span>
+              </h3>
+              <p className="text-[10px] text-[#9E9088] mt-2 tracking-[0.2em] uppercase">
+                {reviews.length > 0 ? `Based on ${reviews.length} Review${reviews.length !== 1 ? 's' : ''}` : "Be the first to review"}
+              </p>
+            </div>
+            <div className="flex flex-col md:flex-row items-center gap-6">
+              {reviews.length > 0 && (
+                <div className="flex flex-col items-center md:items-end gap-1">
+                  <div className="flex items-center gap-1 text-amber-500">
+                    {Array.from({ length: 5 }).map((_, r) => {
+                      const avg = reviews.reduce((acc, rev) => acc + rev.rating, 0) / reviews.length;
+                      return <Star key={r} size={16} className={r < Math.round(avg) ? "fill-amber-500" : "fill-[#ECE6DF] stroke-[#ECE6DF]"} />;
+                    })}
+                  </div>
+                  <span className="text-xs text-[#1C1C1A] font-medium tracking-wide">
+                    {(reviews.reduce((acc, rev) => acc + rev.rating, 0) / reviews.length).toFixed(1)} / 5.0 Average
+                  </span>
+                </div>
+              )}
+              <button
+                onClick={() => {
+                  if (status !== "authenticated") {
+                    router.push("/login");
+                  } else {
+                    setShowReviewModal(true);
+                  }
+                }}
+                className="bg-[#1C1C1A] text-white px-6 py-2.5 text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-[#C8A97A] transition-colors"
+              >
+                Write a Review
+              </button>
+            </div>
+          </div>
+
+          {reviews.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {reviews.map((rev) => (
+                <div key={rev._id} className="bg-white p-6 rounded-sm border border-[#E8DDD0] shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:border-[#1C1C1A] transition-colors duration-500 flex flex-col justify-between">
+                  <div>
+                    <div className="flex text-amber-500 gap-0.5 mb-4">
+                      {Array.from({ length: 5 }).map((_, r) => (
+                        <Star key={r} size={14} className={r < rev.rating ? "fill-amber-500 stroke-none" : "fill-[#ECE6DF] stroke-none"} />
+                      ))}
+                    </div>
+                    <p className="font-light text-[#6B6560] text-sm leading-relaxed italic break-words" style={{ fontFamily: serif }}>"{rev.comment}"</p>
+                  </div>
+                  <div className="mt-6 pt-4 border-t border-[#ECE6DF]/50 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-[#FAF7F2] flex items-center justify-center text-[10px] font-bold text-[#4A6741]">
+                        {rev.userName.charAt(0)}
+                      </div>
+                      <span className="font-semibold text-[#1C1C1A] text-[11px] uppercase tracking-wider truncate max-w-[120px]">{rev.userName}</span>
+                    </div>
+                    <span className="text-[9px] text-[#9E9088]">{new Date(rev.createdAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-[#FAF7F2] rounded-sm border border-[#ECE6DF]">
+              <MessageSquare size={32} className="mx-auto text-[#C8A97A] mb-4 opacity-50" />
+              <p className="text-[#6B6560] text-sm">No reviews yet. Share your experience with this product!</p>
+            </div>
+          )}
+        </section>
+
       </div>
 
       {/* Quote inquiry modal */}
@@ -675,6 +884,72 @@ _Sent via KrisluxECO B2B Portal_`;
                   </button>
                 </form>
               )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Review Modal */}
+      <AnimatePresence>
+        {showReviewModal && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white w-full max-w-md p-6 relative rounded-sm"
+            >
+              <button
+                onClick={() => setShowReviewModal(false)}
+                className="absolute right-4 top-4 text-[#9E9088] hover:text-[#1C1C1A] transition-colors"
+              >
+                <X size={20} />
+              </button>
+              
+              <h3 className="text-2xl mb-6 text-[#1C1C1A]" style={{ fontFamily: serif }}>
+                Write a Review
+              </h3>
+              
+              <form onSubmit={handleReviewSubmit}>
+                <div className="mb-6">
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-[#9E9088] mb-3">Rating</label>
+                  <div className="flex gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setReviewForm({ ...reviewForm, rating: star })}
+                        className="transition-transform hover:scale-110"
+                      >
+                        <Star
+                          size={28}
+                          className={star <= reviewForm.rating ? "fill-amber-500 stroke-amber-500" : "fill-transparent stroke-[#E8DDD0]"}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-[#9E9088] mb-2">Comment</label>
+                  <textarea
+                    required
+                    rows={4}
+                    value={reviewForm.comment}
+                    onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
+                    className="w-full border border-[#E8DDD0] bg-transparent p-3 text-sm text-[#1C1C1A] focus:outline-none focus:border-[#C8A97A] transition-colors resize-none placeholder:text-[#ECE6DF]"
+                    placeholder="Tell us what you think about this product..."
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submittingReview}
+                  className="w-full bg-[#1C1C1A] hover:bg-[#C8A97A] text-white py-4 text-[10px] font-bold uppercase tracking-[0.2em] transition-colors disabled:opacity-50"
+                >
+                  {submittingReview ? "Submitting..." : "Submit Review"}
+                </button>
+              </form>
             </motion.div>
           </div>
         )}

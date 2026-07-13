@@ -6,11 +6,15 @@ const CartContext = createContext();
 
 export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
+  const [promoCode, setPromoCode] = useState(null);
+  const [discountPercentage, setDiscountPercentage] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Load from localStorage on mount
   useEffect(() => {
     const savedCart = localStorage.getItem("krisluxeco_cart");
+    const savedPromo = localStorage.getItem("krisluxeco_promo");
+    
     if (savedCart) {
       try {
         setCartItems(JSON.parse(savedCart));
@@ -18,15 +22,32 @@ export function CartProvider({ children }) {
         console.error("Failed to parse cart", e);
       }
     }
+    
+    if (savedPromo) {
+      try {
+        const parsed = JSON.parse(savedPromo);
+        setPromoCode(parsed.code);
+        setDiscountPercentage(parsed.percentage);
+      } catch (e) {
+        console.error("Failed to parse promo", e);
+      }
+    }
+    
     setIsLoaded(true);
   }, []);
 
-  // Save to localStorage whenever cart changes
+  // Save to localStorage whenever cart/promo changes
   useEffect(() => {
     if (isLoaded) {
       localStorage.setItem("krisluxeco_cart", JSON.stringify(cartItems));
+      
+      if (promoCode) {
+        localStorage.setItem("krisluxeco_promo", JSON.stringify({ code: promoCode, percentage: discountPercentage }));
+      } else {
+        localStorage.removeItem("krisluxeco_promo");
+      }
     }
-  }, [cartItems, isLoaded]);
+  }, [cartItems, promoCode, discountPercentage, isLoaded]);
 
   const addToCart = (product, quantity, targetBudget = "") => {
     setCartItems((prev) => {
@@ -62,6 +83,18 @@ export function CartProvider({ children }) {
 
   const clearCart = () => {
     setCartItems([]);
+    setPromoCode(null);
+    setDiscountPercentage(0);
+  };
+
+  const applyPromo = (code, percentage) => {
+    setPromoCode(code);
+    setDiscountPercentage(percentage);
+  };
+
+  const removePromo = () => {
+    setPromoCode(null);
+    setDiscountPercentage(0);
   };
 
   const cartCount = cartItems.length;
@@ -70,10 +103,14 @@ export function CartProvider({ children }) {
     <CartContext.Provider
       value={{
         cartItems,
+        promoCode,
+        discountPercentage,
         addToCart,
         removeFromCart,
         updateQuantity,
         clearCart,
+        applyPromo,
+        removePromo,
         cartCount,
         isLoaded,
       }}

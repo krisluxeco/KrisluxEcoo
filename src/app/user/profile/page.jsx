@@ -15,6 +15,7 @@ export default function UserProfilePage() {
   const { data: session, status, update } = useSession();
   const router = useRouter();
   const fileInputRef = useRef(null);
+  const invoiceRef = useRef(null);
 
   // Profile data states
   const [profile, setProfile] = useState({
@@ -43,6 +44,41 @@ export default function UserProfilePage() {
 
   // Status feedback states
   const [message, setMessage] = useState({ type: "", text: "" });
+
+  // Print & PDF Handlers
+  const handlePrint = () => {
+    const printContent = invoiceRef.current;
+    if (!printContent) return;
+
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    iframe.contentDocument.write('<html><head><title>Invoice</title>');
+    // Copy Tailwind styles
+    const styles = document.querySelectorAll('style, link[rel="stylesheet"]');
+    styles.forEach((style) => {
+      iframe.contentDocument.write(style.outerHTML);
+    });
+    iframe.contentDocument.write('<style>body { background: white; -webkit-print-color-adjust: exact; color-adjust: exact; }</style>');
+    iframe.contentDocument.write('</head><body>');
+    // Wrap in standard width to preserve grid/flex classes
+    iframe.contentDocument.write('<div style="width: 794px; padding: 2rem;">');
+    iframe.contentDocument.write(printContent.innerHTML);
+    iframe.contentDocument.write('</div></body></html>');
+    iframe.contentDocument.close();
+
+    // Give images time to load, then print
+    setTimeout(() => {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+      setTimeout(() => document.body.removeChild(iframe), 1000);
+    }, 500);
+  };
+
+  const handleDownloadPdf = () => {
+    handlePrint();
+  };
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -138,7 +174,7 @@ export default function UserProfilePage() {
       formData.append("firstName", profile.firstName);
       formData.append("lastName", profile.lastName);
       formData.append("mobile", profile.mobile);
-      
+
       if (selectedFile) {
         formData.append("image", selectedFile);
       } else if (profile.image) {
@@ -268,9 +304,8 @@ export default function UserProfilePage() {
                 setActiveTab(tab.id);
                 setMobileOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium ${
-                isActive ? "bg-[#4A6741] text-white shadow-md" : "text-white/60 hover:text-white hover:bg-white/5"
-              }`}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium ${isActive ? "bg-[#4A6741] text-white shadow-md" : "text-white/60 hover:text-white hover:bg-white/5"
+                }`}
             >
               <Icon size={18} className={isActive ? "text-white" : "text-white/60"} />
               {tab.label}
@@ -319,7 +354,7 @@ export default function UserProfilePage() {
 
       {/* Main Content */}
       <main className="flex-1 min-w-0 flex flex-col relative z-10">
-        
+
         {/* Mobile Header */}
         <div className="md:hidden flex items-center justify-between bg-white border-b border-[#ECE6DF] px-6 py-4 z-10 shadow-sm">
           <div className="flex items-center gap-2">
@@ -340,7 +375,7 @@ export default function UserProfilePage() {
 
             {activeTab === "dashboard" && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
-                
+
                 {/* Header */}
                 <div className="flex justify-between items-end mb-8">
                   <div>
@@ -461,11 +496,10 @@ export default function UserProfilePage() {
                             <p className="font-semibold text-[#1C1C1A]">{quote.items.length} Product(s) Requested</p>
                             <p className="text-xs text-[#9E9088] mt-1 uppercase tracking-wider">{new Date(quote.createdAt).toLocaleDateString()}</p>
                           </div>
-                          <span className={`text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full ${
-                            quote.status === 'Pending' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-                            quote.status === 'Approved' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-                            'bg-gray-50 text-gray-700 border border-gray-200'
-                          }`}>
+                          <span className={`text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full ${quote.status === 'Pending' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                              quote.status === 'Approved' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                                'bg-gray-50 text-gray-700 border border-gray-200'
+                            }`}>
                             {quote.status}
                           </span>
                         </div>
@@ -477,65 +511,89 @@ export default function UserProfilePage() {
             )}
 
             {activeTab === "orders" && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
-                <div className="mb-8 border-b border-[#ECE6DF] pb-6">
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-12">
+                <div className="mb-8 border-b border-[#1C1C1A] pb-6">
                   <h1 className="text-4xl font-light text-[#1C1C1A] mb-2" style={{ fontFamily: serif }}>
                     Order <span className="font-semibold italic text-[#4A6741]">History</span>
                   </h1>
-                  <p className="text-sm text-[#6B6560]">Track and manage your requested B2B bulk orders.</p>
+                  <p className="text-sm text-[#6B6560] font-light">Track and manage your requested B2B bulk orders.</p>
                 </div>
 
                 {loadingQuotes ? (
-                  <div className="py-24 text-center text-sm text-[#9E9088]">Loading orders...</div>
+                  <div className="py-24 text-center text-sm text-[#9E9088] uppercase tracking-widest font-bold">Loading orders...</div>
                 ) : quotes.length === 0 ? (
-                  <div className="bg-white rounded-3xl border border-[#ECE6DF] p-24 text-center shadow-sm">
-                    <p className="text-[#6B6560]">You haven't requested any bulk quotes yet.</p>
+                  <div className="bg-[#FAF7F2] border border-[#ECE6DF] p-24 text-center">
+                    <p className="text-[#6B6560] font-light">You haven't requested any bulk quotes yet.</p>
                   </div>
                 ) : (
-                  <div className="space-y-6">
+                  <div className="space-y-10">
                     {quotes.map(quote => (
-                      <div key={quote._id} className="bg-white rounded-3xl border border-[#ECE6DF] p-8 shadow-sm hover:shadow-lg transition-shadow duration-300">
-                        <div className="flex justify-between items-start border-b border-[#ECE6DF] pb-6 mb-6">
+                      <div key={quote._id} className="bg-white border border-[#ECE6DF] p-8 md:p-10">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-[#ECE6DF] pb-6 mb-8 gap-4">
                           <div>
-                            <p className="text-[10px] text-[#9E9088] uppercase tracking-widest mb-2">Requested on {new Date(quote.createdAt).toLocaleDateString()}</p>
-                            <h4 className="font-bold text-[#1C1C1A] text-xl font-serif">{quote.items.length} Product(s)</h4>
+                            <p className="text-[9px] text-[#9E9088] uppercase tracking-widest font-bold mb-2">Requested on {new Date(quote.createdAt).toLocaleDateString()}</p>
+                            <h4 className="font-medium text-[#1C1C1A] text-2xl" style={{ fontFamily: serif }}>{quote.items.length} Product(s)</h4>
                           </div>
-                          <span className={`text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full ${
-                            quote.status === 'Pending' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-                            quote.status === 'Approved' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-                            'bg-gray-50 text-gray-700 border border-gray-200'
-                          }`}>
-                            {quote.status}
-                          </span>
+
+                          <div className="flex items-center gap-2">
+                            <div className={`w-2 h-2 rounded-full ${quote.status === 'Pending' ? 'bg-amber-500' :
+                                quote.status === 'Approved' ? 'bg-emerald-600' :
+                                  'bg-gray-400'
+                              }`} />
+                            <span className={`text-[10px] font-bold uppercase tracking-widest ${quote.status === 'Pending' ? 'text-amber-600' :
+                                quote.status === 'Approved' ? 'text-emerald-700' :
+                                  'text-gray-600'
+                              }`}>
+                              {quote.status}
+                            </span>
+                          </div>
                         </div>
-                        <div className="mb-6">
+
+                        <div className="mb-10">
                           <table className="w-full text-left text-sm text-[#6B6560]">
-                            <thead className="text-[10px] uppercase tracking-widest text-[#9E9088] border-b border-[#ECE6DF]">
+                            <thead className="text-[9px] uppercase tracking-widest text-[#9E9088] border-b border-[#ECE6DF]">
                               <tr>
-                                <th className="font-bold py-3 px-2">Item Description</th>
-                                <th className="font-bold py-3 px-2 text-right">Quantity</th>
+                                <th className="font-bold py-4 px-2">Item Description</th>
+                                <th className="font-bold py-4 px-2 text-right">Quantity</th>
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-[#ECE6DF]">
-                              {quote.items.map((item, idx) => (
-                                <tr key={idx} className="hover:bg-[#FAF7F2] transition-colors">
-                                  <td className="py-4 px-2 font-medium text-[#1C1C1A]">{item.productName}</td>
-                                  <td className="py-4 px-2 text-right font-mono text-xs">{item.quantity} units</td>
-                                </tr>
-                              ))}
+                              {quote.items.map((item, idx) => {
+                                const productImg = item.productId?.images?.[0]?.url;
+                                return (
+                                  <tr key={idx} className="hover:bg-[#FAF7F2] transition-colors">
+                                    <td className="py-5 px-2 font-medium text-[#1C1C1A]">
+                                      <div className="flex items-center gap-4">
+                                        {productImg ? (
+                                          <div className="w-12 h-16 shrink-0 bg-[#F8F6F3] border border-[#ECE6DF] overflow-hidden">
+                                            <img src={productImg} alt={item.productName} className="w-full h-full object-cover" />
+                                          </div>
+                                        ) : (
+                                          <div className="w-12 h-16 shrink-0 bg-[#F8F6F3] border border-[#ECE6DF] flex items-center justify-center text-[#9E9088]">
+                                            <Package size={14} strokeWidth={1.5} />
+                                          </div>
+                                        )}
+                                        <span>{item.productName}</span>
+                                      </div>
+                                    </td>
+                                    <td className="py-5 px-2 text-right font-bold text-xs uppercase tracking-widest text-[#6B6560] align-middle">{item.quantity} units</td>
+                                  </tr>
+                                );
+                              })}
                             </tbody>
                           </table>
                         </div>
-                        <div className="flex justify-end pt-4 border-t border-[#ECE6DF] space-x-3">
-                          <button 
+
+                        <div className="flex justify-end pt-6 border-t border-[#1C1C1A] space-x-4">
+                          <button
                             onClick={() => setSelectedQuote(quote)}
-                            className="text-[10px] font-bold text-[#4A6741] border border-[#4A6741] hover:bg-[#4A6741] hover:text-white px-6 py-3 rounded-xl uppercase tracking-widest transition-colors inline-flex items-center gap-2 shadow-sm"
+                            className="text-[9px] font-bold text-[#1C1C1A] border border-[#1C1C1A] hover:bg-[#1C1C1A] hover:text-white px-8 py-3.5 uppercase tracking-[0.2em] transition-colors inline-flex items-center gap-2"
                           >
-                            <FileText size={16} /> View Invoice
+                            <FileText size={14} /> View Details
                           </button>
                           {quote.formalQuoteUrl && (
-                            <a href={quote.formalQuoteUrl} target="_blank" className="text-[10px] font-bold text-white bg-[#4A6741] hover:bg-[#3a5233] px-6 py-3 rounded-xl uppercase tracking-widest transition-colors inline-flex items-center gap-2 shadow-sm">
-                              <Download size={16} /> Download PDF
+                            <a href={quote.formalQuoteUrl} target="_blank" className="text-[9px] font-bold text-white bg-[#1C1C1A] hover:bg-[#C8A97A] border border-[#1C1C1A] hover:border-[#C8A97A] px-8 py-3.5 uppercase tracking-[0.2em] transition-colors inline-flex items-center gap-2">
+                              <Download size={14} /> Spec / PDF
                             </a>
                           )}
                         </div>
@@ -571,11 +629,10 @@ export default function UserProfilePage() {
                             <p className="text-[10px] text-[#9E9088] uppercase tracking-widest mb-2">Requested on {new Date(design.createdAt).toLocaleDateString()}</p>
                             <h4 className="font-bold text-[#1C1C1A] text-xl font-serif">Custom Request</h4>
                           </div>
-                          <span className={`text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full ${
-                            design.status === 'Pending' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-                            design.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-                            'bg-blue-50 text-blue-700 border border-blue-200'
-                          }`}>
+                          <span className={`text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full ${design.status === 'Pending' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                              design.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                                'bg-blue-50 text-blue-700 border border-blue-200'
+                            }`}>
                             {design.status}
                           </span>
                         </div>
@@ -583,7 +640,7 @@ export default function UserProfilePage() {
                           <p className="text-sm text-[#1C1C1A] whitespace-pre-wrap line-clamp-3">{design.description}</p>
                         </div>
                         <div className="flex justify-end pt-4 border-t border-[#ECE6DF]">
-                          <button 
+                          <button
                             onClick={() => setSelectedCustomDesign(design)}
                             className="text-[10px] font-bold text-[#4A6741] border border-[#4A6741] hover:bg-[#4A6741] hover:text-white px-6 py-3 rounded-xl uppercase tracking-widest transition-colors inline-flex items-center gap-2 shadow-sm"
                           >
@@ -649,11 +706,10 @@ export default function UserProfilePage() {
                           initial={{ opacity: 0, y: -5 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -5 }}
-                          className={`p-5 rounded-2xl text-xs font-bold uppercase tracking-widest border flex items-center gap-3 ${
-                            message.type === "success"
+                          className={`p-5 rounded-2xl text-xs font-bold uppercase tracking-widest border flex items-center gap-3 ${message.type === "success"
                               ? "bg-emerald-50 border-emerald-200 text-emerald-800"
                               : "bg-red-50 border-red-200 text-red-800"
-                          }`}
+                            }`}
                         >
                           {message.type === "success" ? <Check size={18} /> : <div className="w-5 h-5 rounded-full border-2 border-red-500 flex items-center justify-center font-bold">!</div>}
                           <span>{message.text}</span>
@@ -757,144 +813,148 @@ export default function UserProfilePage() {
 
             {/* Invoice Details Modal */}
             {selectedQuote && (
-              <div 
-                className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+              <div
+                className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 bg-black/80 backdrop-blur-sm"
                 onClick={() => setSelectedQuote(null)}
               >
-                <div 
-                  className="bg-[#FAF7F2] rounded-xl w-full max-w-3xl max-h-[85vh] overflow-hidden flex flex-col shadow-2xl relative"
+                <div
+                  className="w-full max-w-4xl h-full max-h-[95vh] overflow-hidden flex flex-col relative"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  
+
                   {/* Modal Controls Bar */}
-                  <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-[#ECE6DF]">
-                    <div className="flex items-center gap-3">
-                      <button className="flex items-center gap-2 text-xs font-semibold text-[#6B6560] hover:text-[#1C1C1A] px-3 py-1.5 border border-[#ECE6DF] hover:border-[#1C1C1A] transition-colors bg-white">
+                  <div className="flex items-center justify-between px-6 py-4 bg-[#1C1C1A] text-white">
+                    <div className="flex items-center gap-4">
+                      <button onClick={handlePrint} className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#9E9088] hover:text-white transition-colors">
                         <Printer size={14} /> Print
                       </button>
-                      <button className="flex items-center gap-2 text-xs font-semibold text-white bg-[#4A6741] hover:bg-[#3a5233] px-3 py-1.5 transition-colors shadow-sm">
+                      <button onClick={handleDownloadPdf} className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#C8A97A] hover:text-white transition-colors">
                         <Download size={14} /> Download PDF
                       </button>
                     </div>
-                    <button onClick={() => setSelectedQuote(null)} className="text-[#6B6560] hover:text-red-500 transition-colors">
+                    <button onClick={() => setSelectedQuote(null)} className="text-[#9E9088] hover:text-white transition-colors">
                       <X size={20} />
                     </button>
                   </div>
-                  
-                  {/* The "Paper" Invoice */}
-                  <div className="overflow-y-auto p-8 sm:p-12 flex-1 bg-white mx-auto w-full">
-                    
-                    {/* Branding & Header */}
-                    <div className="flex justify-between items-start border-b-2 border-[#1C1C1A] pb-8 mb-8">
-                      <div>
-                        <h1 className="text-4xl font-serif font-bold text-[#1C1C1A] tracking-wider">Krislux<span className="text-[#4A6741]">ECO</span></h1>
-                        <p className="text-[10px] text-[#6B6560] tracking-[0.2em] uppercase mt-2">Premium Eco-Friendly Hotel Supplies</p>
-                      </div>
-                      <div className="text-right text-[#1C1C1A]">
-                        <h2 className="text-3xl font-light tracking-widest mb-4">INVOICE</h2>
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                          <span className="font-semibold text-gray-500">Invoice #</span>
-                          <span className="font-mono">INV-{selectedQuote._id.substring(selectedQuote._id.length - 6).toUpperCase()}</span>
-                          <span className="font-semibold text-gray-500">Date</span>
-                          <span>{new Date(selectedQuote.createdAt).toLocaleDateString()}</span>
-                          <span className="font-semibold text-gray-500">Status</span>
-                          <span className={`font-bold ${selectedQuote.status === 'Approved' ? 'text-[#4A6741]' : 'text-amber-600'}`}>
-                            {selectedQuote.status.toUpperCase()}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
 
-                    {/* Bill To & Info */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-10">
-                      <div>
-                        <h3 className="text-[10px] font-bold text-[#9E9088] uppercase tracking-widest border-b border-[#ECE6DF] pb-2 mb-3">Bill To</h3>
-                        <h4 className="text-lg font-bold text-[#1C1C1A] mb-1">{profile.firstName} {profile.lastName}</h4>
-                        <p className="text-sm text-[#6B6560] leading-relaxed">
-                          {profile.email}<br/>
-                          {profile.mobile}
-                        </p>
-                      </div>
-                      {selectedQuote.additionalInfo && (
+                  {/* The "Paper" Container */}
+                  <div className="overflow-y-auto flex-1 bg-[#ECE6DF] flex justify-center p-4 md:p-8 custom-scrollbar">
+
+                    {/* The A4 Page itself */}
+                    <div ref={invoiceRef} className="bg-white shadow-2xl w-full max-w-[794px] min-h-[1123px] shrink-0 p-8 sm:p-12 md:p-16 flex flex-col relative">
+
+                      {/* Branding & Header */}
+                      <div className="flex justify-between items-start border-b-2 border-[#1C1C1A] pb-8 mb-8">
                         <div>
-                           <h3 className="text-[10px] font-bold text-[#9E9088] uppercase tracking-widest border-b border-[#ECE6DF] pb-2 mb-3">Order Notes</h3>
-                           <p className="text-sm text-[#6B6560] italic leading-relaxed bg-[#FAF7F2] p-4 rounded-sm border-l-4 border-[#C8A97A]">
-                             "{selectedQuote.additionalInfo}"
-                           </p>
+                          <h1 className="text-4xl font-serif font-bold text-[#1C1C1A] tracking-wider">Krislux<span className="text-[#4A6741]">ECO</span></h1>
+                          <p className="text-[10px] text-[#6B6560] tracking-[0.2em] uppercase mt-2">Premium Eco-Friendly Hotel Supplies</p>
                         </div>
-                      )}
-                    </div>
-
-                    {/* Items Table */}
-                    <div className="mb-8">
-                      <table className="w-full text-left text-sm">
-                        <thead>
-                          <tr className="border-y-2 border-[#1C1C1A] text-[10px] uppercase tracking-widest text-[#1C1C1A]">
-                            <th className="py-3 px-2">Item Description</th>
-                            <th className="py-3 px-2 text-center">Qty</th>
-                            <th className="py-3 px-2 text-right">Unit Price</th>
-                            <th className="py-3 px-2 text-right">Total</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-[#ECE6DF]">
-                          {selectedQuote.items.map((item, idx) => {
-                            const productPrice = item.productId?.discountPrice || item.productId?.price || 0;
-                            const displayPrice = item.targetBudget || productPrice;
-                            const lineTotal = displayPrice * item.quantity;
-                            
-                            return (
-                              <tr key={idx} className="group">
-                                <td className="py-4 px-2">
-                                  <div className="flex items-center gap-4">
-                                    {item.productId?.images?.[0]?.url ? (
-                                      <img src={item.productId.images[0].url} alt={item.productName} className="w-12 h-12 object-cover bg-[#FAF7F2]" />
-                                    ) : (
-                                      <div className="w-12 h-12 bg-[#FAF7F2] flex items-center justify-center text-[10px] text-gray-400">N/A</div>
-                                    )}
-                                    <div>
-                                      <p className="font-bold text-[#1C1C1A]">{item.productName}</p>
-                                      {item.targetBudget && <span className="text-[9px] uppercase tracking-wider text-[#C8A97A] font-semibold">Custom Target Budget</span>}
-                                    </div>
-                                  </div>
-                                </td>
-                                <td className="py-4 px-2 text-center text-[#6B6560] font-medium">{item.quantity}</td>
-                                <td className="py-4 px-2 text-right text-[#6B6560]">₹{displayPrice.toLocaleString()}</td>
-                                <td className="py-4 px-2 text-right font-bold text-[#1C1C1A]">₹{lineTotal.toLocaleString()}</td>
-                              </tr>
-                            )
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    {/* Totals Section */}
-                    <div className="flex justify-end mb-16">
-                      <div className="w-72">
-                        <div className="flex justify-between py-2 text-sm text-[#6B6560] border-b border-[#ECE6DF]">
-                          <span>Subtotal</span>
-                          <span className="font-medium">
-                            ₹{selectedQuote.items.reduce((sum, item) => sum + ((item.targetBudget || item.productId?.discountPrice || item.productId?.price || 0) * item.quantity), 0).toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="flex justify-between py-2 text-sm text-[#6B6560] border-b border-[#1C1C1A]">
-                          <span>Shipping & Taxes</span>
-                          <span className="italic text-[10px] uppercase tracking-wider mt-1">Calculated Later</span>
-                        </div>
-                        <div className="flex justify-between py-4 text-xl font-bold text-[#1C1C1A] border-b-4 border-double border-[#1C1C1A]">
-                          <span className="font-serif">Total Due</span>
-                          <span>
-                            ₹{selectedQuote.items.reduce((sum, item) => sum + ((item.targetBudget || item.productId?.discountPrice || item.productId?.price || 0) * item.quantity), 0).toLocaleString()}
-                          </span>
+                        <div className="text-right text-[#1C1C1A]">
+                          <h2 className="text-3xl font-light tracking-widest mb-4">INVOICE</h2>
+                          <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+                            <span className="font-semibold text-gray-500">Invoice #</span>
+                            <span className="font-mono">INV-{selectedQuote._id.substring(selectedQuote._id.length - 6).toUpperCase()}</span>
+                            <span className="font-semibold text-gray-500">Date</span>
+                            <span>{new Date(selectedQuote.createdAt).toLocaleDateString()}</span>
+                            <span className="font-semibold text-gray-500">Status</span>
+                            <span className={`font-bold ${selectedQuote.status === 'Approved' ? 'text-[#4A6741]' : 'text-amber-600'}`}>
+                              {selectedQuote.status.toUpperCase()}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Footer */}
-                    <div className="text-center pt-8 border-t border-[#ECE6DF]">
-                      <p className="font-serif text-[#1C1C1A] text-lg italic mb-1">Thank you for your business.</p>
-                      <p className="text-[10px] text-[#9E9088] uppercase tracking-widest">KrisluxECO • support@krisluxeco.com • +91 6202585952</p>
-                    </div>
+                      {/* Bill To & Info */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-10">
+                        <div>
+                          <h3 className="text-[10px] font-bold text-[#9E9088] uppercase tracking-widest border-b border-[#ECE6DF] pb-2 mb-3">Bill To</h3>
+                          <h4 className="text-lg font-bold text-[#1C1C1A] mb-1">{profile.firstName} {profile.lastName}</h4>
+                          <p className="text-sm text-[#6B6560] leading-relaxed">
+                            {profile.email}<br />
+                            {profile.mobile}
+                          </p>
+                        </div>
+                        {selectedQuote.additionalInfo && (
+                          <div>
+                            <h3 className="text-[10px] font-bold text-[#9E9088] uppercase tracking-widest border-b border-[#ECE6DF] pb-2 mb-3">Order Notes</h3>
+                            <p className="text-sm text-[#6B6560] italic leading-relaxed bg-[#FAF7F2] p-4 rounded-sm border-l-4 border-[#C8A97A]">
+                              "{selectedQuote.additionalInfo}"
+                            </p>
+                          </div>
+                        )}
+                      </div>
 
+                      {/* Items Table */}
+                      <div className="mb-8">
+                        <table className="w-full text-left text-sm">
+                          <thead>
+                            <tr className="border-y-2 border-[#1C1C1A] text-[10px] uppercase tracking-widest text-[#1C1C1A]">
+                              <th className="py-3 px-2">Item Description</th>
+                              <th className="py-3 px-2 text-center">Qty</th>
+                              <th className="py-3 px-2 text-right">Unit Price</th>
+                              <th className="py-3 px-2 text-right">Total</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-[#ECE6DF]">
+                            {selectedQuote.items.map((item, idx) => {
+                              const productPrice = item.productId?.discountPrice || item.productId?.price || 0;
+                              const displayPrice = item.targetBudget || productPrice;
+                              const lineTotal = displayPrice * item.quantity;
+
+                              return (
+                                <tr key={idx} className="group">
+                                  <td className="py-4 px-2">
+                                    <div className="flex items-center gap-4">
+                                      {item.productId?.images?.[0]?.url ? (
+                                        <img src={item.productId.images[0].url} alt={item.productName} className="w-12 h-12 object-cover bg-[#FAF7F2]" />
+                                      ) : (
+                                        <div className="w-12 h-12 bg-[#FAF7F2] flex items-center justify-center text-[10px] text-gray-400">N/A</div>
+                                      )}
+                                      <div>
+                                        <p className="font-bold text-[#1C1C1A]">{item.productName}</p>
+                                        {item.targetBudget && <span className="text-[9px] uppercase tracking-wider text-[#C8A97A] font-semibold">Custom Target Budget</span>}
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td className="py-4 px-2 text-center text-[#6B6560] font-medium">{item.quantity}</td>
+                                  <td className="py-4 px-2 text-right text-[#6B6560]">₹{displayPrice.toLocaleString()}</td>
+                                  <td className="py-4 px-2 text-right font-bold text-[#1C1C1A]">₹{lineTotal.toLocaleString()}</td>
+                                </tr>
+                              )
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Totals Section */}
+                      <div className="flex justify-end mb-16">
+                        <div className="w-72">
+                          <div className="flex justify-between py-2 text-sm text-[#6B6560] border-b border-[#ECE6DF]">
+                            <span>Subtotal</span>
+                            <span className="font-medium">
+                              ₹{selectedQuote.items.reduce((sum, item) => sum + ((item.targetBudget || item.productId?.discountPrice || item.productId?.price || 0) * item.quantity), 0).toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="flex justify-between py-2 text-sm text-[#6B6560] border-b border-[#1C1C1A]">
+                            <span>Shipping & Taxes</span>
+                            <span className="italic text-[10px] uppercase tracking-wider mt-1">Calculated Later</span>
+                          </div>
+                          <div className="flex justify-between py-4 text-xl font-bold text-[#1C1C1A] border-b-4 border-double border-[#1C1C1A]">
+                            <span className="font-serif">Total Due</span>
+                            <span>
+                              ₹{selectedQuote.items.reduce((sum, item) => sum + ((item.targetBudget || item.productId?.discountPrice || item.productId?.price || 0) * item.quantity), 0).toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Footer */}
+                      <div className="text-center pt-8 border-t border-[#ECE6DF]">
+                        <p className="font-serif text-[#1C1C1A] text-lg italic mb-1">Thank you for your business.</p>
+                        <p className="text-[10px] text-[#9E9088] uppercase tracking-widest">KrisluxECO • support@krisluxeco.com • +91 6202585952</p>
+                      </div>
+
+                    </div>
                   </div>
                 </div>
               </div>
@@ -915,17 +975,16 @@ export default function UserProfilePage() {
                       <X size={20} />
                     </button>
                   </div>
-                  
+
                   <div className="p-6 overflow-y-auto">
                     <div className="grid grid-cols-2 gap-6 mb-8">
                       <div>
                         <p className="text-xs uppercase tracking-wider text-[#9E9088] font-semibold mb-1">Status</p>
-                        <span className={`inline-block text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full ${
-                            selectedCustomDesign.status === 'Pending' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                        <span className={`inline-block text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full ${selectedCustomDesign.status === 'Pending' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
                             selectedCustomDesign.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-                            'bg-blue-50 text-blue-700 border border-blue-200'
+                              'bg-blue-50 text-blue-700 border border-blue-200'
                           }`}>
-                            {selectedCustomDesign.status}
+                          {selectedCustomDesign.status}
                         </span>
                       </div>
                       <div>
@@ -954,9 +1013,9 @@ export default function UserProfilePage() {
                         <div>
                           <p className="text-xs uppercase tracking-wider text-[#9E9088] font-semibold mb-2">Reference Image</p>
                           <div className="rounded-xl overflow-hidden border border-[#ECE6DF] inline-block">
-                            <img 
-                              src={selectedCustomDesign.imageUrl} 
-                              alt="Reference" 
+                            <img
+                              src={selectedCustomDesign.imageUrl}
+                              alt="Reference"
                               className="max-w-full max-h-64 object-contain"
                             />
                           </div>
@@ -964,7 +1023,7 @@ export default function UserProfilePage() {
                       )}
                     </div>
                   </div>
-                  
+
                   <div className="px-6 py-4 border-t border-[#ECE6DF] bg-gray-50 flex justify-end">
                     <button
                       onClick={() => setSelectedCustomDesign(null)}
