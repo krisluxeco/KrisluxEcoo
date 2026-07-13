@@ -1,20 +1,23 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
+import gsap from "gsap";
 import {
   Search,
   SlidersHorizontal,
   ArrowUpDown,
   Heart,
+  ShoppingCart,
   Package,
   X,
   Eye,
   ChevronDown,
 } from "lucide-react";
+import { useCart } from "@/context/CartContext";
 
 const serif = "'Cormorant Garamond', Georgia, serif";
 const sans = "'DM Sans', sans-serif";
@@ -30,31 +33,44 @@ function LikeBurst() {
       animate={{ opacity: 1, y: -26, scale: 1 }}
       exit={{ opacity: 0, y: -38 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="pointer-events-none absolute -top-1 right-0 text-[#4A6741] z-30"
+      className="pointer-events-none absolute -top-1 right-0 text-[#C8A97A] z-30"
     >
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="#4A6741">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="#C8A97A">
         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
       </svg>
     </motion.div>
   );
 }
 
-// Checkbox row used in the sidebar facets (Categories / Material)
+function CartBurst() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 0, scale: 0.6 }}
+      animate={{ opacity: 1, y: -26, scale: 1 }}
+      exit={{ opacity: 0, y: -38 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="pointer-events-none absolute -top-1 left-0 text-[#4A6741] z-30"
+    >
+      <ShoppingCart size={16} className="fill-[#4A6741]" />
+    </motion.div>
+  );
+}
+
 function FacetCheckbox({ label, count, checked, onChange }) {
   return (
     <label className="flex items-center justify-between gap-3 py-2 cursor-pointer group select-none">
       <span className="flex items-center gap-3">
         <span
           className={`relative h-3.5 w-3.5 rounded-full border flex items-center justify-center transition-all duration-300 ${checked
-            ? "bg-[#1C1C1A] border-[#1C1C1A]"
-            : "bg-transparent border-[#D9CFC2] group-hover:border-[#1C1C1A]/40"
+            ? "bg-[#C8A97A] border-[#C8A97A]"
+            : "bg-transparent border-[#ECE6DF] group-hover:border-[#C8A97A]/40"
             }`}
         >
           {checked && (
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              className="w-1.5 h-1.5 bg-[#C8A97A] rounded-full"
+              className="w-1.5 h-1.5 bg-white rounded-full"
             />
           )}
         </span>
@@ -65,37 +81,36 @@ function FacetCheckbox({ label, count, checked, onChange }) {
           className="sr-only"
         />
         <span
-          className={`text-[13px] tracking-wide transition-colors ${checked ? "text-[#1C1C1A] font-medium" : "text-[#6B6560] group-hover:text-[#1C1C1A]"
+          className={`text-[13px] tracking-wide transition-colors ${checked ? "text-white font-medium" : "text-white/60 group-hover:text-white"
             }`}
         >
           {label}
         </span>
       </span>
       {typeof count === "number" && (
-        <span className="text-[11px] text-[#9E9088] font-light">{count}</span>
+        <span className="text-[11px] text-white/30 font-light">{count}</span>
       )}
     </label>
   );
 }
 
-// Collapsible section wrapper for the sidebar (Categories, Material, Price...)
 function FacetSection({ title, children, defaultOpen = true }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="border-b border-[#ECE6DF]/60 py-6 first:pt-0">
+    <div className="border-b border-white/10 py-6 first:pt-0">
       <button
         onClick={() => setOpen((v) => !v)}
         className="w-full flex items-center justify-between mb-2 group"
       >
         <span
-          className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#1C1C1A]"
+          className="text-[11px] font-bold tracking-[0.2em] uppercase text-white"
           style={{ fontFamily: sans }}
         >
           {title}
         </span>
         <ChevronDown
           size={14}
-          className={`text-[#9E9088] transition-transform duration-500 ease-out group-hover:text-[#1C1C1A] ${open ? "rotate-180" : ""
+          className={`text-white/40 transition-transform duration-500 ease-out group-hover:text-white ${open ? "rotate-180" : ""
             }`}
         />
       </button>
@@ -117,18 +132,39 @@ function FacetSection({ title, children, defaultOpen = true }) {
 }
 
 /* ----------------------------------------------------------------------- */
-/* Product Card — image badge, Quick View overlay, details, CTA row        */
+/* Product Card                                                            */
 /* ----------------------------------------------------------------------- */
 
-export function StorefrontProductCard({ product, onQuickView, isLiked = false, onToggleSaved }) {
+export function StorefrontProductCard({ product, isLiked = false, onToggleSaved }) {
   const { status } = useSession();
   const router = useRouter();
+  const { addToCart } = useCart();
   const [liked, setLiked] = useState(isLiked);
   const [showBurst, setShowBurst] = useState(false);
+  const [showCartBurst, setShowCartBurst] = useState(false);
+
+  // 3D tilt-on-hover state
+  const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
+  const cardRef = useRef(null);
 
   useEffect(() => {
     setLiked(isLiked);
   }, [isLiked]);
+
+  const handlePointerMoveCard = (e) => {
+    const card = cardRef.current;
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width;
+    const py = (e.clientY - rect.top) / rect.height;
+    const maxTilt = 5;
+    setTilt({
+      ry: (px - 0.5) * maxTilt * 2,
+      rx: (0.5 - py) * maxTilt * 2,
+    });
+  };
+
+  const resetTilt = () => setTilt({ rx: 0, ry: 0 });
 
   const coverImg = product.images?.[0]?.url || "";
   const displayPrice = product.discountPrice ?? product.price;
@@ -146,9 +182,7 @@ export function StorefrontProductCard({ product, onQuickView, isLiked = false, o
     try {
       const res = await fetch("/api/user/saved-products", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId: product._id }),
       });
       const data = await res.json();
@@ -166,124 +200,179 @@ export function StorefrontProductCard({ product, onQuickView, isLiked = false, o
     }
   };
 
-  const handleQuickView = (e) => {
+  const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    onQuickView?.(product);
+    addToCart(product, product.minOrderQty || 1);
+    setShowCartBurst(true);
+    setTimeout(() => setShowCartBurst(false), 500);
   };
 
-  // Badge priority: out of stock > best seller > new > limited > special offer > eco choice
-  const getBadge = () => {
-    if (isOutOfStock) return { text: "OUT OF STOCK", style: "bg-[#1C1C1A] text-white border-transparent" };
-    if (product.isBestSeller) return { text: "BEST SELLER", style: "bg-white/80 backdrop-blur-md text-[#1C1C1A] border-white/40" };
-    if (product.isNew) return { text: "NEW ARRIVAL", style: "bg-white/80 backdrop-blur-md text-[#1C1C1A] border-white/40" };
-    if (product.stock > 0 && product.stock <= 5) return { text: "LIMITED", style: "bg-[#C8A97A] text-white border-transparent" };
-    if (product.discountPrice !== null && product.discountPrice !== undefined)
-      return { text: "SPECIAL OFFER", style: "bg-[#1C1C1A] text-[#C8A97A] border-[#1C1C1A]" };
-    if (product.category === "Eco & Sustainable")
-      return { text: "ECO CHOICE", style: "bg-white/80 backdrop-blur-md text-[#4A6741] border-white/40" };
+  const badgeStyles = {
+    "BEST SELLER": "bg-[#C8A97A] text-white",
+    "ECO CHOICE": "bg-[#FAF7F2] text-[#1C1C1A] border border-[#1C1C1A]/10",
+    "NEW": "bg-[#1C1C1A] text-white",
+    "LIMITED": "bg-[#C8A97A] text-white",
+    "SPECIAL OFFER": "bg-[#1C1C1A] text-white",
+    "OUT OF STOCK": "bg-white/90 text-[#1C1C1A]",
+  };
+
+  const getBadgeText = () => {
+    if (isOutOfStock) return "OUT OF STOCK";
+    if (product.category === "Eco & Sustainable") return "ECO CHOICE";
+    if (product.discountPrice) return "SPECIAL OFFER";
+    if (product.isBestSeller) return "BEST SELLER";
+    if (product.stock > 0 && product.stock <= 5) return "LIMITED";
+    if (product.isNew) return "NEW";
     return null;
   };
 
-  const badge = getBadge();
+  const badgeText = getBadgeText();
 
   return (
-    <Link href={`/user/products/${product._id}`}>
+    <motion.div
+      ref={cardRef}
+      style={{ perspective: 1000 }}
+      className="group relative flex-shrink-0 w-full select-none"
+    >
       <motion.div
-        className="group relative flex-shrink-0 w-full select-none text-left cursor-pointer flex flex-col h-full"
+        animate={{ rotateX: tilt.rx, rotateY: tilt.ry }}
+        whileHover={{ y: -8, scale: 1.02 }}
+        transition={{ type: "spring", stiffness: 220, damping: 18 }}
+        onPointerMove={handlePointerMoveCard}
+        onPointerLeave={resetTilt}
+        style={{ transformStyle: "preserve-3d" }}
+        className="relative bg-white rounded-sm overflow-hidden border border-[#E8DDD0] group-hover:border-[#C8A97A]/40 shadow-[0_2px_10px_rgba(0,0,0,0.04)] group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.12)] transition-[border-color,box-shadow] duration-500 h-full flex flex-col"
       >
-        <motion.div
-          whileHover={{ y: -8 }}
-          transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          className="relative bg-white flex flex-col h-full"
-        >
-          {/* Image */}
-          <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#F8F6F3]">
-            {badge && (
-              <span
-                className={`absolute top-4 left-4 z-10 text-[8px] font-bold tracking-[0.2em] px-3 py-1.5 border shadow-sm ${badge.style}`}
-              >
-                {badge.text}
-              </span>
-            )}
+        {/* Image */}
+        <Link href={`/user/products/${product._id}`} className="block relative aspect-[4/5] w-full overflow-hidden bg-[#FAF7F2]">
+          {badgeText && (
+            <span
+              className={`absolute top-3 left-3 z-10 text-[10px] font-bold tracking-[0.2em] px-2.5 py-1 uppercase shadow-sm ${
+                badgeStyles[badgeText] ?? "bg-[#1C1C1A] text-white"
+              }`}
+            >
+              {badgeText}
+            </span>
+          )}
 
+          <motion.div
+            className="absolute inset-0"
+            whileHover={{ scale: 1.12 }}
+            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+          >
             {coverImg ? (
               <img
                 src={coverImg}
                 alt={product.name}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[1.2s] ease-out"
+                className="w-full h-full object-cover"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-[#9E9088]">
                 <Package size={32} className="stroke-1" />
               </div>
             )}
+          </motion.div>
 
-            {/* Elegant inner shadow/overlay */}
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500 pointer-events-none" />
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent pointer-events-none"
+            initial={{ x: "-120%" }}
+            whileHover={{ x: "120%" }}
+            transition={{ duration: 0.7, ease: "easeInOut" }}
+          />
+        </Link>
 
-            {/* Quick View overlay button */}
-            <div className="absolute inset-x-0 bottom-6 flex justify-center opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 ease-out z-20">
-              <button
-                onClick={handleQuickView}
-                className="flex items-center gap-2 bg-white/90 backdrop-blur-md text-[#1C1C1A] text-[10px] font-bold tracking-[0.15em] uppercase px-6 py-3 shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:bg-[#1C1C1A] hover:text-white transition-all duration-300"
-              >
-                <Eye size={12} /> Quick View
-              </button>
-            </div>
+        {/* Body */}
+        <div className="p-5 flex flex-col flex-1" style={{ transform: "translateZ(20px)" }}>
+          <p
+            className="text-[11px] uppercase tracking-[0.14em] text-[#C8A97A] italic mb-1.5 truncate"
+            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+          >
+            {product.category}
+          </p>
+
+          <h3
+            className="text-lg leading-snug text-[#1C1C1A] mb-3 line-clamp-2 min-h-[2.8rem]"
+            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+          >
+            {product.name}
+          </h3>
+
+          <div className="flex items-center justify-between mb-4 text-xs gap-2 mt-auto pt-2">
+            <span className="flex items-center gap-1.5 text-[#9E9088] whitespace-nowrap uppercase tracking-widest text-[9px] font-bold">
+              MOQ: {product.minOrderQty || 1}
+            </span>
+            <span className="text-[#1C1C1A] font-medium whitespace-nowrap">
+              ₹{displayPrice.toLocaleString()}{" "}
+              <span className="text-[#9E9088] font-light italic">onwards</span>
+            </span>
           </div>
 
-          {/* Details */}
-          <div className="pt-6 pb-2 flex-1 flex flex-col justify-between">
-            <div className="space-y-1.5 flex-1">
-              <span
-                className="block text-[9px] uppercase tracking-[0.2em] text-[#C8A97A] font-bold"
-                style={{ fontFamily: sans }}
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/user/products/${product._id}`}
+              className="flex-1"
+            >
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                className="w-full relative flex items-center justify-center bg-white border border-[#1C1C1A] hover:bg-[#1C1C1A] hover:text-white text-[#1C1C1A] text-[10px] font-bold tracking-[0.2em] uppercase py-3 transition-colors overflow-hidden cursor-pointer"
               >
-                {product.category}
-              </span>
-              <h4
-                className="font-medium text-[#1C1C1A] text-xl leading-snug line-clamp-2 group-hover:text-[#C8A97A] transition-colors duration-300"
-                style={{ fontFamily: serif }}
-              >
-                {product.name}
-              </h4>
-            </div>
+                VIEW DETAILS
+              </motion.button>
+            </Link>
 
-            <div className="mt-4 flex items-end justify-between">
-              <div className="space-y-1">
-                <div className="text-[10px] uppercase tracking-wider text-[#9E9088] font-medium">
-                  MOQ: {product.minOrderQty || 1} units
-                </div>
-                <div className="font-semibold text-[#1C1C1A] text-sm tracking-wide">
-                  ₹{displayPrice.toLocaleString()}{" "}
-                  <span className="font-normal text-[#9E9088] text-xs">/ unit</span>
-                </div>
-              </div>
-
-              <button
-                onClick={handleLikeClick}
-                className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center bg-transparent text-[#9E9088] hover:bg-[#FAF7F2] hover:text-[#1C1C1A] transition-colors relative"
-                aria-label="Add to wishlist"
+            {!isOutOfStock && (
+              <motion.button
+                onClick={handleAddToCart}
+                aria-label="Add to cart"
+                whileTap={{ scale: 0.8 }}
+                whileHover={{ scale: 1.08 }}
+                className="relative w-10 h-10 flex-shrink-0 flex items-center justify-center border border-[#ECE6DF] hover:border-[#4A6741] text-[#1C1C1A] hover:text-[#4A6741] transition-colors cursor-pointer"
               >
-                <Heart size={16} className={liked ? "fill-[#1C1C1A] stroke-[#1C1C1A]" : ""} strokeWidth={1.5} />
-                <AnimatePresence>{showBurst && <LikeBurst />}</AnimatePresence>
-              </button>
-            </div>
+                <AnimatePresence>{showCartBurst && <CartBurst />}</AnimatePresence>
+                <ShoppingCart size={14} strokeWidth={2} />
+              </motion.button>
+            )}
+
+            <motion.button
+              onClick={handleLikeClick}
+              aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
+              whileTap={{ scale: 0.8 }}
+              whileHover={{ scale: 1.08 }}
+              className="relative w-10 h-10 flex-shrink-0 flex items-center justify-center border border-[#ECE6DF] hover:border-[#C8A97A] transition-colors cursor-pointer"
+            >
+              <AnimatePresence>{showBurst && <LikeBurst />}</AnimatePresence>
+              <motion.svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill={liked ? "#C8A97A" : "none"}
+                stroke={liked ? "#C8A97A" : "#9E9088"}
+                strokeWidth="2"
+                animate={liked ? { scale: [1, 1.4, 1] } : { scale: 1 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+              >
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              </motion.svg>
+            </motion.button>
           </div>
-        </motion.div>
+        </div>
       </motion.div>
-    </Link>
+    </motion.div>
   );
 }
 
 /* ----------------------------------------------------------------------- */
-/* Main page: sidebar facets + grid                                        */
+/* Main page: Full width grid + slide-out drawer                           */
 /* ----------------------------------------------------------------------- */
 
 export default function ProductsListClient({ initialProducts = [], savedProductIds = [] }) {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get("category");
+  const containerRef = useRef(null);
+  const { addToCart } = useCart();
 
   const [products] = useState(initialProducts);
 
@@ -292,12 +381,11 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
     initialCategory ? [initialCategory] : []
   );
   
-  // Re-sync category filter if the URL changes without unmounting (e.g., when clicking nav links on the same page)
   useEffect(() => {
     if (initialCategory) {
       setSelectedCategories((prev) => {
         if (!prev.includes(initialCategory)) {
-          return [initialCategory]; // or [...prev, initialCategory] depending on desired behavior (replace vs append)
+          return [initialCategory];
         }
         return prev;
       });
@@ -305,7 +393,7 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
   }, [initialCategory]);
 
   const [selectedMaterials, setSelectedMaterials] = useState([]);
-  const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   const [hideOutOfStock, setHideOutOfStock] = useState(false);
   const [maxPrice, setMaxPrice] = useState(null);
   const [sortKey, setSortKey] = useState("featured");
@@ -317,7 +405,6 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
 
   const effectiveMaxPrice = maxPrice ?? absoluteMaxPrice;
 
-  // Build category facet with live counts
   const categoryFacets = useMemo(() => {
     const counts = {};
     products.forEach((p) => {
@@ -326,7 +413,6 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
     return Object.entries(counts).map(([name, count]) => ({ name, count }));
   }, [products]);
 
-  // Build material facet only if products actually carry a `material` field
   const materialFacets = useMemo(() => {
     const counts = {};
     products.forEach((p) => {
@@ -389,25 +475,42 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
           return (a.discountPrice ?? a.price) - (b.discountPrice ?? b.price);
         if (sortKey === "price_desc")
           return (b.discountPrice ?? b.price) - (a.discountPrice ?? a.price);
-        return 0; // "featured" — keep original order
+        return 0;
       });
   }, [products, search, selectedCategories, selectedMaterials, effectiveMaxPrice, hideOutOfStock, sortKey]);
 
-  /* ------------------------------- Sidebar content, reused for mobile drawer */
-  const SidebarContent = () => (
+  // GSAP Initial Page Reveal
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      let ctx = gsap.context(() => {
+        gsap.fromTo(".reveal-header", 
+          { opacity: 0, y: 30 }, 
+          { opacity: 1, y: 0, duration: 1.2, ease: "power3.out" }
+        );
+        gsap.fromTo(".product-card-wrap",
+          { opacity: 0, y: 40 },
+          { opacity: 1, y: 0, duration: 0.8, stagger: 0.05, ease: "power3.out", delay: 0.2 }
+        );
+      }, containerRef);
+      return () => ctx.revert();
+    }
+  }, []);
+
+  /* ------------------------------- Drawer Content -------------------------- */
+  const DrawerContent = () => (
     <>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-8">
         <h3
-          className="flex items-center gap-2 text-[10px] tracking-[0.2em] uppercase font-bold text-[#1C1C1A]"
+          className="flex items-center gap-3 text-xs tracking-[0.3em] uppercase font-bold text-white"
           style={{ fontFamily: sans }}
         >
-          <SlidersHorizontal size={12} className="text-[#C8A97A]" />
+          <SlidersHorizontal size={14} className="text-[#C8A97A]" />
           Filters
         </h3>
         {activeFilterCount > 0 && (
           <button
             onClick={clearAllFilters}
-            className="text-xs font-semibold text-[#D98C5F] hover:text-[#b96f44] hover:underline"
+            className="text-[10px] uppercase tracking-widest font-semibold text-[#C8A97A] hover:text-white"
           >
             Clear All
           </button>
@@ -445,10 +548,10 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
       )}
 
       <FacetSection title="Price Range">
-        <div className="space-y-2">
-          <div className="flex justify-between text-xs text-[#6B6560] font-medium">
+        <div className="space-y-4 pt-2">
+          <div className="flex justify-between text-[11px] uppercase tracking-widest text-white/60 font-medium">
             <span>Up to</span>
-            <span className="font-semibold text-[#4A6741]">
+            <span className="font-semibold text-white">
               ₹{effectiveMaxPrice.toLocaleString()}
             </span>
           </div>
@@ -459,9 +562,9 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
             step="50"
             value={effectiveMaxPrice}
             onChange={(e) => setMaxPrice(Number(e.target.value))}
-            className="w-full h-1 bg-[#ECE6DF] rounded-lg appearance-none cursor-pointer accent-[#4A6741]"
+            className="w-full h-[2px] bg-white/20 rounded-lg appearance-none cursor-pointer accent-[#C8A97A]"
           />
-          <div className="flex justify-between text-[10px] text-[#9E9088]">
+          <div className="flex justify-between text-[10px] text-white/30">
             <span>₹0</span>
             <span>₹{(absoluteMaxPrice || 10000).toLocaleString()}</span>
           </div>
@@ -477,152 +580,177 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
               onChange={(e) => setHideOutOfStock(e.target.checked)}
               className="sr-only peer"
             />
-            <div className="w-9 h-5 bg-[#ECE6DF] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#4A6741]" />
+            <div className="w-9 h-5 bg-white/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-[#C8A97A] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#C8A97A]" />
           </span>
-          <span className="text-[13px] text-[#6B6560]">Hide Out of Stock</span>
+          <span className="text-[13px] text-white/60">Hide Out of Stock</span>
         </label>
       </FacetSection>
     </>
   );
 
   return (
-    <main className="relative min-h-screen bg-white text-[#1C1C1A]" style={{ fontFamily: sans }}>
-      {/* Decorative band */}
-      <div className="relative h-20 bg-[#1C1C1A] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/noise-pattern-with-subtle-cross-lines.png')" }}></div>
-        <div className="text-[#C8A97A] text-[9px] tracking-[0.3em] uppercase font-bold z-10">
-          The Art of Fine Living
+    <main ref={containerRef} className="relative min-h-screen bg-[#FAF7F2] text-[#1C1C1A]" style={{ fontFamily: sans }}>
+      
+      {/* ─── Cinematic Page Header ────────────────────────────────────────── */}
+      <section className="relative pt-32 pb-16 px-6 bg-[#1C1C1A] text-white border-b border-[#C8A97A]/20">
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)", backgroundSize: "32px 32px" }} />
+        
+        <div className="relative z-10 max-w-7xl mx-auto flex flex-col items-center text-center reveal-header">
+          <p className="flex items-center gap-3 text-[10px] tracking-[0.4em] uppercase text-[#C8A97A] mb-4 font-bold">
+            <span className="w-8 h-px bg-[#C8A97A]/50" />
+            The Complete Catalog
+            <span className="w-8 h-px bg-[#C8A97A]/50" />
+          </p>
+          <h1 className="text-[clamp(2.5rem,5vw,4.5rem)] font-light leading-tight mb-4" style={{ fontFamily: serif }}>
+            Curated <span className="italic text-[#C8A97A]">Elegance.</span>
+          </h1>
+          <p className="text-white/60 text-sm max-w-md font-light leading-relaxed">
+            Discover our entire collection of sustainable, artisan-crafted luxury pieces designed to elevate your space.
+          </p>
         </div>
-      </div>
+      </section>
 
-      <section className="max-w-7xl mx-auto px-6 py-10">
-        {/* Top bar: search + count + sort */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-          <div>
-            <p className="text-sm text-[#6B6560]">
-              Showing <span className="font-semibold text-[#1C1C1A]">{filteredProducts.length}</span>{" "}
-              products
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2.5">
-            <div className="relative w-full sm:w-60">
-              <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9E9088]" />
-              <input
-                type="text"
-                placeholder="Search catalog..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 rounded-full border border-[#E8DDD0] bg-white text-xs focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition text-[#1C1C1A]"
-              />
-            </div>
-
-            {/* Mobile filter toggle */}
+      {/* ─── Top Utility Bar ────────────────────────────────────────────── */}
+      <div className="sticky top-[90px] lg:top-[110px] z-30 bg-[#FAF7F2]/90 backdrop-blur-md border-b border-[#E8DDD0] py-4 px-6 shadow-sm">
+        <div className="max-w-[1400px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          
+          <div className="flex items-center gap-4 w-full sm:w-auto">
+            {/* Filter Toggle Button */}
             <button
-              onClick={() => setShowMobileFilters(true)}
-              className="lg:hidden p-2.5 rounded-full border border-[#E8DDD0] bg-white text-[#6B6560] hover:bg-[#FAF7F2] flex items-center justify-center relative"
+              onClick={() => setShowFilters(true)}
+              className="flex items-center gap-2 bg-[#1C1C1A] text-white px-5 py-2.5 rounded-full text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-[#C8A97A] transition-colors shadow-md"
             >
               <SlidersHorizontal size={14} />
+              Filters
               {activeFilterCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-[#4A6741] text-white text-[9px] flex items-center justify-center">
+                <span className="ml-1 w-4 h-4 rounded-full bg-[#C8A97A] text-white flex items-center justify-center text-[9px]">
                   {activeFilterCount}
                 </span>
               )}
             </button>
 
-            <div className="relative bg-white border border-[#E8DDD0] rounded-full px-3 py-2 flex items-center gap-1.5 shrink-0">
-              <ArrowUpDown size={12} className="text-[#9E9088]" />
+            <span className="text-xs text-[#9E9088] font-medium hidden sm:inline-block">
+              {filteredProducts.length} Results
+            </span>
+          </div>
+
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            {/* Search */}
+            <div className="relative w-full sm:w-64">
+              <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#9E9088]" />
+              <input
+                type="text"
+                placeholder="Search collection..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 rounded-full border border-[#E8DDD0] bg-white text-xs focus:outline-none focus:border-[#C8A97A] transition-colors text-[#1C1C1A] shadow-sm"
+              />
+            </div>
+
+            {/* Sort */}
+            <div className="relative bg-white border border-[#E8DDD0] rounded-full px-4 py-2.5 flex items-center gap-2 shrink-0 shadow-sm hover:border-[#C8A97A] transition-colors">
+              <ArrowUpDown size={12} className="text-[#1C1C1A]" />
               <select
                 value={sortKey}
                 onChange={(e) => setSortKey(e.target.value)}
-                className="bg-transparent text-xs text-[#6B6560] font-medium focus:outline-none cursor-pointer pr-1"
+                className="bg-transparent text-[11px] uppercase tracking-widest text-[#1C1C1A] font-bold focus:outline-none cursor-pointer pr-2 appearance-none"
               >
                 <option value="featured">Featured</option>
-                <option value="newest">Newest First</option>
-                <option value="price_asc">Price: Low-High</option>
-                <option value="price_desc">Price: High-Low</option>
+                <option value="newest">Newest</option>
+                <option value="price_asc">Price: Low</option>
+                <option value="price_desc">Price: High</option>
               </select>
             </div>
           </div>
+          
         </div>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-10">
-          {/* Desktop sidebar */}
-          <aside className="hidden lg:block">
-            <div className="sticky top-6 bg-white rounded-2xl border border-[#ECE6DF] p-6 shadow-sm">
-              <SidebarContent />
+      {/* ─── Main Content Area ──────────────────────────────────────────── */}
+      <section className="max-w-[1400px] mx-auto px-6 py-12">
+        {/* Universal Filter Drawer */}
+        <AnimatePresence>
+          {showFilters && (
+            <>
+              {/* Dark Overlay */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowFilters(false)}
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+              />
+              
+              {/* Drawer Panel */}
+              <motion.div
+                initial={{ x: "-100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "-100%" }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="fixed left-0 top-0 h-full w-[85%] max-w-sm bg-[#1C1C1A] shadow-2xl z-50 overflow-hidden flex flex-col"
+              >
+                {/* Header */}
+                <div className="p-6 border-b border-white/10 flex items-center justify-between">
+                  <h2 className="text-2xl text-white font-light" style={{ fontFamily: serif }}>
+                    Refine <span className="italic text-[#C8A97A]">Search</span>
+                  </h2>
+                  <button
+                    onClick={() => setShowFilters(false)}
+                    className="p-2 rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                {/* Scrollable Filters */}
+                <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-[#C8A97A] scrollbar-track-transparent">
+                  <DrawerContent />
+                </div>
+
+                {/* Footer Actions */}
+                <div className="p-6 border-t border-white/10 bg-[#151514]">
+                  <button
+                    onClick={() => setShowFilters(false)}
+                    className="w-full bg-[#C8A97A] text-[#1C1C1A] text-[10px] font-bold uppercase tracking-[0.2em] py-4 rounded-sm hover:bg-white transition-colors shadow-lg"
+                  >
+                    View {filteredProducts.length} Results
+                  </button>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* ─── Full Width Product Grid ──────────────────────────────────── */}
+        <div>
+          {filteredProducts.length === 0 ? (
+            <div className="bg-white rounded-md border border-[#E8DDD0] p-24 text-center shadow-sm">
+              <Package size={48} className="mx-auto text-[#9E9088] mb-4" strokeWidth={1} />
+              <h3 className="text-2xl font-light text-[#1C1C1A]" style={{ fontFamily: serif }}>
+                No pieces found
+              </h3>
+              <p className="text-sm text-[#6B6560] mt-2 max-w-sm mx-auto font-light leading-relaxed">
+                We couldn't find any products matching those exact criteria. Try adjusting your filters.
+              </p>
+              <button
+                onClick={clearAllFilters}
+                className="mt-8 inline-flex items-center gap-2 bg-[#1C1C1A] text-white px-6 py-3 text-[10px] font-bold tracking-[0.2em] uppercase rounded-full hover:bg-[#C8A97A] transition-colors"
+              >
+                Reset All Filters
+              </button>
             </div>
-          </aside>
-
-          {/* Mobile drawer */}
-          <AnimatePresence>
-            {showMobileFilters && (
-              <>
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  onClick={() => setShowMobileFilters(false)}
-                  className="fixed inset-0 bg-black/40 z-40 lg:hidden"
-                />
-                <motion.div
-                  initial={{ x: "-100%" }}
-                  animate={{ x: 0 }}
-                  exit={{ x: "-100%" }}
-                  transition={{ type: "tween", duration: 0.3 }}
-                  className="fixed left-0 top-0 h-full w-[82%] max-w-xs bg-white z-50 p-6 overflow-y-auto lg:hidden"
-                >
-                  <button
-                    onClick={() => setShowMobileFilters(false)}
-                    className="absolute top-5 right-5 text-[#9E9088]"
-                  >
-                    <X size={18} />
-                  </button>
-                  <div className="mt-6">
-                    <SidebarContent />
-                  </div>
-                  <button
-                    onClick={() => setShowMobileFilters(false)}
-                    className="mt-6 w-full bg-[#4A6741] text-white text-xs font-semibold uppercase tracking-wider py-3 rounded-xl"
-                  >
-                    Show {filteredProducts.length} Results
-                  </button>
-                </motion.div>
-              </>
-            )}
-          </AnimatePresence>
-
-          {/* Product grid */}
-          <div>
-            {filteredProducts.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-[#ECE6DF] p-16 text-center shadow-sm">
-                <Package size={48} className="mx-auto text-[#9E9088] mb-3" />
-                <h3 className="text-lg font-medium text-[#1C1C1A]" style={{ fontFamily: serif }}>
-                  No collections found
-                </h3>
-                <p className="text-sm text-[#9E9088] mt-1 max-w-sm mx-auto font-light leading-relaxed">
-                  We couldn't find any products matching your filters. Try clearing filters or
-                  searching for something else.
-                </p>
-                <button
-                  onClick={clearAllFilters}
-                  className="mt-6 inline-flex items-center gap-2 border-b border-[#1C1C1A] bg-transparent px-2 py-1 text-xs font-bold tracking-[0.1em] uppercase text-[#1C1C1A] hover:text-[#C8A97A] hover:border-[#C8A97A] transition-colors"
-                >
-                  Reset All Filters
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-16">
-                {filteredProducts.map((product) => (
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 gap-y-12">
+              {filteredProducts.map((product) => (
+                <div key={product._id} className="product-card-wrap h-full flex">
                   <StorefrontProductCard
-                    key={product._id}
                     product={product}
                     isLiked={savedProductIds?.includes(product._id.toString())}
                   />
-                ))}
-              </div>
-            )}
-          </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </main>

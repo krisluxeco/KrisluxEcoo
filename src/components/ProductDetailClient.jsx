@@ -37,9 +37,9 @@ export default function ProductDetailClient({ product, similarProducts = [], isL
   }, [isLiked]);
 
   const { addToCart } = useCart();
-  
+
   const [modalMode, setModalMode] = useState("cart"); // "cart" or "quote"
-  
+
   // Quote form states
   const [quoteForm, setQuoteForm] = useState({
     companyName: "",
@@ -167,7 +167,7 @@ ${quoteForm.additionalInfo || '_No additional requirements specified._'}
 -----------------------------------
 _Sent via KrisluxECO B2B Portal_`;
 
-    const adminPhone = "6202585952"; 
+    const adminPhone = "6202585952";
     const waUrl = `https://wa.me/${adminPhone}?text=${encodeURIComponent(waMessage)}`;
 
     try {
@@ -238,8 +238,8 @@ _Sent via KrisluxECO B2B Portal_`;
                       key={index}
                       onClick={() => setActiveImageIndex(index)}
                       className={`relative w-20 md:w-full h-20 md:h-24 shrink-0 rounded-sm overflow-hidden bg-[#F8F6F3] border transition-all ${active
-                          ? "border-[#1C1C1A] ring-1 ring-[#1C1C1A]/20"
-                          : "border-transparent hover:border-[#ECE6DF]"
+                        ? "border-[#1C1C1A] ring-1 ring-[#1C1C1A]/20"
+                        : "border-transparent hover:border-[#ECE6DF]"
                         }`}
                     >
                       <img
@@ -375,28 +375,16 @@ _Sent via KrisluxECO B2B Portal_`;
                   }
                 }}
                 className={`w-14 h-[52px] shrink-0 border flex items-center justify-center transition-colors duration-300 ${liked
-                    ? "border-[#1C1C1A] bg-[#1C1C1A] text-white"
-                    : "border-[#ECE6DF] bg-transparent text-[#1C1C1A] hover:bg-[#FAF7F2]"
+                  ? "border-[#1C1C1A] bg-[#1C1C1A] text-white"
+                  : "border-[#ECE6DF] bg-transparent text-[#1C1C1A] hover:bg-[#FAF7F2]"
                   }`}
               >
                 <Heart size={16} className={liked ? "fill-white stroke-white" : ""} strokeWidth={1.5} />
               </button>
             </div>
 
-            <div className="flex gap-4 pt-2">
-              <button
-                onClick={() => {
-                  if (status !== "authenticated") return router.push("/login");
-                  addToCart(product, 1, "");
-                  setModalMode("cart");
-                  setQuoteSubmitted(true);
-                  setShowQuoteModal(true);
-                }}
-                className="flex-1 inline-flex items-center justify-center gap-2 border border-[#E8DDD0] hover:bg-[#FAF7F2] text-[#4A6741] py-2.5 px-4 text-[10px] font-bold uppercase tracking-[0.1em] transition-colors duration-300"
-              >
-                <Box size={14} /> Request 1 Unit Sample
-              </button>
-              {product.downloadableSpecSheetUrl && (
+            {product.downloadableSpecSheetUrl && (
+              <div className="flex gap-4 pt-2">
                 <a
                   href={product.downloadableSpecSheetUrl}
                   target="_blank"
@@ -404,8 +392,8 @@ _Sent via KrisluxECO B2B Portal_`;
                 >
                   <Download size={14} /> Spec Sheet PDF
                 </a>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Highlight Bullets 2x2 Grid */}
             <div className="grid grid-cols-2 gap-x-4 gap-y-3 pt-4 border-t border-[#ECE6DF]/50">
@@ -431,8 +419,8 @@ _Sent via KrisluxECO B2B Portal_`;
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={`pb-4 relative transition-colors ${activeTab === tab.id
-                        ? "text-[#1C1C1A]"
-                        : "hover:text-[#1C1C1A]"
+                      ? "text-[#1C1C1A]"
+                      : "hover:text-[#1C1C1A]"
                       }`}
                   >
                     {tab.label}
@@ -681,8 +669,8 @@ _Sent via KrisluxECO B2B Portal_`;
                     disabled={modalMode === "quote" && submittingQuote}
                     className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#4A6741] hover:bg-[#3a5233] text-white py-3.5 text-xs font-bold uppercase tracking-wider transition shadow-sm mt-2 disabled:opacity-60"
                   >
-                    {modalMode === "cart" 
-                      ? "Add to Quote List" 
+                    {modalMode === "cart"
+                      ? "Add to Quote List"
                       : (submittingQuote ? "Submitting Inquiry..." : "Submit Quote Request")}
                   </button>
                 </form>
