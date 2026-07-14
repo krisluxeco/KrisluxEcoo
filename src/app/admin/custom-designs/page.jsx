@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useState, useEffect } from "react";
 import { Loader2, ExternalLink } from "lucide-react";
@@ -175,7 +176,7 @@ export default function AdminCustomDesigns() {
                   <div>
                     <p className="text-xs uppercase tracking-wider text-[#9E9088] font-semibold mb-2">Reference Image</p>
                     <div className="rounded-xl overflow-hidden border border-[#ECE6DF] inline-block">
-                      <img 
+                      <Image width={800} height={800} 
                         src={selectedRequest.imageUrl} 
                         alt="Reference" 
                         className="max-w-full max-h-64 object-contain"

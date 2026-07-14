@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -67,7 +68,7 @@ const utilityMessages = [
 function LeafMark() {
   return (
     <div className="relative w-12 h-12 flex items-center justify-center bg-white rounded-full overflow-hidden shadow-sm">
-      <img src="/logos.jpg" alt="KrisluxECO Logo" className="w-full h-full object-contain scale-[0.85]" />
+      <Image width={800} height={800} src="/logos.jpg" alt="KrisluxECO Logo" className="w-full h-full object-contain scale-[0.85]" />
     </div>
   );
 }
@@ -372,7 +373,7 @@ export default function NavBar() {
                     aria-label="User Profile Dashboard"
                   >
                     {session.user.image ? (
-                      <img
+                      <Image width={800} height={800}
                         src={session.user.image}
                         alt={session.user.name || "User"}
                         className="w-8 h-8 rounded-full object-cover border border-[#C8A97A]/30 hover:border-[#C8A97A] transition-colors"
@@ -641,7 +642,7 @@ export default function NavBar() {
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">
                       {session.user.image ? (
-                        <img
+                        <Image width={800} height={800}
                           src={session.user.image}
                           alt={session.user.name || "User"}
                           className="w-10 h-10 rounded-full object-cover border border-[#C8A97A]/30"

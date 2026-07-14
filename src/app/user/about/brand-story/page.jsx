@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useRef, useEffect } from "react";
 import gsap from "gsap";
@@ -52,7 +53,7 @@ const CHAPTERS = [
     eyebrow: "Chapter One — The Crisis",
     title: "A silent ecological emergency",
     line: "In Bihar, our waterways faced a disaster. Over 2.5 lakh hectares of vital wetlands became choked by invasive water hyacinth—killing local fish populations, destroying the livelihoods of traditional fishermen, and releasing harmful methane as it decayed.",
-    img: "https://images.unsplash.com/photo-1621272036047-bc0f829f0e8f?auto=format&fit=crop&w=1600&q=80",
+    img: "/images/BrandStory1.png",
     align: "left",
   },
   {
@@ -60,7 +61,7 @@ const CHAPTERS = [
     eyebrow: "Chapter Two — The Human Cost",
     title: "Exploited and marginalized",
     line: "Simultaneously, traditional craft was dying due to a lack of market access. Rural artisans—80% of whom are economically vulnerable women—earned below subsistence levels while middlemen captured over 80% of the value they created.",
-    img: "https://images.unsplash.com/photo-1596406981156-f0330dc372f7?auto=format&fit=crop&w=1600&q=80",
+    img: "/images/BrandStory2.png",
     align: "right",
   },
   {
@@ -76,7 +77,7 @@ const CHAPTERS = [
     eyebrow: "Chapter Four — The Craft",
     title: "Heritage meets modern design",
     line: "Collaborating with the National Institute of Design (NID), we combined traditional weaving heritage with modern ergonomics to craft export-ready, eco-luxury products.",
-    img: "https://images.unsplash.com/photo-1601004825966-2391ce4248be?auto=format&fit=crop&w=1600&q=80",
+    img: "/images/BrandStory4.png",
     align: "right",
   },
   {
@@ -237,7 +238,7 @@ function ImageStory() {
               className={`is-frame align-${c.align}`}
               ref={(el) => (frameRefs.current[i] = el)}
             >
-              <img src={c.img} alt={c.title} loading={i === 0 ? "eager" : "lazy"} />
+              <Image width={800} height={800} src={c.img} alt={c.title} loading={i === 0 ? "eager" : "lazy"} />
               <div className="is-scrim" />
             </div>
           ))}
@@ -285,7 +286,7 @@ export default function BrandStoryPage() {
           </video>
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-[#050505] z-1" />
         </div>
-        
+
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto flex flex-col items-center">
           <h2 className="text-[10px] md:text-xs font-mono tracking-[0.3em] uppercase text-[#C8A97A] mb-6">Our Heritage</h2>
           <h1 className="text-4xl md:text-7xl font-serif text-white font-light tracking-wide leading-tight mb-8">

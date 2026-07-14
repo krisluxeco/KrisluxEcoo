@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
@@ -175,8 +176,8 @@ export default function BlogListing() {
               >
                 <Link href={`/blog/${blog.slug}`}>
                   <div className="relative aspect-[4/5] w-full overflow-hidden mb-6 bg-white border border-[#E8DDD0]">
-                    {blog.image ? (
-                      <img
+                    {blog.image && (blog.image.startsWith('/') || blog.image.startsWith('http')) ? (
+                      <Image width={800} height={800}
                         src={blog.image}
                         alt={blog.title}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"

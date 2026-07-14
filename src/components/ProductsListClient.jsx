@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -258,7 +259,7 @@ export function StorefrontProductCard({ product, isLiked = false, onToggleSaved 
 
           <div className="absolute inset-0">
             {coverImg ? (
-              <img
+              <Image width={800} height={800}
                 src={coverImg}
                 alt={product.name}
                 className="w-full h-full object-cover"

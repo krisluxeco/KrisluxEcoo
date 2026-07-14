@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -375,7 +376,7 @@ export default function ProductForm({ initialData = null, mode = "add", onSucces
                     key={img.id}
                     className="relative group aspect-square rounded-xl overflow-hidden border border-[#ECE6DF]"
                   >
-                    <img
+                    <Image width={800} height={800}
                       src={img.preview || img.url}
                       alt="Product"
                       className="w-full h-full object-cover"

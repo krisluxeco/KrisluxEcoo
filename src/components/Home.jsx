@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import React, { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
@@ -85,9 +86,9 @@ function MarqueeStrip() {
 
 // ─── Hero Slideshow ────────────────────────────────────────────────────────────
 const heroSlides = [
-  { url: "/images/hero_baskets.png", caption: "Handcrafted ceramics & baskets" },
-  { url: "/images/hero_hotel.png", caption: "Luxury eco-friendly amenities" },
-  { url: "/images/artisan_crafting.png", caption: "Sustainably Sourced Craft" },
+  { url: "/images/HeroSection2.png", caption: "Handcrafted ceramics & baskets" },
+  { url: "/images/HeroSection3.png", caption: "Luxury eco-friendly amenities" },
+  { url: "/images/HeroSection1.png", caption: "Sustainably Sourced Craft" },
 ];
 
 function HeroSlideshow() {
@@ -132,10 +133,10 @@ function HeroSlideshow() {
 
 // ─── Categories Data ──────────────────────────────────────────────────────────
 const categories = [
-  { slug: "home-living", name: "Home & Living", tag: "Everyday Rituals", image: "/images/home_storage.png", aspect: "aspect-[3/4]" },
-  { slug: "kitchen-dining", name: "Kitchen & Dining", tag: "Reclaimed Woodware", image: "/images/kitchen_dining.png", aspect: "aspect-[4/3]" },
+  { slug: "home-living", name: "Home & Living", tag: "Everyday Rituals", image: "/images/HomeCategory1.png", aspect: "aspect-[3/4]" },
+  { slug: "kitchen-dining", name: "Kitchen & Dining", tag: "Reclaimed Woodware", image: "/images/HomeCategory2.png", aspect: "aspect-[4/3]" },
   { slug: "eco-living", name: "Eco Amenities", tag: "Zero-Waste Luxury", image: "/images/hero_hotel.png", aspect: "aspect-square" },
-  { slug: "business-wholesale", name: "Wholesale", tag: "Corporate Supply", image: "/images/corporate_gifting.png", aspect: "aspect-[3/4]" },
+  { slug: "business-wholesale", name: "Wholesale", tag: "Corporate Supply", image: "/images/HomeCategory4.png", aspect: "aspect-[3/4]" },
 ];
 
 // ─── Video Reels Data ────────────────────────────────────────────────────────
@@ -285,7 +286,7 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
                   <div className="w-full bg-white p-4 md:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.03)] transition-transform duration-1000 group-hover:-translate-y-2">
                     <div className={`relative w-full overflow-hidden ${cat.aspect}`}>
                       <div className="absolute inset-0 bg-[#C8A97A]/0 group-hover:bg-[#C8A97A]/10 transition-colors duration-1000 z-10 mix-blend-overlay" />
-                      <img src={cat.image} alt={cat.name} className="w-full h-full object-cover transition-transform duration-[2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" />
+                      <Image src={cat.image} alt={cat.name} fill className="object-cover transition-transform duration-[2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" />
                     </div>
                   </div>
                   <div className="mt-8 flex justify-between items-start px-2">

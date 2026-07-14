@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -89,7 +90,7 @@ const socialLinks = [
 function LeafMark() {
   return (
     <div className="relative w-12 h-12 flex items-center justify-center flex-shrink-0 bg-white rounded-full overflow-hidden shadow-sm">
-      <img src="/logos.jpg" alt="KrisluxECO Logo" className="w-full h-full object-contain scale-[0.85]" />
+      <Image width={800} height={800} src="/logos.jpg" alt="KrisluxECO Logo" className="w-full h-full object-contain scale-[0.85]" />
     </div>
   );
 }

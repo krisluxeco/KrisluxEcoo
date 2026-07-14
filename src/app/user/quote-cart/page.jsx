@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import React, { useState } from "react";
 import Link from "next/link";
@@ -209,7 +210,7 @@ _Sent via KrisluxECO B2B Portal_`;
                     <div key={item.product._id} className="flex gap-6 sm:gap-10 border-b border-[#ECE6DF] py-8 last:border-b-0">
                       <div className="w-24 h-32 sm:w-32 sm:h-40 shrink-0 bg-[#F8F6F3] overflow-hidden border border-[#ECE6DF]/50">
                         {item.product.images?.[0] ? (
-                          <img src={item.product.images[0].url} alt={item.product.name} className="w-full h-full object-cover" />
+                          <Image width={800} height={800} src={item.product.images[0].url} alt={item.product.name} className="w-full h-full object-cover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-[#9E9088]">
                             <ShoppingCart size={20} strokeWidth={1} />

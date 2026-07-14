@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useEffect, useState, useRef } from "react";
 import { Menu } from "lucide-react";
@@ -64,7 +65,7 @@ export default function AdminShell({ children }) {
               className="flex items-center outline-none focus:ring-2 focus:ring-[#C8A97A]/40 rounded-full cursor-pointer"
             >
               {session?.user?.image ? (
-                <img
+                <Image width={800} height={800}
                   src={session.user.image}
                   alt={session.user.name || "Admin"}
                   className="w-9 h-9 rounded-full object-cover border border-[#E8DDD0]"

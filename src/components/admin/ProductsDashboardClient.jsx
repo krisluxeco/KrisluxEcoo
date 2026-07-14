@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -375,7 +376,7 @@ export default function ProductsDashboardClient({ initialProducts = [] }) {
                             <td className="py-4 px-6">
                               <div className="w-12 h-12 rounded-lg overflow-hidden border border-[#ECE6DF] bg-[#FAF7F2]">
                                 {coverImg ? (
-                                  <img
+                                  <Image width={800} height={800}
                                     src={coverImg}
                                     alt={product.name}
                                     className="w-full h-full object-cover"
@@ -502,7 +503,7 @@ export default function ProductsDashboardClient({ initialProducts = [] }) {
                         <div className="flex gap-3">
                           <div className="w-16 h-16 shrink-0 rounded-lg overflow-hidden border border-[#ECE6DF] bg-[#FAF7F2]">
                             {coverImg ? (
-                              <img
+                              <Image width={800} height={800}
                                 src={coverImg}
                                 alt={product.name}
                                 className="w-full h-full object-cover"

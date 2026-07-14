@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -72,9 +73,9 @@ export default function BlogReader() {
             </div>
           </header>
 
-          {blog.image && (
+          {blog.image && (blog.image.startsWith('/') || blog.image.startsWith('http')) && (
             <div className="w-full aspect-video md:aspect-[21/9] overflow-hidden bg-white mb-16 border border-[#E8DDD0]">
-              <img
+              <Image width={800} height={800}
                 src={blog.image}
                 alt={blog.title}
                 className="w-full h-full object-cover"

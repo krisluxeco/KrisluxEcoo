@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useRef, useEffect } from "react";
 import Link from "next/link";
@@ -198,7 +199,7 @@ export default function AboutPage() {
             <div key={i} className="h-card w-[100vw] h-full flex items-center justify-center px-6 md:px-16 flex-shrink-0">
               <div className="w-full max-w-5xl h-full flex flex-col md:flex-row items-center gap-12">
                 <div className="w-full md:w-1/2 h-64 md:h-[90%] overflow-hidden rounded-[2rem]">
-                  <img src={p.img} alt={p.name} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" />
+                  <Image width={800} height={800} src={p.img} alt={p.name} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" />
                 </div>
                 <div className="w-full md:w-1/2">
                   <span className="text-[10px] tracking-[0.2em] uppercase text-[#C8A97A] mb-4 block" style={{ fontFamily: sans }}>Category {i + 1}</span>

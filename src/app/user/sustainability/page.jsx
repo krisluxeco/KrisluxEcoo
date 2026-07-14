@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useRef, useState, useEffect } from "react";
 import { motion, useInView, AnimatePresence, useScroll, useTransform } from "framer-motion";
@@ -25,9 +26,9 @@ function FadeUp({ children, delay = 0, className = "" }) {
 
 // ─── Hero Slideshow ────────────────────────────────────────────────────────────
 const sustainabilitySlides = [
-  { url: "https://images.pexels.com/photos/4145153/pexels-photo-4145153.jpeg?auto=compress&cs=tinysrgb&w=1600", caption: "Preserving Nature" },
-  { url: "https://images.pexels.com/photos/3209211/pexels-photo-3209211.jpeg?auto=compress&cs=tinysrgb&w=1600", caption: "Deep Roots" },
-  { url: "https://images.pexels.com/photos/1448735/pexels-photo-1448735.jpeg?auto=compress&cs=tinysrgb&w=1600", caption: "Sustainable Growth" },
+  { url: "/images/sustainability_hero_1.png", caption: "Preserving Nature" },
+  { url: "/images/sustainability_hero_2.png", caption: "Deep Roots" },
+  { url: "/images/sustainability_hero_3.png", caption: "Sustainable Growth" },
 ];
 
 function SustainabilitySlideshow() {
@@ -109,17 +110,17 @@ export default function SustainabilityPage() {
     {
       title: "Ethical Sourcing",
       desc: "Every material we use is traced back to its origin. We work exclusively with certified fair-trade cooperatives across 14 Indian states, ensuring that the hands that craft our products are compensated fairly and work in safe conditions.",
-      img: "https://images.pexels.com/photos/7658097/pexels-photo-7658097.jpeg?auto=compress&cs=tinysrgb&w=800",
+      img: "/images/ethical_sourcing.png",
     },
     {
       title: "Zero Plastics",
       desc: "From our supply chain to your doorstep, we have eliminated single-use plastics. Our packaging utilizes biodegradable cornstarch, recycled paper, and reusable fabric totes to ensure our environmental footprint remains as light as possible.",
-      img: "https://images.pexels.com/photos/7161048/pexels-photo-7161048.jpeg?auto=compress&cs=tinysrgb&w=800",
+      img: "/images/zero_plastics.png",
     },
     {
       title: "Artisan Empowerment",
       desc: "True sustainability includes sustaining communities. We partner with over 200 artisans, preserving centuries-old weaving, carving, and pottery techniques that might otherwise be lost to mass manufacturing.",
-      img: "https://images.pexels.com/photos/4597285/pexels-photo-4597285.jpeg?auto=compress&cs=tinysrgb&w=800",
+      img: "/images/artisan_empowerment.png",
     }
   ];
 
@@ -177,7 +178,7 @@ export default function SustainabilityPage() {
             <div className="w-full lg:w-1/2">
               <FadeUp className="bg-white p-4 md:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.03)]">
                 <div className="relative aspect-[4/5] overflow-hidden bg-[#FAF7F2]">
-                  <img 
+                  <Image width={800} height={800} 
                     src={pillar.img} 
                     alt={pillar.title}
                     className="w-full h-full object-cover mix-blend-multiply transition-transform duration-[3s] hover:scale-105"

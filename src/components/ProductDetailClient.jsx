@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
@@ -336,7 +337,7 @@ _Sent via KrisluxECO B2B Portal_`;
                         : "border-transparent hover:border-[#ECE6DF]"
                         }`}
                     >
-                      <img
+                      <Image width={800} height={800}
                         src={img.url}
                         alt={`Preview ${index + 1}`}
                         className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity"

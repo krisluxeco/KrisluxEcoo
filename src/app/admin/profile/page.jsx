@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import React, { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
@@ -173,7 +174,7 @@ export default function AdminProfilePage() {
           <div className="flex flex-col items-center border-b border-[#ECE6DF] pb-6 mb-2">
             <div className="relative group cursor-pointer" onClick={triggerFileInput}>
               {imagePreview ? (
-                <img
+                <Image width={800} height={800}
                   src={imagePreview}
                   alt="Admin Profile Preview"
                   className="w-24 h-24 rounded-full object-cover border-2 border-[#C8A97A]/40 group-hover:opacity-75 transition-all duration-300 shadow-sm"

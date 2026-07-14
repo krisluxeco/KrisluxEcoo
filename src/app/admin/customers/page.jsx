@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useState, useEffect } from "react";
 import { Search, Ban, CheckCircle2, Clock, MessageSquare, Building2, UserCircle2 } from "lucide-react";
@@ -150,7 +151,7 @@ export default function CustomersList() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         {user.image ? (
-                          <img src={user.image} className="w-8 h-8 rounded-full border border-gray-200" alt="avatar" />
+                          <Image width={800} height={800} src={user.image} className="w-8 h-8 rounded-full border border-gray-200" alt="avatar" />
                         ) : (
                           <div className="w-8 h-8 rounded-full bg-[#1C1C1A] text-white flex items-center justify-center font-bold text-xs">
                             {user.firstName?.charAt(0) || "U"}

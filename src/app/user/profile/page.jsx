@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import React, { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
@@ -282,7 +283,7 @@ export default function UserProfilePage() {
       <div className="px-6 py-8 flex flex-col items-center text-center">
         <div className="w-20 h-20 rounded-full bg-[#4A6741] text-white flex items-center justify-center text-2xl font-semibold shadow-lg overflow-hidden mb-4 border border-[#4A6741]/50">
           {imagePreview ? (
-            <img src={imagePreview} alt="Profile" className="w-full h-full object-cover" />
+            <Image width={800} height={800} src={imagePreview} alt="Profile" className="w-full h-full object-cover" />
           ) : (
             initials
           )}
@@ -566,7 +567,7 @@ export default function UserProfilePage() {
                                       <div className="flex items-center gap-4">
                                         {productImg ? (
                                           <div className="w-12 h-16 shrink-0 bg-[#F8F6F3] border border-[#ECE6DF] overflow-hidden">
-                                            <img src={productImg} alt={item.productName} className="w-full h-full object-cover" />
+                                            <Image width={800} height={800} src={productImg} alt={item.productName} className="w-full h-full object-cover" />
                                           </div>
                                         ) : (
                                           <div className="w-12 h-16 shrink-0 bg-[#F8F6F3] border border-[#ECE6DF] flex items-center justify-center text-[#9E9088]">
@@ -669,7 +670,7 @@ export default function UserProfilePage() {
                     <div className="flex flex-col items-center">
                       <div className="relative group cursor-pointer" onClick={triggerFileInput}>
                         {imagePreview ? (
-                          <img
+                          <Image width={800} height={800}
                             src={imagePreview}
                             alt="Profile Preview"
                             className="w-32 h-32 rounded-full object-cover border-4 border-[#C8A97A]/40 group-hover:opacity-75 transition-all duration-300 shadow-md"
@@ -906,7 +907,7 @@ export default function UserProfilePage() {
                                   <td className="py-4 px-2">
                                     <div className="flex items-center gap-4">
                                       {item.productId?.images?.[0]?.url ? (
-                                        <img src={item.productId.images[0].url} alt={item.productName} className="w-12 h-12 object-cover bg-[#FAF7F2]" />
+                                        <Image width={800} height={800} src={item.productId.images[0].url} alt={item.productName} className="w-12 h-12 object-cover bg-[#FAF7F2]" />
                                       ) : (
                                         <div className="w-12 h-12 bg-[#FAF7F2] flex items-center justify-center text-[10px] text-gray-400">N/A</div>
                                       )}
@@ -1013,7 +1014,7 @@ export default function UserProfilePage() {
                         <div>
                           <p className="text-xs uppercase tracking-wider text-[#9E9088] font-semibold mb-2">Reference Image</p>
                           <div className="rounded-xl overflow-hidden border border-[#ECE6DF] inline-block">
-                            <img
+                            <Image width={800} height={800}
                               src={selectedCustomDesign.imageUrl}
                               alt="Reference"
                               className="max-w-full max-h-64 object-contain"

@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
@@ -290,7 +291,7 @@ export default function AdminQuotesPage() {
                           <td className="py-4 px-2">
                             <div className="flex items-center gap-4">
                               {item.productId?.images?.[0]?.url ? (
-                                <img src={item.productId.images[0].url} alt={item.productName} className="w-12 h-12 object-cover bg-[#FAF7F2]" />
+                                <Image width={800} height={800} src={item.productId.images[0].url} alt={item.productName} className="w-12 h-12 object-cover bg-[#FAF7F2]" />
                               ) : (
                                 <div className="w-12 h-12 bg-[#FAF7F2] flex items-center justify-center text-[10px] text-gray-400">N/A</div>
                               )}
