@@ -1,7 +1,8 @@
 "use client";
 import Image from "next/image";
 
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -164,7 +165,7 @@ function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggle
         className="relative bg-white rounded-sm overflow-hidden border border-[#E8DDD0] group-hover:border-[#1C1C1A] shadow-[0_2px_10px_rgba(0,0,0,0.04)] group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.12)] transition-[border-color,box-shadow] duration-500"
       >
         {/* Image */}
-        <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#FAF7F2]">
+        <div className="relative aspect-square w-full overflow-hidden bg-[#F8F6F3]">
           <motion.span
             initial={{ opacity: 0, scale: 0.5, x: -10 }}
             animate={inView ? { opacity: 1, scale: 1, x: 0 } : {}}
@@ -193,7 +194,7 @@ function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggle
                 fill
                 draggable={false}
                 sizes="(max-width: 768px) 260px, 280px"
-                className="object-cover"
+                className="object-contain p-2"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-[#9E9088]">
@@ -227,13 +228,21 @@ function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggle
             {product.name}
           </h3>
 
-          <div className="flex items-center justify-between mb-4 text-xs gap-2">
+          <div className="flex items-center justify-between mb-4 text-xs gap-2 mt-auto pt-2">
             <span className="flex items-center gap-1.5 text-[#9E9088] whitespace-nowrap uppercase tracking-widest text-[9px] font-bold">
               MOQ: {product.minOrderQty || 1}
             </span>
-            <span className="text-[#1C1C1A] font-medium whitespace-nowrap">
-              ₹{displayPrice.toLocaleString()} <span className="text-[#9E9088] font-light italic">onwards</span>
-            </span>
+            <div className="flex flex-col items-end">
+              <span className="text-[#1C1C1A] font-medium whitespace-nowrap">
+                ₹{displayPrice.toLocaleString()}{" "}
+                <span className="text-[#9E9088] font-light italic text-[10px]">onwards</span>
+              </span>
+              {product.discountPrice && product.discountPrice < product.price && (
+                <span className="text-[#9E9088] text-[9px] line-through decoration-[#9E9088]/60 mt-0.5">
+                  ₹{product.price.toLocaleString()}
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
@@ -279,7 +288,13 @@ function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggle
   );
 }
 
-export default function FeaturedProducts({ products = [], savedProductIds = [] }) {
+export default function FeaturedProducts({ 
+  products = [], 
+  savedProductIds = [],
+  title = "Featured",
+  subtitle = "Products",
+  pretitle = "Handpicked for You"
+}) {
   const railRef = useRef(null);
   const sectionRef = useRef(null);
   const inView = useInView(sectionRef, { once: true, margin: "-60px" });
@@ -435,7 +450,7 @@ export default function FeaturedProducts({ products = [], savedProductIds = [] }
           >
             <span className="h-px w-6 bg-[#C8A97A]/50" />
             <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }} className="italic not-italic">
-              Handpicked for You
+              {pretitle}
             </span>
             <span className="h-px w-6 bg-[#C8A97A]/50" />
           </motion.p>
@@ -450,7 +465,7 @@ export default function FeaturedProducts({ products = [], savedProductIds = [] }
               transition={{ duration: 0.6, delay: 0.15 }}
               className="inline-block font-bold"
             >
-              Featured{" "}
+              {title}{" "}
             </motion.span>
             <motion.span
               initial={{ opacity: 0, y: 18 }}
@@ -458,7 +473,7 @@ export default function FeaturedProducts({ products = [], savedProductIds = [] }
               transition={{ duration: 0.6, delay: 0.28 }}
               className="relative inline-block font-normal italic text-[#C8A97A]"
             >
-              Products
+              {subtitle}
               <motion.span
                 initial={{ scaleX: 0 }}
                 animate={inView ? { scaleX: 1 } : {}}

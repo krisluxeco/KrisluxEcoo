@@ -246,7 +246,7 @@ export function StorefrontProductCard({ product, isLiked = false, onToggleSaved 
         className="relative bg-white rounded-sm overflow-hidden border border-[#E8DDD0] group-hover:border-[#C8A97A]/40 shadow-[0_2px_10px_rgba(0,0,0,0.04)] group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.12)] transition-[border-color,box-shadow] duration-500 h-full flex flex-col"
       >
         {/* Image */}
-        <Link href={`/user/products/${product._id}`} className="block relative aspect-[4/5] w-full overflow-hidden bg-[#FAF7F2]">
+        <Link href={`/user/products/${product._id}`} className="block relative aspect-square w-full overflow-hidden bg-[#F8F6F3]">
           {badgeText && (
             <span
               className={`absolute top-3 left-3 z-10 text-[10px] font-bold tracking-[0.2em] px-2.5 py-1 uppercase shadow-sm ${
@@ -262,7 +262,7 @@ export function StorefrontProductCard({ product, isLiked = false, onToggleSaved 
               <Image width={800} height={800}
                 src={coverImg}
                 alt={product.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain p-2"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-[#9E9088]">
@@ -299,10 +299,17 @@ export function StorefrontProductCard({ product, isLiked = false, onToggleSaved 
             <span className="flex items-center gap-1.5 text-[#9E9088] whitespace-nowrap uppercase tracking-widest text-[9px] font-bold">
               MOQ: {product.minOrderQty || 1}
             </span>
-            <span className="text-[#1C1C1A] font-medium whitespace-nowrap">
-              ₹{displayPrice.toLocaleString()}{" "}
-              <span className="text-[#9E9088] font-light italic">onwards</span>
-            </span>
+            <div className="flex flex-col items-end">
+              <span className="text-[#1C1C1A] font-medium whitespace-nowrap">
+                ₹{displayPrice.toLocaleString()}{" "}
+                <span className="text-[#9E9088] font-light italic text-[10px]">onwards</span>
+              </span>
+              {product.discountPrice && product.discountPrice < product.price && (
+                <span className="text-[#9E9088] text-[9px] line-through decoration-[#9E9088]/60 mt-0.5">
+                  ₹{product.price.toLocaleString()}
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-2">

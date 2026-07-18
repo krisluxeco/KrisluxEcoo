@@ -20,6 +20,7 @@ import {
   Box
 } from "lucide-react";
 import { StorefrontProductCard } from "./ProductsListClient";
+import FeaturedProducts from "./Featuredproducts";
 import { useCart } from "@/context/CartContext";
 
 const serif = "'Cormorant Garamond', Georgia, serif";
@@ -299,7 +300,7 @@ _Sent via KrisluxECO B2B Portal_`;
 
   return (
     <main
-      className="min-h-screen bg-white text-[#1C1C1A] pb-24 pt-6"
+      className="min-h-screen bg-white text-[#1C1C1A] pb-24 pt-32"
       style={{ fontFamily: sans }}
     >
       <div className="max-w-7xl mx-auto px-6">
@@ -340,7 +341,7 @@ _Sent via KrisluxECO B2B Portal_`;
                       <Image width={800} height={800}
                         src={img.url}
                         alt={`Preview ${index + 1}`}
-                        className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity"
+                        className="w-full h-full object-contain opacity-90 hover:opacity-100 transition-opacity"
                       />
                     </button>
                   );
@@ -349,7 +350,7 @@ _Sent via KrisluxECO B2B Portal_`;
             )}
 
             {/* Main Image */}
-            <div className="relative aspect-[3/4] w-full bg-[#F8F6F3] flex items-center justify-center overflow-hidden rounded-sm">
+            <div className="relative aspect-square w-full bg-[#F8F6F3] flex items-center justify-center overflow-hidden rounded-sm">
               {activeImage ? (
                 <AnimatePresence mode="wait">
                   <motion.img
@@ -360,7 +361,7 @@ _Sent via KrisluxECO B2B Portal_`;
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.98 }}
                     transition={{ duration: 0.4, ease: "easeOut" }}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 </AnimatePresence>
               ) : (
@@ -386,13 +387,24 @@ _Sent via KrisluxECO B2B Portal_`;
               </h1>
 
               {/* Prices matching video style */}
-              <div className="flex items-baseline gap-2 pt-2">
-                <span className="text-3xl font-bold text-[#1C1C1A]">
-                  ₹{displayPrice.toLocaleString()} onwards
-                </span>
-                <span className="text-xs text-[#9E9088] tracking-wide ml-1">
-                  per unit
-                </span>
+              <div className="flex flex-col gap-1.5 pt-2">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-bold text-[#1C1C1A]">
+                    ₹{displayPrice.toLocaleString()} onwards
+                  </span>
+                  <span className="text-xs text-[#9E9088] tracking-wide ml-1">
+                    per unit
+                  </span>
+                </div>
+                {product.discountPrice && product.discountPrice < product.price && (
+                  <div className="flex items-center gap-1.5 text-[13px] text-[#9E9088]">
+                    <span>MRP:</span>
+                    <span className="line-through decoration-[#9E9088]/60">₹{product.price.toLocaleString()}</span>
+                    <span className="text-[#4A6741] font-semibold text-[10px] uppercase tracking-wider ml-2 bg-[#FAF7F2] border border-[#ECE6DF] px-2 py-0.5 rounded-sm">
+                      Save ₹{(product.price - product.discountPrice).toLocaleString()}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* MOQ Indicator */}
@@ -418,10 +430,23 @@ _Sent via KrisluxECO B2B Portal_`;
               </div>
             </div>
 
-            {/* Description paragraph */}
-            <p className="text-[#6B6560] text-sm leading-relaxed font-light">
-              {product.description}
-            </p>
+            {/* Description paragraph (Truncated) */}
+            <div className="relative">
+              <p className="text-[#6B6560] text-sm leading-relaxed font-light line-clamp-3">
+                {product.description}
+              </p>
+              {product.description?.length > 150 && (
+                <button 
+                  onClick={() => {
+                    setActiveTab("description");
+                    document.getElementById('product-accordions')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }}
+                  className="text-[10px] uppercase tracking-wider font-bold text-[#C8A97A] hover:text-[#1C1C1A] transition-colors mt-2 inline-block"
+                >
+                  Read full description ↓
+                </button>
+              )}
+            </div>
 
             {/* B2B Action Buttons Row */}
             <div className="flex flex-wrap items-center gap-3 pt-4">
@@ -490,15 +515,7 @@ _Sent via KrisluxECO B2B Portal_`;
               </div>
             )}
 
-            {/* Highlight Bullets 2x2 Grid */}
-            <div className="grid grid-cols-2 gap-x-4 gap-y-3 pt-4 border-t border-[#ECE6DF]/50">
-              {highlights.map((item, i) => (
-                <div key={i} className="flex items-center gap-2 text-xs text-[#6B6560]">
-                  <span className="text-[#4A6741] font-semibold text-sm">✓</span>
-                  <span>{item}</span>
-                </div>
-              ))}
-            </div>
+
 
             {/* Promotional Banner in place of tabs */}
             {activePromo && (
@@ -514,7 +531,7 @@ _Sent via KrisluxECO B2B Portal_`;
                         <p className="text-[#6B6560] text-xs">Use code <span className="font-bold text-[#4A6741]">{activePromo.code}</span> for {activePromo.discountPercentage}% off bulk orders.</p>
                       </div>
                     </div>
-                    <button 
+                    <button
                       onClick={handleApplyPromo}
                       disabled={promoLoading || promoCode === activePromo.code}
                       className="text-[10px] uppercase tracking-wider font-bold text-[#C8A97A] border-b border-[#C8A97A] pb-0.5 hover:text-[#1C1C1A] hover:border-[#1C1C1A] transition-colors whitespace-nowrap ml-4 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -531,12 +548,28 @@ _Sent via KrisluxECO B2B Portal_`;
               </div>
             )}
 
+            {/* Tags Display */}
+            {product.tags?.length > 0 && (
+              <div className="pt-6 pb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+                {product.tags.map((tag, i) => (
+                  <div key={i} className="flex items-center gap-4">
+                    <span className="text-[#8C837C] text-[10px] uppercase tracking-[0.25em] font-semibold">
+                      {tag}
+                    </span>
+                    {i < product.tags.length - 1 && (
+                      <div className="w-[3px] h-[3px] bg-[#C8A97A] rotate-45 opacity-60" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* Vertical Stacked Accordions */}
-            <div className="pt-4 border-t border-[#ECE6DF]/50 divide-y divide-[#ECE6DF]/60">
+            <div id="product-accordions" className="pt-4 border-t border-[#ECE6DF]/50 divide-y divide-[#ECE6DF]/60">
               {[
                 { id: "description", label: "Description" },
                 { id: "specifications", label: "Specifications" },
-                { id: "applications", label: "Applications" },
+                { id: "highlights", label: "Product Highlights" },
               ].map((acc) => (
                 <div key={acc.id} className="py-4">
                   <button
@@ -550,7 +583,7 @@ _Sent via KrisluxECO B2B Portal_`;
                       +
                     </span>
                   </button>
-                  
+
                   <AnimatePresence>
                     {activeTab === acc.id && (
                       <motion.div
@@ -576,15 +609,13 @@ _Sent via KrisluxECO B2B Portal_`;
                             </div>
                           )}
 
-                          {acc.id === "applications" && (
-                            <div className="flex flex-wrap gap-2.5">
-                              {applications.map((app, i) => (
-                                <span
-                                  key={i}
-                                  className="bg-white border border-[#E8DDD0] rounded-xl px-4 py-2.5 font-medium text-[#1C1C1A] text-xs shadow-sm"
-                                >
-                                  {app}
-                                </span>
+                          {acc.id === "highlights" && (
+                            <div className="flex flex-col gap-3">
+                              {highlights.map((item, i) => (
+                                <div key={i} className="flex items-start gap-2.5 text-[#1C1C1A]">
+                                  <Check size={16} className="text-[#4A6741] mt-0.5 shrink-0" />
+                                  <span className="leading-relaxed">{item}</span>
+                                </div>
                               ))}
                             </div>
                           )}
@@ -600,32 +631,15 @@ _Sent via KrisluxECO B2B Portal_`;
 
         {/* Similar Products Recommendation Rail */}
         {similarProducts.length > 0 && (
-          <section className="mt-20 border-t border-[#ECE6DF] pt-12 pb-8">
-            <div className="text-center mb-8">
-              <span className="h-px w-8 bg-[#C8A97A]/60 inline-block mr-2 align-middle" />
-              <span className="text-[10px] tracking-[0.25em] uppercase text-[#C8A97A] align-middle font-semibold">
-                You May Also Like
-              </span>
-              <span className="h-px w-8 bg-[#C8A97A]/60 inline-block ml-2 align-middle" />
-              <h3
-                className="text-3xl font-light text-[#1C1C1A] mt-2"
-                style={{ fontFamily: serif }}
-              >
-                Related <span className="italic text-[#4A6741]">Products</span>
-              </h3>
-              <div className="h-[2px] w-14 bg-[#C8A97A] mx-auto mt-4" />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {similarProducts.map((p) => (
-                <StorefrontProductCard
-                  key={p._id}
-                  product={p}
-                  isLiked={savedProductIds?.includes(p._id.toString())}
-                />
-              ))}
-            </div>
-          </section>
+          <div className="mt-8 border-t border-[#ECE6DF]">
+            <FeaturedProducts 
+              products={similarProducts} 
+              savedProductIds={savedProductIds}
+              pretitle="You May Also Like"
+              title="Similar"
+              subtitle="Products"
+            />
+          </div>
         )}
 
         {/* Why KrisluxEco Strip */}
@@ -906,11 +920,11 @@ _Sent via KrisluxECO B2B Portal_`;
               >
                 <X size={20} />
               </button>
-              
+
               <h3 className="text-2xl mb-6 text-[#1C1C1A]" style={{ fontFamily: serif }}>
                 Write a Review
               </h3>
-              
+
               <form onSubmit={handleReviewSubmit}>
                 <div className="mb-6">
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-[#9E9088] mb-3">Rating</label>
