@@ -38,11 +38,11 @@ export default function ProductForm({ initialData = null, mode = "add", onSucces
   // Convert initial images (which are `{ url }` from DB) to our state format
   const initialImagesState = initialData?.images
     ? initialData.images.map((img) => ({
-        id: crypto.randomUUID(),
-        url: img.url,
-        file: null,
-        preview: img.url,
-      }))
+      id: crypto.randomUUID(),
+      url: img.url,
+      file: null,
+      preview: img.url,
+    }))
     : [];
 
   const [images, setImages] = useState(initialImagesState);
@@ -53,7 +53,7 @@ export default function ProductForm({ initialData = null, mode = "add", onSucces
       ? initialData.specs.map(s => ({ id: crypto.randomUUID(), key: s.key, value: s.value }))
       : [emptySpec()],
   );
-  
+
   const [highlights, setHighlights] = useState(
     initialData?.highlights?.length
       ? initialData.highlights.map(h => ({ id: crypto.randomUUID(), value: h }))
@@ -203,13 +203,18 @@ export default function ProductForm({ initialData = null, mode = "add", onSucces
         if (img.file) {
           try {
             const compressedFile = await imageCompression(img.file, {
-              maxSizeMB: 1,
-              maxWidthOrHeight: 1920,
+              maxSizeMB: 0.5,
+              maxWidthOrHeight: 1280,
               useWebWorker: true,
             });
             fd.append("images", compressedFile);
           } catch (error) {
             console.error("Image compression error:", error);
+            if (img.file.size > 0.8 * 1024 * 1024) {
+              setError("An image is too large and failed to compress. Please use images under 1MB.");
+              setSubmitting(false);
+              return;
+            }
             fd.append("images", img.file);
           }
         }
