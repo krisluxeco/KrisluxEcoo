@@ -1,4 +1,5 @@
 "use client";
+import imageCompression from "browser-image-compression";
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -50,7 +51,17 @@ export default function CustomDesignPage() {
       dataToSend.append("phone", formData.phone);
       dataToSend.append("description", formData.description);
       if (imageFile) {
-        dataToSend.append("image", imageFile);
+        try {
+          const compressedFile = await imageCompression(imageFile, {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true,
+          });
+          dataToSend.append("image", compressedFile);
+        } catch (error) {
+          console.error("Image compression error:", error);
+          dataToSend.append("image", imageFile);
+        }
       }
 
       const res = await fetch("/api/user/custom-design", {

@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import imageCompression from "browser-image-compression";
 
 import React, { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
@@ -177,7 +178,17 @@ export default function UserProfilePage() {
       formData.append("mobile", profile.mobile);
 
       if (selectedFile) {
-        formData.append("image", selectedFile);
+        try {
+          const compressedFile = await imageCompression(selectedFile, {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true,
+          });
+          formData.append("image", compressedFile);
+        } catch (error) {
+          console.error("Image compression error:", error);
+          formData.append("image", selectedFile);
+        }
       } else if (profile.image) {
         formData.append("image", profile.image);
       }

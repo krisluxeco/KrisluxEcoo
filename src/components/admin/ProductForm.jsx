@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import imageCompression from "browser-image-compression";
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -178,9 +179,21 @@ export default function ProductForm({ initialData = null, mode = "add", onSucces
       }
 
       // New files uploaded
-      images.forEach((img) => {
-        if (img.file) fd.append("images", img.file);
-      });
+      for (const img of images) {
+        if (img.file) {
+          try {
+            const compressedFile = await imageCompression(img.file, {
+              maxSizeMB: 1,
+              maxWidthOrHeight: 1920,
+              useWebWorker: true,
+            });
+            fd.append("images", compressedFile);
+          } catch (error) {
+            console.error("Image compression error:", error);
+            fd.append("images", img.file);
+          }
+        }
+      }
 
       const endpoint =
         mode === "edit"
