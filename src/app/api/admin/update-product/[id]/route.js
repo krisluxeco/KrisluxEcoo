@@ -45,6 +45,7 @@ export async function PUT(req, { params }) {
     // parse JSON arrays
     const tags = formData.get("tags") ? JSON.parse(formData.get("tags")) : [];
     const specs = formData.get("specs") ? JSON.parse(formData.get("specs")) : [];
+    const highlights = formData.get("highlights") ? JSON.parse(formData.get("highlights")) : [];
     const existingImages = formData.get("existingImages") ? JSON.parse(formData.get("existingImages")) : [];
 
     if (!name || !category || !description || !price) {
@@ -119,6 +120,7 @@ export async function PUT(req, { params }) {
         height: parsedHeight,
         tags,
         specs: specs.filter((s) => s.key?.trim() && s.value?.trim()),
+        highlights,
       },
       { new: true },
     );

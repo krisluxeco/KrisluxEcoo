@@ -39,6 +39,9 @@ export async function POST(req) {
     const specs = formData.get("specs")
       ? JSON.parse(formData.get("specs"))
       : [];
+    const highlights = formData.get("highlights")
+      ? JSON.parse(formData.get("highlights"))
+      : [];
 
     if (!name || !category || !description || !price) {
       return NextResponse.json(
@@ -105,6 +108,7 @@ export async function POST(req) {
       height: parsedHeight,
       tags,
       specs: specs.filter((s) => s.key?.trim() && s.value?.trim()),
+      highlights,
     });
 
     return NextResponse.json(product, { status: 200 });

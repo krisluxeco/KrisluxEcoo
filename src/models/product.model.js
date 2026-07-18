@@ -52,6 +52,7 @@ const productSchema = new mongoose.Schema(
 
     tags: { type: [String], default: [] },
     specs: { type: [specSchema], default: [] },
+    highlights: { type: [String], default: [] },
     
     // B2B features
     volumePricing: { type: [volumePricingSchema], default: [] },

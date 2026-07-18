@@ -53,10 +53,21 @@ export default function ProductForm({ initialData = null, mode = "add", onSucces
       ? initialData.specs.map(s => ({ id: crypto.randomUUID(), key: s.key, value: s.value }))
       : [emptySpec()],
   );
+  
+  const [highlights, setHighlights] = useState(
+    initialData?.highlights?.length
+      ? initialData.highlights.map(h => ({ id: crypto.randomUUID(), value: h }))
+      : [{ id: crypto.randomUUID(), value: "" }]
+  );
+
+  const initialIsCustomCategory = initialData?.category && !categories.includes(initialData.category);
+  const [isCustomCategory, setIsCustomCategory] = useState(initialIsCustomCategory);
+  const [customCategory, setCustomCategory] = useState(initialIsCustomCategory ? initialData.category : "");
+
   const [form, setForm] = useState({
     name: initialData?.name || "",
     brand: initialData?.brand || "",
-    category: initialData?.category || categories[0],
+    category: initialIsCustomCategory ? "custom" : (initialData?.category || categories[0]),
     description: initialData?.description || "",
     price: initialData?.price || "",
     discountPrice: initialData?.discountPrice || "",
@@ -133,6 +144,11 @@ export default function ProductForm({ initialData = null, mode = "add", onSucces
       prev.map((s) => (s.id === id ? { ...s, [field]: value } : s)),
     );
 
+  // ── Highlights ──────────────────────────────────────
+  const addHighlightRow = () => setHighlights((prev) => [...prev, { id: crypto.randomUUID(), value: "" }]);
+  const removeHighlightRow = (id) => setHighlights((prev) => prev.length > 1 ? prev.filter((h) => h.id !== id) : prev);
+  const updateHighlightRow = (id, value) => setHighlights((prev) => prev.map((h) => (h.id === id ? { ...h, value } : h)));
+
   // ── Submit ──────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -154,7 +170,7 @@ export default function ProductForm({ initialData = null, mode = "add", onSucces
       const fd = new FormData();
       fd.append("name", form.name);
       fd.append("brand", form.brand);
-      fd.append("category", form.category);
+      fd.append("category", isCustomCategory ? customCategory : form.category);
       fd.append("description", form.description);
       fd.append("price", form.price);
       if (form.discountPrice) fd.append("discountPrice", form.discountPrice);
@@ -170,6 +186,10 @@ export default function ProductForm({ initialData = null, mode = "add", onSucces
       fd.append(
         "specs",
         JSON.stringify(specs.filter((s) => s.key.trim() && s.value.trim())),
+      );
+      fd.append(
+        "highlights",
+        JSON.stringify(highlights.map((h) => h.value).filter((val) => val.trim())),
       );
 
       // In edit mode, append URLs of already uploaded images that were kept
@@ -342,7 +362,16 @@ export default function ProductForm({ initialData = null, mode = "add", onSucces
                   </label>
                   <select
                     value={form.category}
-                    onChange={(e) => update("category", e.target.value)}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === "custom") {
+                        setIsCustomCategory(true);
+                        update("category", "custom");
+                      } else {
+                        setIsCustomCategory(false);
+                        update("category", val);
+                      }
+                    }}
                     className="w-full rounded-xl border border-[#E8DDD0] bg-[#FAF7F2] px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition"
                   >
                     {categories.map((c) => (
@@ -350,7 +379,16 @@ export default function ProductForm({ initialData = null, mode = "add", onSucces
                         {c}
                       </option>
                     ))}
+                    <option value="custom">Add New Category...</option>
                   </select>
+                  {isCustomCategory && (
+                    <input
+                      value={customCategory}
+                      onChange={(e) => setCustomCategory(e.target.value)}
+                      placeholder="Type new category name..."
+                      className="w-full mt-2 rounded-xl border border-[#E8DDD0] bg-[#FAF7F2] px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition"
+                    />
+                  )}
                 </div>
 
                 <div className="sm:col-span-2">
@@ -493,6 +531,50 @@ export default function ProductForm({ initialData = null, mode = "add", onSucces
                       type="button"
                       onClick={() => removeSpecRow(spec.id)}
                       className="rounded-lg p-2 text-[#9E9088] hover:text-red-500 hover:bg-red-50 transition-colors"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Highlights */}
+            <section className="rounded-2xl border border-[#ECE6DF] bg-white p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <h2
+                  className="text-base font-semibold text-[#1C1C1A]"
+                  style={{ fontFamily: serif }}
+                >
+                  Product Highlights
+                </h2>
+                <button
+                  type="button"
+                  onClick={addHighlightRow}
+                  className="inline-flex items-center gap-1.5 text-sm text-[#4A6741] hover:text-[#3a5233] font-medium"
+                >
+                  <Plus size={15} /> Add row
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                {highlights.map((highlight) => (
+                  <div
+                    key={highlight.id}
+                    className="flex gap-2"
+                  >
+                    <input
+                      value={highlight.value}
+                      onChange={(e) =>
+                        updateHighlightRow(highlight.id, e.target.value)
+                      }
+                      placeholder="e.g. Handmade by skilled artisans"
+                      className="flex-1 rounded-lg border border-[#E8DDD0] bg-[#FAF7F2] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeHighlightRow(highlight.id)}
+                      className="rounded-lg p-2 text-[#9E9088] hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
                     >
                       <Trash2 size={16} />
                     </button>
