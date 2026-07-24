@@ -5,6 +5,8 @@ import { useRef, useEffect } from "react";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import TeamSection from "@/components/TeamSection";
+
 
 const serif = "'Cormorant Garamond', Georgia, serif";
 const sans = "'DM Sans', sans-serif";
@@ -243,6 +245,9 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      {/* Team Section */}
+      <TeamSection />
 
       {/* 5. Vision for the future */}
       <section className="vision-container relative py-48 px-6 md:px-16 bg-[#1C1C1A] text-white text-center overflow-hidden">

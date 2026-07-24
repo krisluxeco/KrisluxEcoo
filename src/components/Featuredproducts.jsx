@@ -288,8 +288,8 @@ function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggle
   );
 }
 
-export default function FeaturedProducts({ 
-  products = [], 
+export default function FeaturedProducts({
+  products = [],
   savedProductIds = [],
   title = "Featured",
   subtitle = "Products",
@@ -571,22 +571,23 @@ export default function FeaturedProducts({
         </div>
 
         <div className="flex justify-center">
-          <motion.a
-            href="/user/products"
-            initial={{ opacity: 0, y: 10 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            whileHover={{ x: 4 }}
-            className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] font-bold text-[#1C1C1A] border-b border-[#1C1C1A]/40 pb-0.5 hover:border-[#1C1C1A] transition-colors mt-8"
-          >
-            View all products
-            <motion.span
-              animate={{ x: [0, 4, 0] }}
-              transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+          <Link href="/user/products" passHref legacyBehavior>
+            <motion.a
+              initial={{ opacity: 0, y: 10 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              whileHover={{ x: 4 }}
+              className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] font-bold text-[#1C1C1A] border-b border-[#1C1C1A]/40 pb-0.5 hover:border-[#1C1C1A] transition-colors mt-8"
             >
-              →
-            </motion.span>
-          </motion.a>
+              View all products
+              <motion.span
+                animate={{ x: [0, 4, 0] }}
+                transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+              >
+                →
+              </motion.span>
+            </motion.a>
+          </Link>
         </div>
       </div>
     </section>

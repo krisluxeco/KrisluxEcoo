@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import FeaturedProducts from "./Featuredproducts";
+import LiveCarbonFootprint from "./LiveCarbonFootprint";
 import Link from "next/link";
 
 // ─── Shared Typography ────────────────────────────────────────────────────────
@@ -147,7 +148,7 @@ const reels = [
 ];
 
 // ─── Main Home Page Component ──────────────────────────────────────────────────
-export default function Home({ featuredProducts = [], savedProductIds = [] }) {
+export default function Home({ featuredProducts = [], savedProductIds = [], impactStats, detailedStats, recentItems }) {
   const containerRef = useRef(null);
 
   useEffect(() => {
@@ -408,6 +409,9 @@ export default function Home({ featuredProducts = [], savedProductIds = [] }) {
           </div>
         </div>
       </section>
+
+      {/* ─── LIVE CARBON FOOTPRINT TRACKER ──────────────────────────────────── */}
+      <LiveCarbonFootprint impactStats={impactStats} detailedStats={detailedStats} recentItems={recentItems} />
     </main>
   );
 }

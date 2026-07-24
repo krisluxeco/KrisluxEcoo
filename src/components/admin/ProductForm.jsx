@@ -21,7 +21,7 @@ import {
 
 const serif = "'Cormorant Garamond', Georgia, serif";
 
-const categories = [
+const defaultCategories = [
   "Home & Living",
   "Kitchen & Dining",
   "Eco & Sustainable",
@@ -32,8 +32,13 @@ const categories = [
 
 const emptySpec = () => ({ id: crypto.randomUUID(), key: "", value: "" });
 
-export default function ProductForm({ initialData = null, mode = "add", onSuccess, onCancel }) {
+export default function ProductForm({ initialData = null, mode = "add", onSuccess, onCancel, existingCategories = [] }) {
   const router = useRouter();
+
+  const categories = React.useMemo(() => {
+    const merged = new Set([...defaultCategories, ...existingCategories]);
+    return Array.from(merged);
+  }, [existingCategories]);
 
   // Convert initial images (which are `{ url }` from DB) to our state format
   const initialImagesState = initialData?.images

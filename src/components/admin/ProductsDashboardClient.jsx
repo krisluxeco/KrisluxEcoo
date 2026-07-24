@@ -22,20 +22,17 @@ import ProductForm from "./ProductForm";
 const serif = "'Cormorant Garamond', Georgia, serif";
 const sans = "'DM Sans', sans-serif";
 
-const categories = [
-  "All Categories",
-  "Home & Living",
-  "Kitchen & Dining",
-  "Eco & Sustainable",
-  "Business & Wholesale",
-  "Garden & Outdoor",
-  "Gifting",
-];
-
 export default function ProductsDashboardClient({ initialProducts = [] }) {
   const [products, setProducts] = useState(initialProducts);
   const [activeTab, setActiveTab] = useState("list"); // "list" | "add"
   const [editingProduct, setEditingProduct] = useState(null);
+
+  const dynamicCategories = useMemo(() => {
+    const cats = new Set(products.map((p) => p.category).filter(Boolean));
+    return Array.from(cats);
+  }, [products]);
+
+  const filterCategories = ["All Categories", ...dynamicCategories];
 
   // Search & Filter States
   const [search, setSearch] = useState("");
@@ -231,6 +228,7 @@ export default function ProductsDashboardClient({ initialProducts = [] }) {
             <ProductForm
               mode="edit"
               initialData={editingProduct}
+              existingCategories={dynamicCategories}
               onCancel={() => setEditingProduct(null)}
               onSuccess={handleUpdateSuccess}
             />
@@ -239,6 +237,7 @@ export default function ProductsDashboardClient({ initialProducts = [] }) {
           <div className="bg-white rounded-2xl border border-[#ECE6DF] p-6 shadow-sm">
             <ProductForm
               mode="add"
+              existingCategories={dynamicCategories}
               onCancel={() => setActiveTab("list")}
               onSuccess={handleAddSuccess}
             />
@@ -270,7 +269,7 @@ export default function ProductsDashboardClient({ initialProducts = [] }) {
                   onChange={(e) => setCategoryFilter(e.target.value)}
                   className="w-full px-3 py-2.5 rounded-xl border border-[#E8DDD0] bg-[#FAF7F2] text-sm focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition text-[#1C1C1A] font-medium"
                 >
-                  {categories.map((cat) => (
+                  {filterCategories.map((cat) => (
                     <option key={cat} value={cat}>
                       {cat}
                     </option>

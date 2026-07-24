@@ -9,7 +9,7 @@ import { useSession, signOut } from "next-auth/react";
 import { ShoppingCart, Heart, User } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 
-const navLinks = [
+const initialNavLinks = [
   {
     label: "Products",
     href: "/user/products",
@@ -18,21 +18,6 @@ const navLinks = [
         label: "All Products",
         href: "/user/products",
         desc: "Browse our full catalog",
-      },
-      {
-        label: "Home & Living",
-        href: "/user/products?category=Home%20%26%20Living",
-        desc: "Eco-friendly decor and essentials",
-      },
-      {
-        label: "Eco & Sustainable",
-        href: "/user/products?category=Eco%20%26%20Sustainable",
-        desc: "Products with minimal footprint",
-      },
-      {
-        label: "Home Decor",
-        href: "/user/products?category=Home%20Decor",
-        desc: "Handcrafted interior decor",
       },
     ]
   },
@@ -128,7 +113,41 @@ export default function NavBar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [utilityVisible, setUtilityVisible] = useState(true);
   const [scrolled, setScrolled] = useState(false);
+  const [navLinks, setNavLinks] = useState(initialNavLinks);
   const drawerRef = useRef(null);
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const res = await fetch("/api/categories");
+        if (res.ok) {
+          const categories = await res.json();
+          setNavLinks((prev) => {
+            const newLinks = [...prev];
+            const productsLink = newLinks.find((link) => link.label === "Products");
+            if (productsLink) {
+              productsLink.children = [
+                {
+                  label: "All Products",
+                  href: "/user/products",
+                  desc: "Browse our full catalog",
+                },
+                ...categories.map((category) => ({
+                  label: category,
+                  href: `/user/products?category=${encodeURIComponent(category)}`,
+                  desc: `Browse ${category}`,
+                })),
+              ];
+            }
+            return newLinks;
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching categories for navbar:", err);
+      }
+    }
+    fetchCategories();
+  }, []);
 
   // Desktop hover dropdown (e.g. About → Brand Story / About Us).
   // A short close-delay keeps the panel open while the cursor travels
