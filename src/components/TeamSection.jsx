@@ -31,14 +31,14 @@ const teamMembers = [
     }
   },
   {
-    name: "Palak Yadav",
+    name: "Deepali Kumari",
     role: "Head Manager",
-    university: "DU",
-    image: "/our_team/Palak.png",
+    university: "IIT Patna",
+    image: "/our_team/Deepali.jpeg",
     socials: {
-      linkedin: "https://www.linkedin.com/in/palak-yadav-06a319379",
-      instagram: "https://www.instagram.com/palakk_128/",
-      mail: "mailto:palakyadav721@gmail.com"
+      linkedin: "https://www.linkedin.com/in/deepali-kumari-545a23314/",
+      instagram: "https://www.instagram.com/attitude_deepsr/",
+      mail: "deepalixyz01@gmail.com"
     }
   },
   {
@@ -86,7 +86,7 @@ function TeamCard({ member, index }) {
           alt={member.name}
           className="w-full h-full object-cover grayscale opacity-90 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-1000 ease-[cubic-bezier(0.25,1,0.5,1)]"
         />
-        
+
         {/* Social Links on Hover */}
         <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-[#1C1C1A]/90 via-[#1C1C1A]/40 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out z-20 flex justify-center gap-5">
           <a href={member.socials.linkedin} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-[#C8A97A] transition-colors">
@@ -102,23 +102,23 @@ function TeamCard({ member, index }) {
       </div>
 
       {/* Text Content */}
-      <h3 
+      <h3
         className="text-2xl lg:text-3xl font-bold text-[#1C1C1A] mb-2 group-hover:text-[#4A6741] transition-colors duration-500"
         style={{ fontFamily: serif }}
       >
         {member.name}
       </h3>
-      
-      <p 
+
+      <p
         className="text-[#C8A97A] text-sm tracking-[0.1em] uppercase font-extrabold mb-4"
         style={{ fontFamily: sans }}
       >
         {member.role}
       </p>
-      
+
       <div className="flex items-center gap-2">
         <span className="h-[1.5px] w-4 bg-[#1C1C1A]/30" />
-        <span 
+        <span
           className="text-[#1C1C1A]/70 text-xs tracking-wider uppercase font-bold"
           style={{ fontFamily: sans }}
         >
@@ -146,7 +146,7 @@ export default function TeamSection() {
   const y = useTransform(scrollYProgress, [0, 1], [100, -100]);
 
   return (
-    <section 
+    <section
       ref={containerRef}
       className="py-32 bg-[#FAF7F2] overflow-hidden border-t border-[#1C1C1A]/10"
     >
@@ -159,13 +159,13 @@ export default function TeamSection() {
           className="text-center mb-24"
         >
           <Eyebrow>The Visionaries</Eyebrow>
-          <h2 
+          <h2
             className="text-[clamp(2.5rem,5vw,4.5rem)] font-light leading-tight text-[#1C1C1A]"
             style={{ fontFamily: serif }}
           >
             Guided by <span className="text-[#4A6741] italic">Excellence</span>
           </h2>
-          <p 
+          <p
             className="text-[#1C1C1A]/70 text-lg md:text-xl max-w-2xl mx-auto mt-6 font-light leading-relaxed"
             style={{ fontFamily: sans }}
           >
@@ -179,7 +179,7 @@ export default function TeamSection() {
             <TeamCard member={teamMembers[0]} index={0} />
           </div>
 
-          {/* Bottom Row - Patil (Index 3), Palak (Index 2) and CTO (Alok Ranjan - Index 1) */}
+          {/* Bottom Row - Patil (Index 3), Deepali Kumari (Index 2) and CTO (Alok Ranjan - Index 1) */}
           <div className="flex flex-col md:flex-row justify-center gap-8 lg:gap-12 w-full">
             <TeamCard member={teamMembers[3]} index={1} />
             <TeamCard member={teamMembers[2]} index={2} />
