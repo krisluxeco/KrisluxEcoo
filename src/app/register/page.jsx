@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
@@ -78,49 +78,37 @@ function Eyebrow({ children, light = false }) {
 function FloatField({ label, type = "text", icon, name, autoComplete }) {
   const [focused, setFocused] = useState(false);
   const [value, setValue] = useState("");
-  const active = focused || value.length > 0;
 
   return (
-    <div className="relative">
-      <div
-        className={`relative flex items-center gap-3 rounded-2xl border bg-white/70 backdrop-blur-sm px-5 transition-all duration-300 ${focused
-            ? "border-[#4A6741] shadow-[0_0_0_4px_rgba(74,103,65,0.08)]"
-            : "border-[#E8DDD0]"
-          }`}
-        style={{ height: 58 }}
-      >
-        <span
-          className={`shrink-0 transition-colors duration-300 ${focused ? "text-[#4A6741]" : "text-[#B7AFA4]"}`}
-        >
-          {icon}
-        </span>
+    <div
+      className={`relative flex items-end gap-3 border-b pb-2 transition-all duration-300 ${focused ? "border-[#1C1C1A]" : "border-[#E8DDD0]"}`}
+      style={{ height: 58 }}
+    >
+      <span className={`shrink-0 mb-1 transition-colors duration-300 ${focused ? "text-[#1C1C1A]" : "text-[#9E9088]"}`}>
+        {icon}
+      </span>
 
-        <div className="relative flex-1 h-full">
-          <input
-            id={name}
-            name={name}
-            type={type}
-            autoComplete={autoComplete}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-            onChange={(e) => setValue(e.target.value)}
-            className="absolute inset-x-0 bottom-0 w-full bg-transparent outline-none text-[#1C1C1A] text-[15px] h-[24px]"
-            style={{ fontFamily: sans }}
-          />
-          <motion.label
-            htmlFor={name}
-            className="absolute left-0 bottom-[6px] pointer-events-none origin-left select-none"
-            style={{ fontFamily: sans, color: focused ? "#4A6741" : "#9E9088" }}
-            animate={
-              active
-                ? { y: -20, scale: 0.78, opacity: 0.9 }
-                : { y: 0, scale: 1, opacity: 0.75 }
-            }
-            transition={{ duration: 0.22, ease: "easeOut" }}
-          >
-            {label}
-          </motion.label>
-        </div>
+      <div className="relative flex-1 h-full flex items-end">
+        <input
+          id={name}
+          name={name}
+          type={type}
+          autoComplete={autoComplete}
+          placeholder=" "
+          value={value}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          onChange={(e) => setValue(e.target.value)}
+          className="peer w-full bg-transparent outline-none text-[#1C1C1A] text-[15px]"
+          style={{ fontFamily: sans }}
+        />
+        <label
+          htmlFor={name}
+          className="absolute left-0 bottom-1 origin-left select-none pointer-events-none transition-all duration-200 ease-out text-[#9E9088] uppercase tracking-[0.15em] text-[10px] peer-focus:-translate-y-[24px] peer-focus:scale-100 peer-focus:text-[#1C1C1A] peer-[:not(:placeholder-shown)]:-translate-y-[24px] peer-[:not(:placeholder-shown)]:scale-100"
+          style={{ fontFamily: sans }}
+        >
+          {label}
+        </label>
       </div>
     </div>
   );
@@ -131,89 +119,52 @@ function PasswordField({ label, name }) {
   const [focused, setFocused] = useState(false);
   const [value, setValue] = useState("");
   const [visible, setVisible] = useState(false);
-  const active = focused || value.length > 0;
 
   return (
     <div
-      className={`relative flex items-center gap-3 rounded-2xl border bg-white/70 backdrop-blur-sm px-5 transition-all duration-300 ${focused
-          ? "border-[#4A6741] shadow-[0_0_0_4px_rgba(74,103,65,0.08)]"
-          : "border-[#E8DDD0]"
-        }`}
+      className={`relative flex items-end gap-3 border-b pb-2 transition-all duration-300 ${focused ? "border-[#1C1C1A]" : "border-[#E8DDD0]"}`}
       style={{ height: 58 }}
     >
-      <span
-        className={`shrink-0 transition-colors duration-300 ${focused ? "text-[#4A6741]" : "text-[#B7AFA4]"}`}
-      >
-        <svg
-          width="17"
-          height="17"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.8"
-        >
+      <span className={`shrink-0 mb-1 transition-colors duration-300 ${focused ? "text-[#1C1C1A]" : "text-[#9E9088]"}`}>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
           <rect x="4" y="11" width="16" height="9" rx="2" />
           <path d="M8 11V7a4 4 0 0 1 8 0v4" />
         </svg>
       </span>
 
-      <div className="relative flex-1 h-full">
+      <div className="relative flex-1 h-full flex items-end">
         <input
           id={name}
           name={name}
           type={visible ? "text" : "password"}
           autoComplete="new-password"
+          placeholder=" "
+          value={value}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           onChange={(e) => setValue(e.target.value)}
-          className="absolute inset-x-0 bottom-0 w-full bg-transparent outline-none text-[#1C1C1A] text-[15px] h-[24px]"
+          className="peer w-full bg-transparent outline-none text-[#1C1C1A] text-[15px]"
           style={{ fontFamily: sans }}
         />
-        <motion.label
+        <label
           htmlFor={name}
-          className="absolute left-0 bottom-[6px] pointer-events-none origin-left select-none"
-          style={{ fontFamily: sans, color: focused ? "#4A6741" : "#9E9088" }}
-          animate={
-            active
-              ? { y: -20, scale: 0.78, opacity: 0.9 }
-              : { y: 0, scale: 1, opacity: 0.75 }
-          }
-          transition={{ duration: 0.22, ease: "easeOut" }}
+          className="absolute left-0 bottom-1 origin-left select-none pointer-events-none transition-all duration-200 ease-out text-[#9E9088] uppercase tracking-[0.15em] text-[10px] peer-focus:-translate-y-[24px] peer-focus:scale-100 peer-focus:text-[#1C1C1A] peer-[:not(:placeholder-shown)]:-translate-y-[24px] peer-[:not(:placeholder-shown)]:scale-100"
+          style={{ fontFamily: sans }}
         >
           {label}
-        </motion.label>
+        </label>
       </div>
 
       <button
         type="button"
         onClick={() => setVisible((v) => !v)}
-        className="shrink-0 text-[#B7AFA4] hover:text-[#4A6741] transition-colors duration-200"
+        className="shrink-0 mb-1 text-[#9E9088] hover:text-[#1C1C1A] transition-colors duration-200"
         aria-label="Toggle password visibility"
       >
         {visible ? (
-          <svg
-            width="17"
-            height="17"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-          >
-            <path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-5 0-9.27-3.11-11-7.5a13.16 13.16 0 0 1 2.16-3.19m3.9-2.27A9.77 9.77 0 0 1 12 5c5 0 9.27 3.11 11 7.5a13.06 13.06 0 0 1-1.67 2.68M9.9 9.9a3 3 0 1 0 4.2 4.2" />
-            <path d="M2 2l20 20" />
-          </svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
         ) : (
-          <svg
-            width="17"
-            height="17"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-          >
-            <path d="M1 12s4-7.5 11-7.5S23 12 23 12s-4 7.5-11 7.5S1 12 1 12z" />
-            <circle cx="12" cy="12" r="3" />
-          </svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" /><line x1="1" y1="1" x2="23" y2="23" /></svg>
         )}
       </button>
     </div>
@@ -251,6 +202,59 @@ function StrengthMeter() {
       >
         {labels[level]}
       </span>
+    </div>
+  );
+}
+
+// ─── Eco Jokes Component ────────────────────────────────────────────────────────
+const ecoJokes = [
+  "Why did the eco-friendly product break up with plastic? It just wasn't sustainable. 💔♻️",
+  "Logging you in... faster than our products biodegrade! ⏳🍃",
+  "Don't worry, your password is as secure as our commitment to the earth. 🌍🔒",
+  "Zero plastic, 100% luxury... and a 0% chance we'd sell your data. 🤫✨",
+  "Why are sustainable products so calm? Because they have a lot of inner peace! 🧘‍♀️🌿",
+];
+
+function EcoJokeAnimation() {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % ecoJokes.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="mt-8 p-5 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 relative overflow-hidden min-h-[140px] flex flex-col items-center justify-center gap-4">
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#8FBD84] to-transparent opacity-50" />
+      
+      {/* Humorous Eco Meme Illustration */}
+      <motion.div
+        initial={{ rotate: -5, scale: 0.9 }}
+        animate={{ rotate: 5, scale: 1 }}
+        transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+      >
+        <img 
+          src="/images/eco-meme.png" 
+          alt="Eco friendly meme" 
+          className="w-16 h-16 rounded-full object-cover border-2 border-[#8FBD84]/40"
+        />
+      </motion.div>
+
+      <AnimatePresence mode="wait">
+        <motion.p
+          key={index}
+          initial={{ opacity: 0, y: 10, filter: "blur(4px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
+          transition={{ duration: 0.5 }}
+          className="text-[#E8DDD0] text-sm text-center leading-relaxed font-medium"
+          style={{ fontFamily: sans }}
+        >
+          {ecoJokes[index]}
+        </motion.p>
+      </AnimatePresence>
     </div>
   );
 }
@@ -377,11 +381,11 @@ export default function RegisterPage() {
               className="absolute inset-0 bg-cover bg-center"
               style={{
                 backgroundImage:
-                  "url(https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=1600)",
+                  "url(/images/auth-hero.png)",
               }}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1A] via-[#1C1C1A]/75 to-[#1C1C1A]/35" />
-            <div className="absolute inset-0 bg-[#1C1C1A]/20" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1A] via-[#1C1C1A]/60 to-transparent" />
+            <div className="absolute inset-0 bg-black/30" />
           </div>
 
           {/* Ambient floating leaves */}
@@ -471,6 +475,14 @@ export default function RegisterPage() {
               Create an account to track orders, save your favourite pieces, and
               unlock B2B pricing on every handcrafted collection.
             </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              <EcoJokeAnimation />
+            </motion.div>
           </div>
 
           {/* Bottom trust strip */}
@@ -685,24 +697,13 @@ export default function RegisterPage() {
               {/* Submit */}
               <motion.button
                 type="submit"
-                whileHover={{
-                  scale: 1.015,
-                  boxShadow: "0 14px 36px rgba(74,103,65,0.38)",
-                }}
-                whileTap={{ scale: 0.98 }}
                 disabled={loading}
-                className="w-full mt-2 flex items-center justify-center gap-2 bg-[#4A6741] text-white py-4 rounded-2xl text-sm tracking-wide font-medium transition-all disabled:cursor-not-allowed disabled:opacity-60"
-                style={{ fontFamily: sans }}
+                className="group relative w-full flex items-center justify-center gap-4 bg-[#1C1C1A] text-white px-8 py-5 overflow-hidden transition-all hover:bg-[#333] mt-8 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {loading ? "Creating account..." : "Create Account"}
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
+                <span className="relative z-10 text-[11px] uppercase tracking-[0.3em] font-medium" style={{ fontFamily: sans }}>
+                  {loading ? "Creating account..." : "Create Account"}
+                </span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="relative z-10 text-[#C8A97A] transform group-hover:translate-x-1 transition-transform">
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
               </motion.button>

@@ -10,7 +10,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       <NavBar />
-      
+
       <main className="flex-grow pt-24">
         {/* Hero Section */}
         <section className="py-20 px-4 text-center">
@@ -24,7 +24,7 @@ export default function AboutPage() {
               About <span className="text-blue-600 dark:text-blue-400">Krisluxeco</span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
-              We are a team of dedicated professionals from top institutions like DU, IIT Patna, and IIM Lucknow. 
+              We are a team of dedicated professionals from top institutions like DU, IIT Patna, and IIM Lucknow.
               Our mission is to bring innovation and excellence to everything we do.
             </p>
           </motion.div>

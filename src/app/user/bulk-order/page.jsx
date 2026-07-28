@@ -9,8 +9,8 @@ const sans = "'DM Sans', sans-serif";
 
 // ⚠️ Update these with your real business details
 const COMPANY = {
-  phone: "+62025895952", // used for the "Call Us" button
-  whatsapp: "6202585952", // used for the WhatsApp button (no + or spaces)
+  phone: "+9798611931", // used for the "Call Us" button
+  whatsapp: "9798611931", // used for the WhatsApp button (no + or spaces)
   email: "krisluxeco@gmail.com",
 };
 

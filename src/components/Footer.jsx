@@ -48,7 +48,7 @@ const footerColumns = [
 const socialLinks = [
   {
     label: "WhatsApp",
-    href: "https://wa.me/910000000000",
+    href: "https://wa.me/9798611931",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.27-1.38a9.9 9.9 0 0 0 4.77 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 18.07h-.01a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.13.82.84-3.05-.2-.31a8.18 8.18 0 0 1-1.26-4.36c0-4.53 3.69-8.22 8.24-8.22a8.18 8.18 0 0 1 5.82 2.42 8.16 8.16 0 0 1 2.41 5.81c0 4.53-3.69 8.22-8.23 8.22zm4.51-6.16c-.25-.12-1.46-.72-1.69-.8-.23-.08-.39-.12-.56.12-.16.25-.64.8-.78.96-.14.17-.29.18-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.48-1.39-1.73-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.42-.14-.01-.31-.01-.48-.01a.93.93 0 0 0-.67.31c-.23.25-.88.86-.88 2.09 0 1.23.9 2.42 1.03 2.59.12.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.46-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.1-.23-.16-.48-.28z" />
@@ -77,7 +77,7 @@ const socialLinks = [
   },
   {
     label: "LinkedIn",
-    href: "https://linkedin.com/company/krisluxeco",
+    href: "https://www.linkedin.com/company/krisluxeco-official/posts/?feedView=all",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
         <path d="M6.94 8.5H3.56V20.4h3.38V8.5zM5.25 3.6a1.96 1.96 0 1 0 0 3.92 1.96 1.96 0 0 0 0-3.92zM20.45 20.4h-3.37v-6.24c0-1.49-.03-3.4-2.07-3.4-2.08 0-2.4 1.62-2.4 3.3v6.34H9.25V8.5h3.23v1.63h.05c.45-.85 1.56-1.75 3.21-1.75 3.43 0 4.06 2.26 4.06 5.2v6.82z" />
@@ -138,31 +138,7 @@ export default function Footer() {
               building livelihoods, one product at a time.
             </p>
 
-            <form onSubmit={handleSubscribe} className="mb-6">
-              <label htmlFor="footer-email" className="block text-[11px] tracking-[0.15em] uppercase text-[#C8A97A] mb-2">
-                Join the newsletter
-              </label>
-              <div className="flex items-stretch gap-2 max-w-xs">
-                <input
-                  id="footer-email"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@email.com"
-                  className="flex-1 min-w-0 bg-white/5 border border-white/15 rounded-full px-4 py-2 text-sm text-white placeholder-white/35 outline-none focus:border-[#C8A97A] transition-colors"
-                />
-                <button
-                  type="submit"
-                  className="flex-shrink-0 bg-[#4A6741] hover:bg-[#3a5233] transition-colors text-white text-sm px-4 py-2 rounded-full font-medium"
-                >
-                  {subscribed ? "✓" : "Join"}
-                </button>
-              </div>
-              {subscribed && (
-                <p className="text-xs text-[#8FBD84] mt-2">Thanks — you're on the list.</p>
-              )}
-            </form>
+
 
             {/* Socials */}
             <div className="flex items-center gap-3">
@@ -210,7 +186,7 @@ export default function Footer() {
               Talk to us
             </h3>
             <a
-              href="https://wa.me/910000000000"
+              href="https://wa.me/9798611931"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 bg-[#25D366]/10 border border-[#25D366]/30 text-[#25D366] text-sm px-4 py-2.5 rounded-full w-fit mb-4 hover:bg-[#25D366]/20 transition-colors"
@@ -222,13 +198,13 @@ export default function Footer() {
             </a>
             <ul className="flex flex-col gap-3 text-sm text-white/65">
               <li>
-                <a href="mailto:hello@krisluxeco.com" className="hover:text-white transition-colors">
-                  hello@krisluxeco.com
+                <a href="mailto:krisluxeco@gmail.com" className="hover:text-white transition-colors">
+                  krisluxeco@gmail.com
                 </a>
               </li>
               <li>
                 <a href="tel:+910000000000" className="hover:text-white transition-colors">
-                  +91 00000 00000
+                  +91 97986 11931
                 </a>
               </li>
               <li className="text-white/45 leading-relaxed">

@@ -142,9 +142,9 @@ const categories = [
 
 // ─── Video Reels Data ────────────────────────────────────────────────────────
 const reels = [
-  { id: 1, url: "https://cdn.coverr.co/videos/coverr-weaving-a-basket-5254/1080p.mp4", title: "Hand Woven Baskets" },
-  { id: 2, url: "https://cdn.coverr.co/videos/coverr-a-woman-making-a-clay-pot-5246/1080p.mp4", title: "Artisan Pottery" },
-  { id: 3, url: "https://videos.pexels.com/video-files/3209211/3209211-uhd_2560_1440_25fps.mp4", title: "Nature & Origins" }
+  { id: 1, type: "instagram", url: "https://www.instagram.com/p/DaxAEiUJuEn/embed", title: "KrisluxECO Highlights" },
+  { id: 2, type: "instagram", url: "https://www.instagram.com/p/DbMkSPLoP80/embed", title: "Eco-Friendly Lifestyle" },
+  { id: 3, type: "instagram", url: "https://www.instagram.com/p/Da8PEBqJjfW/embed", title: "Sustainable Living" }
 ];
 
 // ─── Main Home Page Component ──────────────────────────────────────────────────
@@ -320,24 +320,45 @@ export default function Home({ featuredProducts = [], savedProductIds = [], impa
 
           <div className="reel-container grid grid-cols-1 md:grid-cols-3 gap-6">
             {reels.map((reel) => (
-              <div key={reel.id} className="reel-card group relative aspect-[9/16] rounded-[24px] overflow-hidden bg-black/5">
-                <video autoPlay loop muted playsInline className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
-                  <source src={reel.url} type="video/mp4" />
-                </video>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-80" />
+              reel.type === "instagram" ? (
+                <div key={reel.id} className="reel-card group relative aspect-[9/16] rounded-[24px] overflow-hidden bg-white shadow-lg">
+                  <iframe
+                    src={reel.url}
+                    className="w-full h-full border-none"
+                    scrolling="no"
+                    allowTransparency={true}
+                    allow="encrypted-media"
+                  ></iframe>
+                </div>
+              ) : (
+                <a href={reel.link || "#"} target="_blank" rel="noopener noreferrer" key={reel.id} className="reel-card group relative aspect-[9/16] rounded-[24px] overflow-hidden bg-black/5 block">
+                  <video autoPlay loop muted playsInline className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
+                    <source src={reel.url} type="video/mp4" />
+                  </video>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-80 pointer-events-none" />
 
-                {/* Play Icon */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/40">
-                    <svg className="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                  {/* Play Icon */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/40 shadow-lg">
+                      <svg className="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                    </div>
                   </div>
-                </div>
 
-                <div className="absolute bottom-6 left-6 right-6">
-                  <p className="text-white font-medium text-lg" style={{ fontFamily: serif }}>{reel.title}</p>
-                </div>
-              </div>
+                  <div className="absolute bottom-6 left-6 right-6">
+                    <p className="text-white font-medium text-lg" style={{ fontFamily: serif }}>{reel.title}</p>
+                  </div>
+                </a>
+              )
             ))}
+          </div>
+
+          <div className="mt-16 flex justify-center">
+            <a href="https://www.instagram.com/krisluxeco/" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 border border-[#E8DDD0] bg-transparent text-[#1C1C1A] px-8 py-4 rounded-full text-xs tracking-[0.2em] uppercase font-semibold hover:bg-[#1C1C1A] hover:text-[#FAF7F2] transition-all duration-500">
+              Watch More on Instagram
+              <svg className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </a>
           </div>
         </div>
       </section>
@@ -392,11 +413,15 @@ export default function Home({ featuredProducts = [], savedProductIds = [], impa
               </div>
             </div>
 
-            <div className="relative aspect-[4/5] rounded-[24px] overflow-hidden border border-white/10">
+            <div className="relative aspect-[4/5] rounded-[24px] overflow-hidden border border-white/10 bg-white">
               <div className="impact-video absolute top-[-20%] left-0 w-full h-[140%]">
-                <video autoPlay loop muted playsInline className="w-full h-full object-cover filter brightness-[0.7]">
-                  <source src="https://cdn.coverr.co/videos/coverr-a-woman-making-a-clay-pot-5246/1080p.mp4" type="video/mp4" />
-                </video>
+                <iframe
+                  src="https://www.instagram.com/p/DbSDxu6Ov5G/embed"
+                  className="w-full h-full border-none filter brightness-[0.85]"
+                  scrolling="no"
+                  allowTransparency={true}
+                  allow="encrypted-media"
+                ></iframe>
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1A] via-transparent to-transparent opacity-90 pointer-events-none" />
               <div className="absolute bottom-8 left-8 right-8 z-10 pointer-events-none">
