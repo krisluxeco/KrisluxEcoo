@@ -13,7 +13,7 @@ const footerColumns = [
     links: [
       { label: "All Products", href: "/user/products" },
       { label: "Bulk Order", href: "/user/bulk-order" },
-      { label: "Distributors", href: "/distributors" },
+     
       { label: "Saved Products", href: "/user/saved" },
     ],
   },
@@ -22,27 +22,27 @@ const footerColumns = [
     links: [
       { label: "Our Story", href: "/user/about/brand-story" },
       { label: "About Us", href: "/user/about" },
-      { label: "Sustainability", href: "/sustainability" },
+      { label: "Sustainability", href: "/user/sustainability" },
       { label: "Blog", href: "/blog" },
     ],
   },
   {
     title: "Support",
     links: [
-      { label: "Contact Us", href: "/contact" },
-      { label: "Track Order", href: "/user/orders" },
-      { label: "Shipping & Returns", href: "/shipping-returns" },
-      { label: "FAQs", href: "/faq" },
+      { label: "Contact Us", href: "/user/bulk-order" },
+      { label: "Track Order", href: "user/profile" },
+     
+      { label: "FAQs", href: "/user/bulk-order" },
     ],
   },
-  {
-    title: "Legal",
-    links: [
-      { label: "Privacy Policy", href: "/privacy-policy" },
-      { label: "Terms of Service", href: "/terms" },
-      { label: "Refund Policy", href: "/refund-policy" },
-    ],
-  },
+  // {
+  //   title: "Legal",
+  //   links: [
+  //     { label: "Privacy Policy", href: "/privacy-policy" },
+  //     { label: "Terms of Service", href: "/terms" },
+  //     { label: "Refund Policy", href: "/refund-policy" },
+  //   ],
+  // },
 ];
 
 const socialLinks = [

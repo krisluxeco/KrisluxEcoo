@@ -1,20 +1,37 @@
 "use client";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { TrendingUp, CalendarDays, Wallet, Package, Users, Truck } from "lucide-react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-} from "recharts";
+
+// Custom SVG Icons for robust rendering
+const InstagramIcon = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+  </svg>
+);
+
+const LinkedinIcon = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+    <rect x="2" y="9" width="4" height="12"></rect>
+    <circle cx="4" cy="4" r="2"></circle>
+  </svg>
+);
+
+const GlobeIcon = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <circle cx="12" cy="12" r="10"></circle>
+    <line x1="2" y1="12" x2="22" y2="12"></line>
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+  </svg>
+);
 
 const serif = "'Cormorant Garamond', Georgia, serif";
 
-const AdminDashBoardClient = ({ earning, stats, chartData }) => {
+const AdminDashBoardClient = ({ earning, stats, chartData, trafficData }) => {
   const [filter, setFilter] = useState("sevenDays");
 
   const currentEarning =
@@ -35,7 +52,7 @@ const AdminDashBoardClient = ({ earning, stats, chartData }) => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full relative pb-20">
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -165,48 +182,103 @@ const AdminDashBoardClient = ({ earning, stats, chartData }) => {
           })}
         </div>
 
-        {/* Orders Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mt-6 rounded-2xl border border-[#ECE6DF] bg-white p-6 shadow-sm"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-lg font-semibold text-[#1C1C1A]" style={{ fontFamily: serif }}>
-                Orders Overview
-              </h2>
-              <p className="text-sm text-[#9E9088]">Last 7 days performance</p>
+        {/* Charts Grid */}
+        <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Orders Chart */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="lg:col-span-2 rounded-2xl border border-[#ECE6DF] bg-white p-6 shadow-sm"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-semibold text-[#1C1C1A]" style={{ fontFamily: serif }}>
+                  Orders Overview
+                </h2>
+                <p className="text-sm text-[#9E9088]">Last 7 days performance</p>
+              </div>
+              <TrendingUp className="h-5 w-5 text-[#4A6741]" />
             </div>
-            <TrendingUp className="h-5 w-5 text-[#4A6741]" />
-          </div>
 
-          <div className="h-[260px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#ECE6DF" />
-                <XAxis dataKey="day" stroke="#9E9088" fontSize={12} />
-                <YAxis allowDecimals={false} stroke="#9E9088" fontSize={12} />
-                <Tooltip
-                  contentStyle={{
-                    borderRadius: 12,
-                    border: "1px solid #ECE6DF",
-                    fontSize: 13,
-                  }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="orders"
-                  stroke="#4A6741"
-                  strokeWidth={3}
-                  dot={{ r: 4, fill: "#4A6741" }}
-                  activeDot={{ r: 6 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </motion.div>
+            <div className="h-[260px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ECE6DF" />
+                  <XAxis dataKey="day" stroke="#9E9088" fontSize={12} />
+                  <YAxis allowDecimals={false} stroke="#9E9088" fontSize={12} />
+                  <Tooltip
+                    contentStyle={{
+                      borderRadius: 12,
+                      border: "1px solid #ECE6DF",
+                      fontSize: 13,
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="orders"
+                    stroke="#4A6741"
+                    strokeWidth={3}
+                    dot={{ r: 4, fill: "#4A6741" }}
+                    activeDot={{ r: 6 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </motion.div>
+
+          {/* Traffic Sources */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="rounded-2xl border border-[#ECE6DF] bg-white p-6 shadow-sm flex flex-col"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-lg font-semibold text-[#1C1C1A]" style={{ fontFamily: serif }}>
+                  Traffic Sources
+                </h2>
+                <p className="text-sm text-[#9E9088]">Total Site Visits: {trafficData?.total || 0}</p>
+              </div>
+              <Users className="h-5 w-5 text-[#C8A97A]" />
+            </div>
+
+            <div className="flex-1 flex flex-col justify-center gap-4">
+              <div className="flex items-center justify-between p-3 rounded-xl border border-[#ECE6DF] bg-gray-50">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-pink-100 text-pink-600 rounded-lg">
+                    <InstagramIcon className="w-5 h-5" />
+                  </div>
+                  <span className="font-medium text-[#1C1C1A]">Instagram</span>
+                </div>
+                <span className="font-semibold">{trafficData?.instagram || 0}</span>
+              </div>
+
+              <div className="flex items-center justify-between p-3 rounded-xl border border-[#ECE6DF] bg-gray-50">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
+                    <LinkedinIcon className="w-5 h-5" />
+                  </div>
+                  <span className="font-medium text-[#1C1C1A]">LinkedIn</span>
+                </div>
+                <span className="font-semibold">{trafficData?.linkedin || 0}</span>
+              </div>
+
+              <div className="flex items-center justify-between p-3 rounded-xl border border-[#ECE6DF] bg-gray-50">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-gray-200 text-gray-600 rounded-lg">
+                    <GlobeIcon className="w-5 h-5" />
+                  </div>
+                  <span className="font-medium text-[#1C1C1A]">Direct / Other</span>
+                </div>
+                <span className="font-semibold">
+                  {(trafficData?.direct || 0) + (trafficData?.other || 0)}
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </motion.div>
     </div>
   );

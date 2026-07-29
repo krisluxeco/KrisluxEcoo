@@ -24,9 +24,8 @@ function FadeUp({ children, delay = 0, className = "" }) {
 
 // ─── Hero Slideshow ────────────────────────────────────────────────────────────
 const partnersSlides = [
-  { url: "https://images.pexels.com/photos/1579253/pexels-photo-1579253.jpeg?auto=compress&cs=tinysrgb&w=1600", caption: "Boutique Hospitality" },
-  { url: "https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=1600", caption: "Global Luxury Resorts" },
-  { url: "https://images.pexels.com/photos/105809/pexels-photo-105809.jpeg?auto=compress&cs=tinysrgb&w=1600", caption: "Corporate Gifting" },
+  { url: "/images/sustainability_hero_2.png", caption: "Boutique Hospitality" },
+  { url: "/images/HeroSection1.png", caption: "Global Luxury Resorts" },
 ];
 
 function PartnersSlideshow() {

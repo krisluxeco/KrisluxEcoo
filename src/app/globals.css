@@ -1,8 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Jersey+10+Charted&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-serif: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
-  --font-sans: var(--font-dm-sans), "DM Sans", system-ui, sans-serif;
+  --font-serif: "Jersey 10 Charted", var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Black Ops One", var(--font-dm-sans), "DM Sans", system-ui, sans-serif;
   
   --color-brand-cream: #FAF7F2;
   --color-brand-forest: #1C1C1A;
@@ -28,6 +29,10 @@ body {
   font-family: var(--font-sans);
 }
 
+* {
+  font-family: "Black Ops One", "Jersey 10 Charted", system-ui, sans-serif !important;
+}
+
 @keyframes marquee {
   0% { transform: translateX(0%); }
   100% { transform: translateX(-50%); }
@@ -46,3 +51,14 @@ body {
 }
 
 
+.black-ops-one-regular {
+  font-family: "Black Ops One", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.jersey-10-charted-regular {
+  font-family: "Jersey 10 Charted", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}

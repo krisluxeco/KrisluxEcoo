@@ -10,9 +10,9 @@ const sans = "'DM Sans', sans-serif";
 
 // ─── Hero Slideshow ────────────────────────────────────────────────────────────
 const blogSlides = [
-  { url: "/images/kitchen_dining.png", caption: "Sustaining The Earth" },
-  { url: "/images/fashion_bags.png", caption: "Handcrafted Luxury" },
-  { url: "/images/garden_outdoor.png", caption: "Natural Spaces" },
+  { url: "/images/HeroSection3.png", caption: "Sustaining The Earth" },
+  { url: "/images/HeroSection2.png", caption: "Handcrafted Luxury" },
+  { url: "/images/brand_Story_hero.png", caption: "Natural Spaces" },
 ];
 
 function BlogSlideshow() {

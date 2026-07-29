@@ -609,7 +609,7 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
             Curated <span className="italic text-[#C8A97A]">Elegance.</span>
           </h1>
           <p className="text-white/60 text-sm max-w-md font-light leading-relaxed">
-            Discover our entire collection of sustainable, artisan-crafted luxury pieces designed to elevate your space.
+            Discover our entire collection of sustainable, artisan-crafted Eco-Luxury pieces designed to elevate your space.
           </p>
         </div>
       </section>

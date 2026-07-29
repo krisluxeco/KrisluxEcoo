@@ -102,7 +102,7 @@ export default function AboutPage() {
 
   return (
     <main ref={containerRef} className="bg-[#FAF7F2] text-[#1C1C1A] overflow-x-hidden">
-      
+
       {/* 1. Cinematic Video Hero */}
       <section className="relative w-full h-[90vh] md:h-screen flex items-center justify-center overflow-hidden bg-[#1C1C1A]">
         <div className="absolute inset-0 w-full h-full">
@@ -115,10 +115,10 @@ export default function AboutPage() {
               frameBorder="0"
             ></iframe>
           </div>
-          
+
           {/* Elegant Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1A] via-[#1C1C1A]/40 to-[#1C1C1A]/10 pointer-events-none" />
-          
+
           <div className="absolute inset-0 flex flex-col justify-end pb-24 px-6 md:px-16 md:pb-32 max-w-7xl mx-auto w-full z-20 pointer-events-none">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -138,12 +138,12 @@ export default function AboutPage() {
 
         {/* Custom Slide Controls */}
         <div className="absolute bottom-8 right-6 md:right-16 z-30 flex items-center gap-6">
-          <button 
+          <button
             onClick={toggleVideoPlay}
             className="group flex items-center justify-center w-14 h-14 rounded-full border border-white/20 bg-white/5 backdrop-blur-md hover:bg-white/10 hover:border-white/40 transition-all text-white"
           >
             {isPlaying ? (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></svg>
             ) : (
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="ml-1"><path d="M8 5v14l11-7z" /></svg>
             )}
@@ -152,37 +152,95 @@ export default function AboutPage() {
       </section>
 
       {/* 2. Brand Ethos (Replacing solid green Who We Are section) */}
-      <section className="relative w-full py-32 px-6 md:px-16 bg-[#FAF7F2]">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-16 md:gap-24 items-center">
-          <div className="w-full md:w-1/2">
-            <Eyebrow>Who We Are</Eyebrow>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-light leading-tight mb-8" style={{ fontFamily: serif }}>
-              Founded in Begusarai,<br/>Bihar in 2023.
-            </h2>
-            <p className="text-[#1C1C1A]/70 text-lg md:text-xl font-light leading-relaxed mb-8">
-              We are an artisan-led, zero-waste, and export-ready eco-luxury brand. We build a formal, sustainable ecosystem that sources free raw materials from wetlands, trains rural artisans, and connects their premium creations directly to conscious consumers and global buyers.
-            </p>
-            <p className="text-[#1C1C1A]/70 text-lg md:text-xl font-light leading-relaxed">
-              We believe that true luxury is ethical and inclusive. Our ecosystem is built from the ground up to empower those who need it most.
-            </p>
-          </div>
+      <section className="relative w-full py-32 px-6 md:px-16 bg-[#FAF7F2] overflow-hidden">
+        {/* Animated Background Blobs */}
+        <motion.div 
+          animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-[#E8DDD0] rounded-full mix-blend-multiply filter blur-[120px] opacity-70 pointer-events-none" 
+        />
+        <motion.div 
+          animate={{ scale: [1, 1.3, 1], rotate: [0, -90, 0] }}
+          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+          className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-[#C8A97A]/20 rounded-full mix-blend-multiply filter blur-[120px] opacity-70 pointer-events-none" 
+        />
 
-          <div className="w-full md:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-8">
-            <div className="bg-white p-10 rounded-[2rem] shadow-sm border border-[#E8DDD0]">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-16 md:gap-24 items-center relative z-10">
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="w-full md:w-1/2"
+          >
+            <Eyebrow>Who We Are</Eyebrow>
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-4xl md:text-5xl lg:text-7xl font-light leading-[1.1] mb-8" 
+              style={{ fontFamily: serif }}
+            >
+              <span className="inline-block bg-gradient-to-r from-[#1C1C1A] to-[#6B6560] bg-clip-text text-transparent">Redefining</span> <br/> 
+              <span className="italic text-[#C8A97A]">Eco-</span>Luxury.
+            </motion.h2>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-[#1C1C1A]/70 text-lg md:text-xl font-light leading-relaxed mb-8"
+            >
+              Founded by students of IIT Patna, we are an artisan-led, zero-waste, and export-ready Eco-Luxury brand. We build a formal, sustainable ecosystem that sources free raw materials from wetlands, trains rural artisans, and connects their premium creations directly to conscious consumers and global buyers.
+            </motion.p>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="text-[#1C1C1A]/70 text-lg md:text-xl font-light leading-relaxed"
+            >
+              We believe that true Eco-Luxury is ethical and inclusive. Our ecosystem is built from the ground up to empower those who need it most.
+            </motion.p>
+          </motion.div>
+
+          <div className="w-full md:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-8 perspective-[1000px]">
+            <motion.div 
+              initial={{ opacity: 0, y: 50, rotateX: 10 }}
+              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              whileHover={{ scale: 1.05, y: -10, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.1)" }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-white/80 backdrop-blur-xl p-10 rounded-[2rem] shadow-sm border border-[#E8DDD0] transform-gpu transition-shadow"
+            >
               <h4 className="text-[3rem] leading-none text-[#C8A97A] font-light mb-4" style={{ fontFamily: serif }}>200+</h4>
-              <h5 className="text-lg font-medium mb-3">Artisans</h5>
+              <h5 className="text-lg font-medium mb-3 text-[#1C1C1A]">Artisans</h5>
               <p className="text-[#1C1C1A]/60 text-sm font-light leading-relaxed">Trained and onboarded across Begusarai, Madhubani, and Gaya.</p>
-            </div>
-            <div className="bg-white p-10 rounded-[2rem] shadow-sm border border-[#E8DDD0] sm:translate-y-8">
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, y: 80, rotateX: 10 }}
+              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              whileHover={{ scale: 1.05, y: -10, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.1)" }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="bg-white/80 backdrop-blur-xl p-10 rounded-[2rem] shadow-sm border border-[#E8DDD0] sm:translate-y-8 transform-gpu transition-shadow"
+            >
               <h4 className="text-[3rem] leading-none text-[#C8A97A] font-light mb-4" style={{ fontFamily: serif }}>80%</h4>
-              <h5 className="text-lg font-medium mb-3">Women-Led</h5>
+              <h5 className="text-lg font-medium mb-3 text-[#1C1C1A]">Women-Led</h5>
               <p className="text-[#1C1C1A]/60 text-sm font-light leading-relaxed">Predominantly driven by women, ensuring strong gender-lens credentials.</p>
-            </div>
-            <div className="bg-white p-10 rounded-[2rem] shadow-sm border border-[#E8DDD0] sm:col-span-2">
-              <h4 className="text-3xl leading-tight text-[#C8A97A] font-light mb-4" style={{ fontFamily: serif }}>Pehchan ID</h4>
-              <h5 className="text-lg font-medium mb-3">Formal Identity</h5>
-              <p className="text-[#1C1C1A]/60 text-sm font-light leading-relaxed">Every artisan receives formal employment status, fair wages, and access to social security.</p>
-            </div>
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, y: 50, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, margin: "-50px" }}
+              whileHover={{ scale: 1.02, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.15)" }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="bg-gradient-to-br from-white to-[#FAF7F2] p-10 rounded-[2rem] shadow-lg border border-[#E8DDD0] sm:col-span-2 flex items-center justify-center min-h-[160px] relative overflow-hidden group"
+            >
+              <div className="absolute inset-0 bg-[#C8A97A]/5 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+              <h4 className="text-[2rem] md:text-[2.5rem] leading-none text-[#C8A97A] font-light text-center uppercase tracking-widest relative z-10" style={{ fontFamily: serif }}>Founded in 2026, BIHAR</h4>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -215,34 +273,93 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* 4. Global Impact SDGs */}
-      <section className="py-32 px-6 md:px-16 bg-[#FAF7F2]">
-        <div className="max-w-7xl mx-auto">
+      {/* 4. Global Impact SDGs (Modern Interactive Layout) */}
+      <section className="py-32 px-6 md:px-16 bg-[#1C1C1A] text-white relative overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#C8A97A]/10 rounded-full blur-[150px] pointer-events-none" />
+        
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-24">
-            <Eyebrow dark>Our Global Impact</Eyebrow>
-            <h2 className="text-[clamp(2.5rem,4vw,4rem)] font-light leading-tight text-[#1C1C1A]" style={{ fontFamily: serif }}>
-              Aligned with 7 UN Sustainable Development Goals
-            </h2>
-            <div className="h-[2px] w-14 bg-[#C8A97A] mt-6 mx-auto" />
-            <p className="text-[#1C1C1A]/70 mt-6 max-w-xl mx-auto text-lg font-light leading-relaxed">
+            <Eyebrow dark={false}>Our Global Impact</Eyebrow>
+            <motion.h2 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="text-[clamp(2.5rem,4vw,4.5rem)] font-light leading-tight text-white mb-6" 
+              style={{ fontFamily: serif }}
+            >
+              Aligned with 7 UN Sustainable <br className="hidden md:block"/> Development Goals
+            </motion.h2>
+            <motion.div 
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="h-[1px] w-24 bg-[#C8A97A] mx-auto origin-center" 
+            />
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-white/60 mt-8 max-w-2xl mx-auto text-lg md:text-xl font-light leading-relaxed"
+            >
               Every product crafted in our ecosystem creates measurable, trackable impact.
-            </p>
+            </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {sdgs.map((s, i) => (
-              <div key={i} className="sdg-card bg-white border border-[#1C1C1A]/10 rounded-[2rem] p-8 shadow-sm hover:shadow-xl transition-shadow duration-500">
-                <div className="text-3xl font-light text-[#4A6741] mb-2" style={{ fontFamily: serif }}>{s.num}</div>
-                <div className="text-[11px] tracking-[0.15em] uppercase text-[#C8A97A] font-semibold mb-6" style={{ fontFamily: sans }}>{s.code}</div>
-                <p className="text-[#1C1C1A]/80 text-sm leading-relaxed font-light">{s.impact}</p>
-              </div>
-            ))}
-            <div className="sdg-card bg-[#1C1C1A] text-white rounded-[2rem] p-8 flex items-center justify-center text-center shadow-lg">
-              <p className="text-lg font-medium italic" style={{ fontFamily: serif }}>
-                "Building a formal, sustainable ecosystem."
-              </p>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-[minmax(250px,auto)]">
+            {sdgs.map((s, i) => {
+              let colSpanClass = "col-span-1";
+              if (i === 6) colSpanClass = "md:col-span-2 lg:col-span-3";
+              else if (i === 0 || i === 3 || i === 5) colSpanClass = "md:col-span-2";
+
+              return (
+                <motion.div 
+                  key={i} 
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  whileHover={{ y: -5, backgroundColor: "rgba(255, 255, 255, 0.08)" }}
+                  transition={{ duration: 0.5, delay: (i % 3) * 0.15 }}
+                  className={`group relative bg-white/5 border border-white/10 backdrop-blur-md rounded-[2rem] p-8 md:p-10 overflow-hidden cursor-default flex flex-col justify-end min-h-[280px] ${colSpanClass}`}
+                >
+                  {/* Huge faint background number */}
+                  <div className="absolute -top-6 -right-6 text-[140px] md:text-[180px] font-bold text-white/5 tracking-tighter leading-none pointer-events-none transition-transform duration-700 group-hover:scale-110 group-hover:-translate-x-4 group-hover:translate-y-4" style={{ fontFamily: sans }}>
+                    {s.num.replace("SDG", "").trim()}
+                  </div>
+                  
+                  <div className="relative z-10">
+                    <div className="text-sm tracking-[0.2em] uppercase text-[#C8A97A] font-semibold mb-3 flex items-center gap-3" style={{ fontFamily: sans }}>
+                      <span className="w-2 h-2 rounded-full bg-[#C8A97A] group-hover:animate-pulse" />
+                      {s.num}
+                    </div>
+                    <h3 className="text-2xl md:text-3xl font-light text-white mb-4 transition-colors duration-300" style={{ fontFamily: serif }}>{s.code}</h3>
+                    <p className="text-white/60 text-base md:text-lg leading-relaxed font-light transform-gpu transition-all duration-300">
+                      {s.impact}
+                    </p>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
+
+          {/* Cinematic Quote */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="mt-32 text-center"
+          >
+            <div className="text-6xl text-[#C8A97A]/40 mb-4" style={{ fontFamily: serif }}>"</div>
+            <h3 className="text-[clamp(2rem,5vw,4.5rem)] font-light leading-tight text-white max-w-4xl mx-auto" style={{ fontFamily: serif }}>
+              Building a formal, <br/>
+              <span className="italic text-[#C8A97A]">sustainable</span> ecosystem.
+            </h3>
+            <div className="text-6xl text-[#C8A97A]/40 mt-4 rotate-180" style={{ fontFamily: serif }}>"</div>
+          </motion.div>
         </div>
       </section>
 
@@ -259,7 +376,7 @@ export default function AboutPage() {
             <span className="text-[#C8A97A] italic">we are building for Bihar.</span>
           </h2>
           <p className="text-white/70 text-xl md:text-2xl font-light leading-relaxed max-w-3xl mx-auto">
-            As we expand our export pipelines to the <span className="text-white font-medium">UK, Germany, and Japan</span>, our goal is to scale our network to empower over <span className="text-white font-medium">10,000 artisans</span> while establishing Bihar's first globally recognized eco-luxury brand.
+            As we expand our export pipelines to the <span className="text-white font-medium">UK, Germany, and Japan</span>, our goal is to scale our network to empower over <span className="text-white font-medium">10,000 artisans</span> while establishing Bihar's first globally recognized Eco-Luxury brand.
           </p>
         </div>
       </section>

@@ -86,8 +86,8 @@ function UtilityStrip({ visible, onDismiss }) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.35 }}
-                className="text-[11px] tracking-[0.08em] text-[#C8A97A]"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
+                className="text-[10px] tracking-normal text-[#C8A97A]"
+                style={{ fontFamily: "'Black Ops One', sans-serif" }}
               >
                 {utilityMessages[index]}
               </motion.p>
@@ -267,14 +267,14 @@ export default function NavBar() {
               <LeafMark />
               <div className="flex flex-col leading-none">
                 <span
-                  className={`font-bold tracking-wide transition-colors duration-300 ${textTone}`}
-                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "1.4rem", letterSpacing: "0.04em" }}
+                  className={`font-bold tracking-normal transition-colors duration-300 ${textTone}`}
+                  style={{ fontFamily: "'Jersey 10 Charted', serif", fontSize: "1.6rem" }}
                 >
                   Krislux<span className="text-[#7FA06B]">ECO</span>
                 </span>
                 <span
-                  className={`text-[0.58rem] tracking-[0.2em] uppercase mt-0.5 transition-colors duration-300 ${logoSub}`}
-                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                  className={`text-[0.5rem] tracking-widest uppercase mt-0.5 transition-colors duration-300 ${logoSub}`}
+                  style={{ fontFamily: "'Black Ops One', sans-serif" }}
                 >
                   Handcrafted · Sustainable
                 </span>
@@ -298,9 +298,9 @@ export default function NavBar() {
                   >
                     <Link
                       href={link.href}
-                      className={`relative inline-flex items-center gap-1 text-sm tracking-[0.08em] uppercase outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-[#C8A97A]/50 rounded-sm ${active ? textTone : textToneMuted
+                      className={`relative inline-flex items-center gap-1 text-[11px] tracking-normal uppercase outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-[#C8A97A]/50 rounded-sm ${active ? textTone : textToneMuted
                         } hover:text-[#C8A97A]`}
-                      style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: active ? 500 : 400 }}
+                      style={{ fontFamily: "'Black Ops One', sans-serif", fontWeight: 400 }}
                       aria-haspopup={hasChildren ? "true" : undefined}
                       aria-expanded={hasChildren ? isOpen : undefined}
                     >
@@ -358,9 +358,9 @@ export default function NavBar() {
                                     />
                                     <span className="relative z-10">
                                       <span
-                                        className={`block text-[13px] tracking-wide font-medium transition-colors duration-300 ${childActive ? "text-[#4A6741]" : "text-[#1C1C1A] group-hover:text-[#4A6741]"
+                                        className={`block text-[11px] tracking-normal font-medium transition-colors duration-300 ${childActive ? "text-[#4A6741]" : "text-[#1C1C1A] group-hover:text-[#4A6741]"
                                           }`}
-                                        style={{ fontFamily: "'DM Sans', sans-serif" }}
+                                        style={{ fontFamily: "'Black Ops One', sans-serif" }}
                                       >
                                         {child.label}
                                       </span>

@@ -428,9 +428,12 @@ export default function FeaturedProducts({
   const scrollByCards = (dir) => {
     const rail = railRef.current;
     if (!rail) return;
-    physics.current.velocity = 0;
+    
+    // Stop physics if it's running so they don't fight
+    physics.current.running = false;
     physics.current.target = rail.scrollLeft + dir * CARD_WIDTH;
-    kickPhysics();
+    
+    rail.scrollBy({ left: dir * CARD_WIDTH, behavior: "smooth" });
   };
 
   return (
@@ -489,7 +492,7 @@ export default function FeaturedProducts({
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-sm text-[#6B6560] mt-4 max-w-md"
           >
-            Our most loved eco-friendly products, crafted by skilled artisans.
+            Behind the every Eco-Luxury product krisluxeco have a soulful root story.
           </motion.p>
         </motion.div>
 

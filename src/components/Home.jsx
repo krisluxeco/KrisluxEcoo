@@ -47,7 +47,7 @@ function CountUp({ target, suffix = "", prefix = "" }) {
 
 // ─── Marquee ───────────────────────────────────────────────────────────────────
 const marqueeItems = [
-  "Sustainable Luxury", "·", "Zero Waste", "·", "Artisan Crafted", "·",
+  "Eco-Luxury", "·", "Zero Waste", "·", "Artisan Crafted", "·",
   "B2B Bulk Orders", "·", "Eco-Friendly Materials", "·", "Corporate Gifting", "·"
 ];
 
@@ -88,7 +88,7 @@ function MarqueeStrip() {
 // ─── Hero Slideshow ────────────────────────────────────────────────────────────
 const heroSlides = [
   { url: "/images/HeroSection2.png", caption: "Handcrafted ceramics & baskets" },
-  { url: "/images/HeroSection3.png", caption: "Luxury eco-friendly amenities" },
+  { url: "/images/HeroSection3.png", caption: "Eco-Luxury amenities" },
   { url: "/images/HeroSection1.png", caption: "Sustainably Sourced Craft" },
 ];
 
@@ -134,17 +134,18 @@ function HeroSlideshow() {
 
 // ─── Categories Data ──────────────────────────────────────────────────────────
 const categories = [
-  { slug: "home-living", name: "Home & Living", tag: "Everyday Rituals", image: "/images/HomeCategory1.png", aspect: "aspect-[3/4]" },
-  { slug: "kitchen-dining", name: "Kitchen & Dining", tag: "Reclaimed Woodware", image: "/images/HomeCategory2.png", aspect: "aspect-[4/3]" },
-  { slug: "eco-living", name: "Eco Amenities", tag: "Zero-Waste Luxury", image: "/images/hero_hotel.png", aspect: "aspect-square" },
-  { slug: "business-wholesale", name: "Wholesale", tag: "Corporate Supply", image: "/images/HomeCategory4.png", aspect: "aspect-[3/4]" },
+  { slug: "Home & Living", name: "Home & Living", tag: "Everyday Rituals", image: "/images/HomeCategory1.png", aspect: "aspect-[3/4]" },
+  { slug: "Kitchen & Dining", name: "Kitchen & Dining", tag: "Reclaimed Woodware", image: "/images/HomeCategory2.png", aspect: "aspect-[4/3]" },
+  { slug: "Eco & Sustainable", name: "Eco Amenities", tag: "Zero-Waste Eco-Luxury", image: "/images/hero_hotel.png", aspect: "aspect-square" },
+  { slug: "Business & Wholesale", name: "Wholesale", tag: "Corporate Supply", image: "/images/HomeCategory4.png", aspect: "aspect-[3/4]" },
 ];
 
 // ─── Video Reels Data ────────────────────────────────────────────────────────
 const reels = [
   { id: 1, type: "instagram", url: "https://www.instagram.com/p/DaxAEiUJuEn/embed", title: "KrisluxECO Highlights" },
   { id: 2, type: "instagram", url: "https://www.instagram.com/p/DbMkSPLoP80/embed", title: "Eco-Friendly Lifestyle" },
-  { id: 3, type: "instagram", url: "https://www.instagram.com/p/Da8PEBqJjfW/embed", title: "Sustainable Living" }
+  { id: 3, type: "instagram", url: "https://www.instagram.com/p/Da8PEBqJjfW/embed", title: "Sustainable Living" },
+  { id: 4, type: "instagram", url: "https://www.instagram.com/p/Da-nAIKJOlk/embed", title: "Impact & Craft" }
 ];
 
 // ─── Main Home Page Component ──────────────────────────────────────────────────
@@ -277,13 +278,14 @@ export default function Home({ featuredProducts = [], savedProductIds = [], impa
             {categories.map((cat, i) => (
               <div
                 key={cat.slug}
-                className={`category-card group cursor-pointer ${i === 0 ? "md:col-span-6 md:pr-12 md:mt-0" :
-                  i === 1 ? "md:col-span-5 md:col-start-8 md:mt-64" :
-                    i === 2 ? "md:col-span-5 md:pl-12 md:-mt-32" :
-                      "md:col-span-6 md:col-start-7 md:mt-32"
-                  }`}
+                className={`category-card group cursor-pointer ${
+                  i === 0 ? "md:col-span-6 md:pr-12 md:mt-0" :
+                  i === 1 ? "md:col-span-5 md:col-start-8 md:mt-32" :
+                  i === 2 ? "md:col-span-5 md:pl-12 md:mt-16" :
+                  "md:col-span-6 md:col-start-7 md:mt-32"
+                }`}
               >
-                <Link href={`/user/products?category=${cat.slug}`}>
+                <Link href={`/user/products?category=${encodeURIComponent(cat.slug)}`}>
                   <div className="w-full bg-white p-4 md:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.03)] transition-transform duration-1000 group-hover:-translate-y-2">
                     <div className={`relative w-full overflow-hidden ${cat.aspect}`}>
                       <div className="absolute inset-0 bg-[#C8A97A]/0 group-hover:bg-[#C8A97A]/10 transition-colors duration-1000 z-10 mix-blend-overlay" />
@@ -309,16 +311,16 @@ export default function Home({ featuredProducts = [], savedProductIds = [], impa
       </section>
 
       {/* ─── INSTAGRAM / VIDEO REELS ────────────────────────────────────────── */}
-      <section className="py-24 px-6 bg-white border-y border-[#E8DDD0]">
+      <section className="py-16 px-6 bg-white border-y border-[#E8DDD0]">
         <div className="max-w-7xl mx-auto">
-          <div className="reel-header text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-light text-[#1C1C1A] mb-4" style={{ fontFamily: serif }}>
+          <div className="reel-header text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-light text-[#1C1C1A] mb-3" style={{ fontFamily: serif }}>
               Behind the <span className="italic text-[#C8A97A]">Craft</span>
             </h2>
             <p className="text-[#6B6560] text-sm">Follow our journey and see how each piece is made.</p>
           </div>
 
-          <div className="reel-container grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="reel-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {reels.map((reel) => (
               reel.type === "instagram" ? (
                 <div key={reel.id} className="reel-card group relative aspect-[9/16] rounded-[24px] overflow-hidden bg-white shadow-lg">
@@ -352,7 +354,7 @@ export default function Home({ featuredProducts = [], savedProductIds = [], impa
             ))}
           </div>
 
-          <div className="mt-16 flex justify-center">
+          <div className="mt-10 flex justify-center">
             <a href="https://www.instagram.com/krisluxeco/" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 border border-[#E8DDD0] bg-transparent text-[#1C1C1A] px-8 py-4 rounded-full text-xs tracking-[0.2em] uppercase font-semibold hover:bg-[#1C1C1A] hover:text-[#FAF7F2] transition-all duration-500">
               Watch More on Instagram
               <svg className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -426,7 +428,7 @@ export default function Home({ featuredProducts = [], savedProductIds = [], impa
               <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1A] via-transparent to-transparent opacity-90 pointer-events-none" />
               <div className="absolute bottom-8 left-8 right-8 z-10 pointer-events-none">
                 <p className="text-white/90 font-light text-xl italic" style={{ fontFamily: serif }}>
-                  "True luxury is knowing exactly where your products come from, and the hands that shaped them."
+                  "True Eco-Luxury is knowing exactly where your products come from, and the hands that shaped them."
                 </p>
               </div>
             </div>

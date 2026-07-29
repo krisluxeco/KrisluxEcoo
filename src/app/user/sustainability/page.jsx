@@ -26,9 +26,9 @@ function FadeUp({ children, delay = 0, className = "" }) {
 
 // ─── Hero Slideshow ────────────────────────────────────────────────────────────
 const sustainabilitySlides = [
-  { url: "/images/sustainability_hero_1.png", caption: "Preserving Nature" },
-  { url: "/images/sustainability_hero_2.png", caption: "Deep Roots" },
-  { url: "/images/sustainability_hero_3.png", caption: "Sustainable Growth" },
+  { url: "/images/BrandStory4.png", caption: "Preserving Nature" },
+  { url: "/images/HeroSection2.png", caption: "Deep Roots" },
+  { url: "/images/artisan_empowerment.png", caption: "Sustainable Growth" },
 ];
 
 function SustainabilitySlideshow() {
@@ -110,12 +110,12 @@ export default function SustainabilityPage() {
     {
       title: "Ethical Sourcing",
       desc: "Every material we use is traced back to its origin. We work exclusively with certified fair-trade cooperatives across 14 Indian states, ensuring that the hands that craft our products are compensated fairly and work in safe conditions.",
-      img: "/images/ethical_sourcing.png",
+      img: "/images/loginimg.png",
     },
     {
       title: "Zero Plastics",
       desc: "From our supply chain to your doorstep, we have eliminated single-use plastics. Our packaging utilizes biodegradable cornstarch, recycled paper, and reusable fabric totes to ensure our environmental footprint remains as light as possible.",
-      img: "/images/zero_plastics.png",
+      img: "/images/signup.png",
     },
     {
       title: "Artisan Empowerment",
@@ -162,7 +162,7 @@ export default function SustainabilityPage() {
               className="flex flex-col sm:flex-row gap-6"
             >
               <p className="text-white/80 text-sm max-w-md font-light leading-loose">
-                Luxury shouldn't cost the earth. Discover how we are redefining premium amenities through ethical sourcing, artisan empowerment, and zero-plastic initiatives.
+                Eco-Luxury shouldn't cost the earth. Discover how we are redefining premium amenities through ethical sourcing, artisan empowerment, and zero-plastic initiatives.
               </p>
             </motion.div>
           </div>
@@ -209,7 +209,7 @@ export default function SustainabilityPage() {
         <div className="max-w-2xl mx-auto">
           <FadeUp>
             <h2 className="text-4xl md:text-5xl font-[300] mb-8" style={{ fontFamily: serif }}>
-              Experience <span className="italic text-[#1C1C1A]/60">Sustainable Luxury</span>
+              Experience <span className="italic text-[#1C1C1A]/60">Eco-Luxury</span>
             </h2>
             <Link href="/user/products" className="relative group inline-block text-[11px] tracking-[0.3em] uppercase font-medium pb-2 text-[#1C1C1A] mt-8">
               <span className="relative z-10">Explore The Collection</span>

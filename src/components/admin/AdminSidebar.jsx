@@ -17,11 +17,13 @@ import {
   FileText,
   MessageSquare,
   Star,
+  Activity,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 
 const navItems = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { label: "Social Hub", href: "/admin/social", icon: Activity },
   { label: "Products", href: "/admin/products", icon: Package },
   { label: "Orders", href: "/admin/orders", icon: ShoppingCart },
   { label: "Customers", href: "/admin/customers", icon: Users },

@@ -4,6 +4,7 @@ import connectDb from "@/lib/db";
 import Quote from "@/models/quote.model";
 import User from "@/models/user.model";
 import Product from "@/models/product.model"; // Ensure model is registered
+import Visit from "@/models/visit.model";
 
 const AdminDashBoard = async () => {
   await connectDb();
@@ -90,11 +91,34 @@ const AdminDashBoard = async () => {
     { title: "Canceled Orders", value: canceledOrders },
   ];
 
+  // 3. Fetch Traffic/Referral Data
+  const visits = await Visit.aggregate([
+    { $group: { _id: "$source", count: { $sum: 1 } } }
+  ]);
+
+  const trafficData = {
+    instagram: 0,
+    linkedin: 0,
+    direct: 0,
+    other: 0,
+    total: 0
+  };
+
+  visits.forEach(v => {
+    if (v._id === "instagram") trafficData.instagram = v.count;
+    else if (v._id === "linkedin") trafficData.linkedin = v.count;
+    else if (v._id === "direct") trafficData.direct = v.count;
+    else trafficData.other += v.count;
+    
+    trafficData.total += v.count;
+  });
+
   return (
     <AdminDashBoardClient
       earning={earning}
       stats={stats}
       chartData={chartData}
+      trafficData={trafficData}
     />
   );
 };

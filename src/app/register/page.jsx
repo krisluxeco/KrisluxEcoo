@@ -211,7 +211,7 @@ const ecoJokes = [
   "Why did the eco-friendly product break up with plastic? It just wasn't sustainable. 💔♻️",
   "Logging you in... faster than our products biodegrade! ⏳🍃",
   "Don't worry, your password is as secure as our commitment to the earth. 🌍🔒",
-  "Zero plastic, 100% luxury... and a 0% chance we'd sell your data. 🤫✨",
+  "Zero plastic, 100% Eco-Luxury... and a 0% chance we'd sell your data. 🤫✨",
   "Why are sustainable products so calm? Because they have a lot of inner peace! 🧘‍♀️🌿",
 ];
 
@@ -381,7 +381,7 @@ export default function RegisterPage() {
               className="absolute inset-0 bg-cover bg-center"
               style={{
                 backgroundImage:
-                  "url(/images/auth-hero.png)",
+                  "url(/images/signup.png)",
               }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1A] via-[#1C1C1A]/60 to-transparent" />

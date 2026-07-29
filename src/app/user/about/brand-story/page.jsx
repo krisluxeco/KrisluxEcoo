@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -76,7 +76,7 @@ const CHAPTERS = [
     id: "craft",
     eyebrow: "Chapter Four — The Craft",
     title: "Heritage meets modern design",
-    line: "Collaborating with the National Institute of Design (NID), we combined traditional weaving heritage with modern ergonomics to craft export-ready, eco-luxury products.",
+    line: "Collaborating with the National Institute of Design (NID), we combined traditional weaving heritage with modern ergonomics to craft export-ready, Eco-Luxury products.",
     img: "/images/BrandStory4.png",
     align: "right",
   },
@@ -271,29 +271,28 @@ function ImageStory() {
 export default function BrandStoryPage() {
   return (
     <div className="bg-[#050505] min-h-screen">
-      {/* Video Hero Section */}
+      {/* Image Hero Section */}
       <section className="relative w-full h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-full object-cover filter brightness-[0.65] contrast-[1.1]"
-          >
-            {/* Cinematic nature/forest stock video */}
-            <source src="https://videos.pexels.com/video-files/3209211/3209211-uhd_2560_1440_25fps.mp4" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-[#050505] z-1" />
+          <Image
+            src="/images/brand_Story_hero.png"
+            alt="Brand Story Hero"
+            fill
+            className="object-cover opacity-80"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/30 z-1" />
+          {/* Just a slight fade at the very bottom to blend with the next section */}
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#050505] to-transparent z-10" />
         </div>
 
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto flex flex-col items-center">
-          <h2 className="text-[10px] md:text-xs font-mono tracking-[0.3em] uppercase text-[#C8A97A] mb-6">Our Heritage</h2>
-          <h1 className="text-4xl md:text-7xl font-serif text-white font-light tracking-wide leading-tight mb-8">
+          <h2 className="text-[10px] md:text-xs tracking-[0.3em] uppercase text-[#C8A97A] mb-6" style={{ fontFamily: mono }}>Our Heritage</h2>
+          <h1 className="text-4xl md:text-7xl text-white font-light tracking-wide leading-tight mb-8" style={{ fontFamily: serif }}>
             Nature, <span className="italic">refined.</span>
           </h1>
-          <p className="text-sm md:text-lg text-white/80 font-sans max-w-2xl mx-auto leading-relaxed font-light mb-12">
-            KrisluxECO bridges the gap between organic sustainability and uncompromising eco-luxury. Scroll down to watch our journey unfold.
+          <p className="text-sm md:text-lg text-white/80 max-w-2xl mx-auto leading-relaxed font-light mb-12" style={{ fontFamily: sans }}>
+            KrisluxECO bridges the gap between organic sustainability and uncompromising Eco-Luxury. Scroll down to watch our journey unfold.
           </p>
           <div className="w-[1px] h-24 bg-gradient-to-b from-[#C8A97A] to-transparent animate-pulse" />
         </div>

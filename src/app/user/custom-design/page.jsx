@@ -105,7 +105,7 @@ export default function CustomDesignPage() {
             className="inline-block mb-6 px-5 py-2 border border-[#C8A97A]/40 rounded-full text-[#C8A97A] text-[10px] sm:text-xs uppercase tracking-[0.25em] font-medium backdrop-blur-md bg-black/40"
             style={{ fontFamily: sans }}
           >
-            Quiet Luxury · 100% Biodegradable
+            Quiet Eco-Luxury · 100% Biodegradable
           </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -123,7 +123,7 @@ export default function CustomDesignPage() {
             className="text-base md:text-[17px] text-[#E8DDD0] leading-relaxed max-w-md font-light mx-auto"
             style={{ fontFamily: sans }}
           >
-            Discover the perfect harmony of nature and elegance. We specialize in crafting luxury sustainable products that bring your unique vision to life. Collaborate directly with our artisans to create bespoke, premium items that are as beautiful as they are kind to the earth.
+            Discover the perfect harmony of nature and elegance. We specialize in crafting Eco-Luxury sustainable products that bring your unique vision to life. Collaborate directly with our artisans to create bespoke, premium items that are as beautiful as they are kind to the earth.
           </motion.p>
         </div>
       </div>
@@ -134,9 +134,10 @@ export default function CustomDesignPage() {
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#E8DDD0]/50 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/3" />
 
         <div className="w-full max-w-xl relative z-10">
-          <div className="mb-12 lg:hidden text-center">
-            <h2 className="text-3xl font-light text-[#1C1C1A] mb-2" style={{ fontFamily: serif }}>Start Your Project</h2>
-            <p className="text-sm text-[#6B6560]" style={{ fontFamily: sans }}>Fill out the details below</p>
+          <div className="mb-6 text-center">
+            <p className="text-lg md:text-xl font-bold text-[#1C1C1A] uppercase tracking-wider" style={{ fontFamily: sans }}>
+              We are converting waste into sustainable Eco-Luxury
+            </p>
           </div>
 
           <motion.div
