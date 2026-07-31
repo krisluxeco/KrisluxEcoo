@@ -7,8 +7,8 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 
 // ─── Shared Typography Helpers ─────────────────────────────────────────────────
-const serif = "'Cormorant Garamond', Georgia, serif";
-const sans = "'DM Sans', sans-serif";
+const serif = "var(--font-playfair), Georgia, serif";
+const sans = "var(--font-montserrat), sans-serif";
 
 // ─── Floating Leaf Particle (reused from home / register) ──────────────────────
 function Leaf({ style }) {

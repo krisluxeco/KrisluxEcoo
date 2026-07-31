@@ -7,8 +7,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import TeamSection from "@/components/TeamSection";
 import { motion } from "framer-motion";
 
-const serif = "'Cormorant Garamond', Georgia, serif";
-const sans = "'DM Sans', sans-serif";
+const serif = "var(--font-playfair), Georgia, serif";
+const sans = "var(--font-montserrat), sans-serif";
 
 function Eyebrow({ children, dark = false }) {
   return (

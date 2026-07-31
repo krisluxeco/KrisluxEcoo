@@ -68,7 +68,7 @@ export default function CustomersList() {
   return (
     <div className="space-y-6 pb-12">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-2xl font-bold text-[#1C1C1A]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+        <h1 className="text-2xl font-bold text-[#1C1C1A]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
           Customers & Analytics
         </h1>
       </div>

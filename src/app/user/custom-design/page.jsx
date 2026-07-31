@@ -6,8 +6,8 @@ import { motion } from "framer-motion";
 import { Send, CheckCircle, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 
-const serif = "'Cormorant Garamond', Georgia, serif";
-const sans = "'DM Sans', sans-serif";
+const serif = "var(--font-playfair), Georgia, serif";
+const sans = "var(--font-montserrat), sans-serif";
 
 export default function CustomDesignPage() {
   const { data: session } = useSession();

@@ -18,8 +18,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
   ─────────────────────────────────────────────────────────────────────────
 */
 
-const serif = "'Cormorant Garamond', Georgia, serif";
-const sans = "'DM Sans', sans-serif";
+const serif = "var(--font-playfair), Georgia, serif";
+const sans = "var(--font-montserrat), sans-serif";
 const mono = "'IBM Plex Mono', monospace";
 
 const TIMELINE = [

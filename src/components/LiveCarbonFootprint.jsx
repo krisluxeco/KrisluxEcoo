@@ -3,8 +3,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, useInView, animate } from "framer-motion";
 
-const serif = "'Cormorant Garamond', Georgia, serif";
-const sans = "'DM Sans', sans-serif";
+const serif = "var(--font-playfair), Georgia, serif";
+const sans = "var(--font-montserrat), sans-serif";
 
 export default function LiveCarbonFootprint({ impactStats, detailedStats, recentItems }) {
   // Use passed stats, or fallback if undefined
@@ -40,6 +40,15 @@ export default function LiveCarbonFootprint({ impactStats, detailedStats, recent
       
       {/* Grid Pattern overlay */}
       <div className="absolute inset-0 opacity-[0.02] z-0" style={{ backgroundImage: "linear-gradient(#C8A97A 1px, transparent 1px), linear-gradient(90deg, #C8A97A 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
+
+      {/* PARALLAX BACKGROUND */}
+      <div className="absolute inset-0 w-full h-[140%] -top-[20%] pointer-events-none z-0">
+         <img 
+           src="https://images.unsplash.com/photo-1506057213367-028a17ec52e5?auto=format&fit=crop&w=2000" 
+           className="gsap-parallax w-full h-full object-cover opacity-[0.25]"
+           alt="Dark Tropical Leaves Parallax Texture"
+         />
+      </div>
 
       <div className="relative z-10 max-w-7xl mx-auto flex flex-col lg:flex-row gap-20 items-center lg:items-start justify-between">
         

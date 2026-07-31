@@ -4,8 +4,8 @@ import { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 
 // ─── Shared Typography Helpers (matches Home.jsx) ──────────────────────────────
-const serif = "'Cormorant Garamond', Georgia, serif";
-const sans = "'DM Sans', sans-serif";
+const serif = "var(--font-playfair), Georgia, serif";
+const sans = "var(--font-montserrat), sans-serif";
 
 // ⚠️ Update these with your real business details
 const COMPANY = {

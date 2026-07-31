@@ -1,19 +1,19 @@
 import LayoutWrapper from "@/components/LayoutWrapper";
 import GoToTop from "@/components/GoToTop";
 import "./globals.css";
-import { Cormorant_Garamond, DM_Sans } from "next/font/google";
+import { Playfair_Display, Montserrat } from "next/font/google";
 
-const cormorant = Cormorant_Garamond({
+const playfair = Playfair_Display({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-cormorant",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-playfair",
   display: "swap",
 });
 
-const dmSans = DM_Sans({
+const montserrat = Montserrat({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-dm-sans",
+  variable: "--font-montserrat",
   display: "swap",
 });
 
@@ -58,7 +58,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${dmSans.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${montserrat.variable}`}>
       <LayoutWrapper>
         <body className="min-h-full flex flex-col font-sans bg-[#FAF7F2] text-[#1C1C1A]">
           {children}

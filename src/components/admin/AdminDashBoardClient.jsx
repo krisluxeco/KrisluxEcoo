@@ -29,7 +29,7 @@ const GlobeIcon = ({ className }) => (
   </svg>
 );
 
-const serif = "'Cormorant Garamond', Georgia, serif";
+const serif = "var(--font-playfair), Georgia, serif";
 
 const AdminDashBoardClient = ({ earning, stats, chartData, trafficData }) => {
   const [filter, setFilter] = useState("sevenDays");

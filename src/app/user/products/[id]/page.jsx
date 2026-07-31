@@ -72,7 +72,7 @@ export default async function ProductDetailPage({ params }) {
         <Package size={48} className="text-[#9E9088] mb-4" />
         <h2
           className="text-3xl font-semibold text-[#1C1C1A]"
-          style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+          style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
         >
           Product Not Found
         </h2>

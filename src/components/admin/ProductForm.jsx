@@ -19,7 +19,7 @@ import {
   Boxes,
 } from "lucide-react";
 
-const serif = "'Cormorant Garamond', Georgia, serif";
+const serif = "var(--font-playfair), Georgia, serif";
 
 const defaultCategories = [
   "Home & Living",

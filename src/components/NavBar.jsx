@@ -87,7 +87,7 @@ function UtilityStrip({ visible, onDismiss }) {
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.35 }}
                 className="text-[10px] tracking-normal text-[#C8A97A]"
-                style={{ fontFamily: "'Black Ops One', sans-serif" }}
+                style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
               >
                 {utilityMessages[index]}
               </motion.p>
@@ -268,13 +268,13 @@ export default function NavBar() {
               <div className="flex flex-col leading-none">
                 <span
                   className={`font-bold tracking-normal transition-colors duration-300 ${textTone}`}
-                  style={{ fontFamily: "'Jersey 10 Charted', serif", fontSize: "1.6rem" }}
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1.6rem" }}
                 >
                   Krislux<span className="text-[#7FA06B]">ECO</span>
                 </span>
                 <span
                   className={`text-[0.5rem] tracking-widest uppercase mt-0.5 transition-colors duration-300 ${logoSub}`}
-                  style={{ fontFamily: "'Black Ops One', sans-serif" }}
+                  style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
                 >
                   Handcrafted · Sustainable
                 </span>
@@ -300,7 +300,7 @@ export default function NavBar() {
                       href={link.href}
                       className={`relative inline-flex items-center gap-1 text-[11px] tracking-normal uppercase outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-[#C8A97A]/50 rounded-sm ${active ? textTone : textToneMuted
                         } hover:text-[#C8A97A]`}
-                      style={{ fontFamily: "'Black Ops One', sans-serif", fontWeight: 400 }}
+                      style={{ fontFamily: "var(--font-montserrat), sans-serif", fontWeight: 400 }}
                       aria-haspopup={hasChildren ? "true" : undefined}
                       aria-expanded={hasChildren ? isOpen : undefined}
                     >
@@ -360,7 +360,7 @@ export default function NavBar() {
                                       <span
                                         className={`block text-[11px] tracking-normal font-medium transition-colors duration-300 ${childActive ? "text-[#4A6741]" : "text-[#1C1C1A] group-hover:text-[#4A6741]"
                                           }`}
-                                        style={{ fontFamily: "'Black Ops One', sans-serif" }}
+                                        style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
                                       >
                                         {child.label}
                                       </span>
@@ -449,7 +449,7 @@ export default function NavBar() {
                 <Link
                   href="/user/bulk-order"
                   className="inline-flex items-center gap-2 bg-[#4A6741] text-white text-sm px-5 py-2.5 rounded-full tracking-wide hover:bg-[#3a5233] transition-colors shadow-[0_4px_20px_rgba(74,103,65,0.15)] hover:shadow-[0_4px_20px_rgba(74,103,65,0.4)]"
-                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                  style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
                 >
                   Bulk Order
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -524,7 +524,7 @@ export default function NavBar() {
                   <LeafMark />
                   <span
                     className="font-bold text-[#1C1C1A]"
-                    style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "1.2rem" }}
+                    style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1.2rem" }}
                   >
                     Krislux<span className="text-[#4A6741]">ECO</span>
                   </span>
@@ -565,7 +565,7 @@ export default function NavBar() {
                             aria-expanded={isExpanded}
                             className={`w-full flex items-center justify-between text-3xl font-light transition-colors outline-none focus-visible:text-[#4A6741] ${active ? "text-[#4A6741]" : "text-[#1C1C1A]"
                               }`}
-                            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+                            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
                           >
                             {link.label}
                             <motion.svg
@@ -601,7 +601,7 @@ export default function NavBar() {
                                       ? "text-[#4A6741]"
                                       : "text-[#1C1C1A]/70 hover:text-[#4A6741]"
                                       }`}
-                                    style={{ fontFamily: "'DM Sans', sans-serif" }}
+                                    style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
                                   >
                                     {link.label} overview
                                   </Link>
@@ -623,7 +623,7 @@ export default function NavBar() {
                                           <span
                                             className={`block text-base font-medium ${childActive ? "text-[#4A6741]" : "text-[#1C1C1A]"
                                               }`}
-                                            style={{ fontFamily: "'DM Sans', sans-serif" }}
+                                            style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
                                           >
                                             {child.label}
                                           </span>
@@ -645,7 +645,7 @@ export default function NavBar() {
                           onClick={() => setMobileOpen(false)}
                           className={`block text-3xl font-light transition-colors outline-none focus-visible:text-[#4A6741] ${active ? "text-[#4A6741]" : "text-[#1C1C1A] hover:text-[#4A6741]"
                             }`}
-                          style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+                          style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
                         >
                           {link.label}
                         </Link>
@@ -746,7 +746,7 @@ export default function NavBar() {
                 <Link
                   href="/products"
                   className="block w-full text-center bg-[#4A6741] text-white text-base py-4 rounded-2xl tracking-wider hover:bg-[#3a5233] transition-colors"
-                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                  style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
                 >
                   Get a Quote
                 </Link>

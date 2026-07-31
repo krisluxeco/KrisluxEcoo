@@ -79,7 +79,7 @@ export default function CategoryCard({ cat, index, featured = false }) {
             <h3
               className={`text-white font-medium leading-[1.05] ${featured ? "text-[2.4rem] md:text-[3rem]" : "text-2xl md:text-[1.9rem]"
                 }`}
-              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
             >
               {cat.name}
             </h3>

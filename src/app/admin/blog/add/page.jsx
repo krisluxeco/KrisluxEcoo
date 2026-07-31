@@ -47,7 +47,7 @@ export default function AddBlog() {
         <Link href="/admin/blog" className="text-gray-500 hover:text-gray-900 transition-colors">
           <ArrowLeft size={20} />
         </Link>
-        <h1 className="text-2xl font-bold text-[#1C1C1A]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+        <h1 className="text-2xl font-bold text-[#1C1C1A]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
           Create New Post
         </h1>
       </div>

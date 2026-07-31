@@ -64,11 +64,11 @@ export default function BlogReader() {
             </div>
             <h1
               className="text-4xl md:text-5xl lg:text-6xl text-[#1C1C1A] leading-tight"
-              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
             >
               {blog.title}
             </h1>
-            <div className="text-[#9E9088] italic" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "1.2rem" }}>
+            <div className="text-[#9E9088] italic" style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1.2rem" }}>
               by {blog.author}
             </div>
           </header>

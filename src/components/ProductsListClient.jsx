@@ -20,8 +20,8 @@ import {
 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 
-const serif = "'Cormorant Garamond', Georgia, serif";
-const sans = "'DM Sans', sans-serif";
+const serif = "var(--font-playfair), Georgia, serif";
+const sans = "var(--font-montserrat), sans-serif";
 
 /* ----------------------------------------------------------------------- */
 /* Small building blocks                                                   */
@@ -283,14 +283,14 @@ export function StorefrontProductCard({ product, isLiked = false, onToggleSaved 
         <div className="p-5 flex flex-col flex-1" style={{ transform: "translateZ(20px)" }}>
           <p
             className="text-[11px] uppercase tracking-[0.14em] text-[#C8A97A] italic mb-1.5 truncate"
-            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
           >
             {product.category}
           </p>
 
           <h3
             className="text-lg leading-snug text-[#1C1C1A] mb-3 line-clamp-2 min-h-[2.8rem]"
-            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
           >
             {product.name}
           </h3>
@@ -593,26 +593,7 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
   );
 
   return (
-    <main ref={containerRef} className="relative min-h-screen bg-[#FAF7F2] text-[#1C1C1A]" style={{ fontFamily: sans }}>
-      
-      {/* ─── Cinematic Page Header ────────────────────────────────────────── */}
-      <section className="relative pt-32 pb-16 px-6 bg-[#1C1C1A] text-white border-b border-[#C8A97A]/20">
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)", backgroundSize: "32px 32px" }} />
-        
-        <div className="relative z-10 max-w-7xl mx-auto flex flex-col items-center text-center reveal-header">
-          <p className="flex items-center gap-3 text-[10px] tracking-[0.4em] uppercase text-[#C8A97A] mb-4 font-bold">
-            <span className="w-8 h-px bg-[#C8A97A]/50" />
-            The Complete Catalog
-            <span className="w-8 h-px bg-[#C8A97A]/50" />
-          </p>
-          <h1 className="text-[clamp(2.5rem,5vw,4.5rem)] font-light leading-tight mb-4" style={{ fontFamily: serif }}>
-            Curated <span className="italic text-[#C8A97A]">Elegance.</span>
-          </h1>
-          <p className="text-white/60 text-sm max-w-md font-light leading-relaxed">
-            Discover our entire collection of sustainable, artisan-crafted Eco-Luxury pieces designed to elevate your space.
-          </p>
-        </div>
-      </section>
+    <main ref={containerRef} className="relative min-h-screen pt-28 bg-[#FAF7F2] text-[#1C1C1A]" style={{ fontFamily: sans }}>
 
       {/* ─── Top Utility Bar ────────────────────────────────────────────── */}
       <div className="bg-[#FAF7F2] border-b border-[#E8DDD0] py-4 px-6 relative">

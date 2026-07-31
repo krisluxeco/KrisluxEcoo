@@ -55,7 +55,7 @@ export default function AdminShell({ children }) {
           </button>
           <h1
             className="text-lg font-semibold text-[#1C1C1A]"
-            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
           >
             Admin
           </h1>

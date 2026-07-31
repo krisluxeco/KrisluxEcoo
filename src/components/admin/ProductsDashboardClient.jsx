@@ -19,8 +19,8 @@ import {
 } from "lucide-react";
 import ProductForm from "./ProductForm";
 
-const serif = "'Cormorant Garamond', Georgia, serif";
-const sans = "'DM Sans', sans-serif";
+const serif = "var(--font-playfair), Georgia, serif";
+const sans = "var(--font-montserrat), sans-serif";
 
 export default function ProductsDashboardClient({ initialProducts = [] }) {
   const [products, setProducts] = useState(initialProducts);

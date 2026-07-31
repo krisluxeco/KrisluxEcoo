@@ -49,8 +49,8 @@ export async function POST(request) {
       to: user.email,
       subject: "KrisluxECO - Password Reset Verification Code",
       html: `
-        <div style="font-family: 'DM Sans', sans-serif; max-w-md; margin: 0 auto; color: #1C1C1A;">
-          <h2 style="color: #4A6741; font-family: 'Cormorant Garamond', serif; font-size: 28px;">Password Reset</h2>
+        <div style="font-family: var(--font-montserrat), sans-serif; max-w-md; margin: 0 auto; color: #1C1C1A;">
+          <h2 style="color: #4A6741; font-family: var(--font-playfair), Georgia, serif; font-size: 28px;">Password Reset</h2>
           <p>Hello ${user.firstName},</p>
           <p>We received a request to reset the password for your KrisluxECO account.</p>
           <p>Your password reset verification code is:</p>

@@ -41,7 +41,7 @@ export default function AdminReviewsPage() {
       <div className="mb-8">
         <h1
           className="text-3xl font-semibold text-[#1C1C1A] mb-1"
-          style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+          style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
         >
           Customer Reviews
         </h1>

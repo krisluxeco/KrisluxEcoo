@@ -20,7 +20,7 @@ const LinkedinIcon = ({ className }) => (
   </svg>
 );
 
-const serif = "'Cormorant Garamond', Georgia, serif";
+const serif = "var(--font-playfair), Georgia, serif";
 
 const mockNotifications = [
   { id: 1, text: "New Instagram follower", time: "2m ago", source: "Instagram", icon: InstagramIcon, color: "text-pink-500", bg: "bg-pink-100" },

@@ -8,8 +8,8 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, Mail, Phone, Upload, Check, Loader2, Camera } from "lucide-react";
 
-const serif = "'Cormorant Garamond', Georgia, serif";
-const sans = "'DM Sans', sans-serif";
+const serif = "var(--font-playfair), Georgia, serif";
+const sans = "var(--font-montserrat), sans-serif";
 
 export default function AdminProfilePage() {
   const { data: session, status, update } = useSession();

@@ -10,8 +10,8 @@ import { User, Mail, Phone, Check, Loader2, Camera, LayoutDashboard, History, Se
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import Link from "next/link";
 
-const serif = "'Cormorant Garamond', Georgia, serif";
-const sans = "'DM Sans', sans-serif";
+const serif = "var(--font-playfair), Georgia, serif";
+const sans = "var(--font-montserrat), sans-serif";
 
 export default function UserProfilePage() {
   const { data: session, status, update } = useSession();

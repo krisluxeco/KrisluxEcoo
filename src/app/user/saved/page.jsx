@@ -8,8 +8,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Package, Loader2, ArrowLeft } from "lucide-react";
 import { StorefrontProductCard } from "@/components/ProductsListClient";
 
-const serif = "'Cormorant Garamond', Georgia, serif";
-const sans = "'DM Sans', sans-serif";
+const serif = "var(--font-playfair), Georgia, serif";
+const sans = "var(--font-montserrat), sans-serif";
 
 export default function SavedProductsPage() {
   const { status } = useSession();

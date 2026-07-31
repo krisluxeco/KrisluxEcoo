@@ -53,7 +53,7 @@ export default function AdminSidebar({
         {!collapsed && (
           <span
             className="font-semibold text-lg whitespace-nowrap"
-            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
           >
             Krislux<span className="text-[#8FBD84]">ECO</span>
           </span>

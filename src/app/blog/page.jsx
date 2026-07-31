@@ -5,8 +5,8 @@ import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 
-const serif = "'Cormorant Garamond', Georgia, serif";
-const sans = "'DM Sans', sans-serif";
+const serif = "var(--font-playfair), Georgia, serif";
+const sans = "var(--font-montserrat), sans-serif";
 
 // ─── Hero Slideshow ────────────────────────────────────────────────────────────
 const blogSlides = [
@@ -194,7 +194,7 @@ export default function BlogListing() {
                     </div>
                     <h2
                       className="text-2xl text-[#1C1C1A] leading-snug group-hover:text-[#C8A97A] transition-colors"
-                      style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+                      style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
                     >
                       {blog.title}
                     </h2>

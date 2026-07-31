@@ -5,8 +5,8 @@ import { useRef, useState, useEffect } from "react";
 import { motion, useInView, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 
-const serif = "'Cormorant Garamond', Georgia, serif";
-const sans = "'DM Sans', sans-serif";
+const serif = "var(--font-playfair), Georgia, serif";
+const sans = "var(--font-montserrat), sans-serif";
 
 function FadeUp({ children, delay = 0, className = "" }) {
   const ref = useRef(null);

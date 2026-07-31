@@ -23,8 +23,8 @@ import { StorefrontProductCard } from "./ProductsListClient";
 import FeaturedProducts from "./Featuredproducts";
 import { useCart } from "@/context/CartContext";
 
-const serif = "'Cormorant Garamond', Georgia, serif";
-const sans = "'DM Sans', sans-serif";
+const serif = "var(--font-playfair), Georgia, serif";
+const sans = "var(--font-montserrat), sans-serif";
 
 export default function ProductDetailClient({ product, similarProducts = [], isLiked = false, savedProductIds = [] }) {
   const { status } = useSession();

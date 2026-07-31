@@ -9,8 +9,8 @@ import { useCart } from "@/context/CartContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trash2, ShoppingCart, ArrowRight, Check } from "lucide-react";
 
-const serif = "'Cormorant Garamond', Georgia, serif";
-const sans = "'DM Sans', sans-serif";
+const serif = "var(--font-playfair), Georgia, serif";
+const sans = "var(--font-montserrat), sans-serif";
 
 const COMPANY_WHATSAPP = "6202585952"; // Replace with your real business WhatsApp number
 

@@ -62,7 +62,7 @@ export default function AdminCustomDesigns() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <h1 className="text-2xl font-semibold text-[#1C1C1A] mb-8" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+      <h1 className="text-2xl font-semibold text-[#1C1C1A] mb-8" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
         Custom Design Requests
       </h1>
 
@@ -133,7 +133,7 @@ export default function AdminCustomDesigns() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
           <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
             <div className="px-6 py-4 border-b border-[#ECE6DF] flex items-center justify-between bg-[#FAF7F2]">
-              <h3 className="text-lg font-semibold text-[#1C1C1A]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+              <h3 className="text-lg font-semibold text-[#1C1C1A]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
                 Request Details
               </h3>
               <button

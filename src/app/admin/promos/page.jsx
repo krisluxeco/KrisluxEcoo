@@ -82,7 +82,7 @@ export default function AdminPromosPage() {
         <div>
           <h1
             className="text-3xl font-semibold text-[#1C1C1A] mb-1"
-            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
           >
             Promo Codes
           </h1>
@@ -180,7 +180,7 @@ export default function AdminPromosPage() {
             >
               <X size={18} />
             </button>
-            <h2 className="text-2xl font-semibold text-[#1C1C1A] mb-6" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+            <h2 className="text-2xl font-semibold text-[#1C1C1A] mb-6" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               New Promo Code
             </h2>
             {error && <p className="text-red-500 text-xs mb-4">{error}</p>}
