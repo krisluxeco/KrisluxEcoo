@@ -638,6 +638,7 @@ _Sent via KrisluxECO B2B Portal_`;
               pretitle="You May Also Like"
               title="Similar"
               subtitle="Products"
+              backgroundLess={true}
             />
           </div>
         )}

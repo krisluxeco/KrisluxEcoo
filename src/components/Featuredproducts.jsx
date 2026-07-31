@@ -299,7 +299,8 @@ export default function FeaturedProducts({
   savedProductIds = [],
   title = "Featured",
   subtitle = "Products",
-  pretitle = "Handpicked for You"
+  pretitle = "Our Curated Collection",
+  backgroundLess = false,
 }) {
   const railRef = useRef(null);
   const sectionRef = useRef(null);
@@ -450,7 +451,7 @@ export default function FeaturedProducts({
   };
 
   return (
-    <section ref={sectionRef} className="relative py-20 px-6 overflow-hidden bg-[#FAF7F2] text-[#1C1C1A] border-y border-[#E8DDD0]">
+    <section ref={sectionRef} className={`relative overflow-hidden text-[#1C1C1A] ${backgroundLess ? "pt-12 pb-6" : "py-20 px-6 bg-[#FAF7F2] border-y border-[#E8DDD0]"}`}>
       <div className="relative z-10 max-w-7xl mx-auto">
         
         {/* Horizontal Split Header */}
