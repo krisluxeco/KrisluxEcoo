@@ -751,9 +751,9 @@ export default function NavBar() {
                   Get a Quote
                 </Link>
                 <div className="flex items-center justify-center gap-3 mt-5 text-xs text-[#9E9088]">
-                  <a href="mailto:hello@krisluxeco.com" className="hover:text-[#4A6741] transition-colors">hello@krisluxeco.com</a>
+                  <a href="mailto:krisluxeco@gmail.com" className="hover:text-[#4A6741] transition-colors">krisluxeco@gmail.com</a>
                   <span className="text-[#E8DDD0]">|</span>
-                  <a href="tel:+910000000000" className="hover:text-[#4A6741] transition-colors">+91 00000 00000</a>
+                  <a href="tel:+919798611931" className="hover:text-[#4A6741] transition-colors">+91 97986 11931</a>
                 </div>
                 <p className="text-center text-xs text-[#C8A97A] mt-4 tracking-widest uppercase">
                   Crafted with purpose · Grown with care

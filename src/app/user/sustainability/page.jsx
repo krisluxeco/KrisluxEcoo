@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRef, useState, useEffect } from "react";
 import { motion, useInView, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
+import EthicsTimeline from "@/components/EthicsTimeline";
 
 const serif = "var(--font-playfair), Georgia, serif";
 const sans = "var(--font-montserrat), sans-serif";
@@ -203,6 +204,9 @@ export default function SustainabilityPage() {
           </div>
         ))}
       </section>
+
+      {/* ─── BUSINESS MODULE & ETHICS (Ultra-Premium Corporate Grid) ─────── */}
+      <EthicsTimeline />
 
       {/* ─── CTA ──────────────────────────────────────────────────────── */}
       <section className="py-40 px-6 border-t border-[#1C1C1A]/5 text-center bg-white">

@@ -59,12 +59,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${playfair.variable} ${montserrat.variable}`}>
-      <LayoutWrapper>
-        <body className="min-h-full flex flex-col font-sans bg-[#FAF7F2] text-[#1C1C1A]">
+      <body className="min-h-full flex flex-col font-sans bg-[#FAF7F2] text-[#1C1C1A]">
+        <LayoutWrapper>
           {children}
           <GoToTop />
-        </body>
-      </LayoutWrapper>
+        </LayoutWrapper>
+      </body>
     </html>
   );
 }

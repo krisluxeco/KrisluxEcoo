@@ -12,6 +12,7 @@ import Deck from "./Deck";
 import DustParticles from "./DustParticles";
 import ImpactCarousel from "./ImpactCarousel";
 import Lenis from "lenis";
+import Platforms from "./Platforms";
 
 // ─── Shared Typography ────────────────────────────────────────────────────────
 const serif = "var(--font-playfair), Georgia, serif";
@@ -590,7 +591,8 @@ export default function Home({ featuredProducts = [], savedProductIds = [], impa
         <FeaturedProducts products={featuredProducts} savedProductIds={savedProductIds} />
       </div>
 
-      {/* ─── NEW IMPACT CAROUSEL ──────────────────────────────────────────────── */}
+      {/* --- NEW IMPACT CAROUSEL ------------------------------------------------ */ }
+      <Platforms />
       <ImpactCarousel />
 
       {/* ─── LIVE CARBON FOOTPRINT TRACKER ──────────────────────────────────── */}

@@ -152,7 +152,6 @@ function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggle
           rotateX: tilt.rx,
           rotateY: tilt.ry,
         }}
-        whileHover={{ y: -12, scale: 1.03 }}
         whileTap={{ scale: 0.98 }}
         transition={{ type: "spring", stiffness: 220, damping: 18 }}
         onPointerMove={(e) => {
@@ -173,15 +172,15 @@ function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggle
               fill
               draggable={false}
               sizes="(max-width: 768px) 260px, 280px"
-              className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+              className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-[#9E9088]">
               <Package size={32} className="stroke-1" />
             </div>
           )}
-          {/* Gradient Overlay for Text Legibility */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/50 to-transparent" />
+          {/* Gradient Overlay for Text Legibility (Fades out on hover) */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/50 to-transparent group-hover:opacity-0 transition-opacity duration-700 ease-out" />
           
           {/* Soft gradient sheen that sweeps across on hover */}
           <motion.div
@@ -196,7 +195,7 @@ function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggle
         <div className="relative z-10 p-5 flex flex-col h-full justify-between pointer-events-none" style={{ minHeight: "380px" }}>
           
           {/* Top Row: Badge & Floating Price */}
-          <div className="flex justify-between items-start">
+          <div className="flex justify-between items-start group-hover:opacity-0 transition-opacity duration-500 ease-out">
             <motion.span
               initial={{ opacity: 0, scale: 0.5, x: -10 }}
               animate={inView ? { opacity: 1, scale: 1, x: 0 } : {}}
@@ -232,21 +231,25 @@ function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggle
 
           {/* Bottom Row: Details & Buttons */}
           <div className="flex flex-col mt-auto pointer-events-auto" style={{ transform: "translateZ(20px)" }}>
-            <p
-              className="text-[11px] uppercase tracking-[0.14em] text-[#C8A97A] italic mb-1.5 truncate drop-shadow-md"
-              style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
-            >
-              {product.category}
-            </p>
+            
+            {/* Text details fade out on hover */}
+            <div className="group-hover:opacity-0 transition-opacity duration-500 ease-out">
+              <p
+                className="text-[11px] uppercase tracking-[0.14em] text-[#C8A97A] italic mb-1.5 truncate drop-shadow-md"
+                style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+              >
+                {product.category}
+              </p>
 
-            <h3
-              className="text-xl leading-snug text-white mb-5 line-clamp-2 min-h-[3.2rem] drop-shadow-md"
-              style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
-            >
-              {product.name}
-            </h3>
+              <h3
+                className="text-xl leading-snug text-white mb-5 line-clamp-2 min-h-[3.2rem] drop-shadow-md"
+                style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+              >
+                {product.name}
+              </h3>
+            </div>
 
-            {/* Action Buttons */}
+            {/* Action Buttons (Remain visible) */}
             <div className="flex items-center gap-2">
               <Link href={`/user/products/${product._id}`} className="flex-1">
                 <motion.button
@@ -526,8 +529,7 @@ export default function FeaturedProducts({
         {/* Rail wrapper — overflow-hidden lives HERE, not on the whole section,
             so headings above are never clipped; edge fades hint at more content */}
         <motion.div className="relative" style={{ y: parallaxY }}>
-          {/* Removed solid color gradient overlays since they clash with the parallax background. 
-              Using a subtle CSS mask instead if needed, but for now simple overflow is cleaner on dark mode. */}
+          {/* Dynamic mask: only fade the sides when there is more content to scroll to */}
           <div
             ref={railRef}
             onPointerDown={onPointerDown}
@@ -537,8 +539,8 @@ export default function FeaturedProducts({
             className="flex gap-5 overflow-x-auto pb-4 cursor-grab [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
             style={{ 
               scrollSnapType: "x proximity",
-              maskImage: "linear-gradient(to right, transparent, black 5%, black 95%, transparent)",
-              WebkitMaskImage: "linear-gradient(to right, transparent, black 2%, black 98%, transparent)"
+              maskImage: `linear-gradient(to right, ${atStart ? 'black 0%' : 'transparent 0%, black 5%'}, ${atEnd ? 'black 100%' : 'black 95%, transparent 100%'})`,
+              WebkitMaskImage: `linear-gradient(to right, ${atStart ? 'black 0%' : 'transparent 0%, black 5%'}, ${atEnd ? 'black 100%' : 'black 95%, transparent 100%'})`
             }}
           >
             {products.map((product, i) => (

@@ -243,15 +243,14 @@ export function StorefrontProductCard({ product, isLiked = false, onToggleSaved 
         onPointerMove={handlePointerMoveCard}
         onPointerLeave={resetTilt}
         style={{ transformStyle: "preserve-3d" }}
-        className="relative bg-white rounded-sm overflow-hidden border border-[#E8DDD0] group-hover:border-[#C8A97A]/40 shadow-[0_2px_10px_rgba(0,0,0,0.04)] group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.12)] transition-[border-color,box-shadow] duration-500 h-full flex flex-col"
+        className="relative bg-white rounded-sm overflow-hidden border border-[#E8DDD0] group-hover:border-[#C8A97A]/40 shadow-[0_2px_10px_rgba(0,0,0,0.04)] group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.12)] transition-[border-color,box-shadow] duration-500 h-fit flex flex-col"
       >
         {/* Image */}
-        <Link href={`/user/products/${product._id}`} className="block relative aspect-square w-full overflow-hidden bg-[#F8F6F3]">
+        <Link href={`/user/products/${product._id}`} className="block relative aspect-[4/5] w-full overflow-hidden bg-[#F8F6F3]">
           {badgeText && (
             <span
-              className={`absolute top-3 left-3 z-10 text-[10px] font-bold tracking-[0.2em] px-2.5 py-1 uppercase shadow-sm ${
-                badgeStyles[badgeText] ?? "bg-[#1C1C1A] text-white"
-              }`}
+              className={`absolute top-3 left-3 z-10 text-[10px] font-bold tracking-[0.2em] px-2.5 py-1 uppercase shadow-sm ${badgeStyles[badgeText] ?? "bg-[#1C1C1A] text-white"
+                }`}
             >
               {badgeText}
             </span>
@@ -262,7 +261,7 @@ export function StorefrontProductCard({ product, isLiked = false, onToggleSaved 
               <Image width={800} height={800}
                 src={coverImg}
                 alt={product.name}
-                className="w-full h-full object-contain p-2"
+                className="w-full h-full object-cover"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-[#9E9088]">
@@ -280,7 +279,7 @@ export function StorefrontProductCard({ product, isLiked = false, onToggleSaved 
         </Link>
 
         {/* Body */}
-        <div className="p-5 flex flex-col flex-1" style={{ transform: "translateZ(20px)" }}>
+        <div className="p-4 flex flex-col" style={{ transform: "translateZ(20px)" }}>
           <p
             className="text-[11px] uppercase tracking-[0.14em] text-[#C8A97A] italic mb-1.5 truncate"
             style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
@@ -289,13 +288,13 @@ export function StorefrontProductCard({ product, isLiked = false, onToggleSaved 
           </p>
 
           <h3
-            className="text-lg leading-snug text-[#1C1C1A] mb-3 line-clamp-2 min-h-[2.8rem]"
+            className="text-lg leading-snug text-[#1C1C1A] mb-1 line-clamp-2"
             style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
           >
             {product.name}
           </h3>
 
-          <div className="flex items-center justify-between mb-4 text-xs gap-2 mt-auto pt-2">
+          <div className="flex items-center justify-between mb-4 text-xs gap-2 mt-3">
             <span className="flex items-center gap-1.5 text-[#9E9088] whitespace-nowrap uppercase tracking-widest text-[9px] font-bold">
               MOQ: {product.minOrderQty || 1}
             </span>
@@ -384,7 +383,7 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
   const [selectedCategories, setSelectedCategories] = useState(
     initialCategory ? [initialCategory] : []
   );
-  
+
   useEffect(() => {
     if (initialCategory) {
       setSelectedCategories((prev) => {
@@ -487,8 +486,8 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
   useEffect(() => {
     if (typeof window !== "undefined") {
       let ctx = gsap.context(() => {
-        gsap.fromTo(".reveal-header", 
-          { opacity: 0, y: 30 }, 
+        gsap.fromTo(".reveal-header",
+          { opacity: 0, y: 30 },
           { opacity: 1, y: 0, duration: 1.2, ease: "power3.out" }
         );
         gsap.fromTo(".product-card-wrap",
@@ -598,7 +597,7 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
       {/* ─── Top Utility Bar ────────────────────────────────────────────── */}
       <div className="bg-[#FAF7F2] border-b border-[#E8DDD0] py-4 px-6 relative">
         <div className="max-w-[1400px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          
+
           <div className="flex items-center gap-4 w-full sm:w-auto">
             {/* Filter Toggle Button */}
             <button
@@ -647,7 +646,7 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
               </select>
             </div>
           </div>
-          
+
         </div>
       </div>
 
@@ -665,7 +664,7 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
                 onClick={() => setShowFilters(false)}
                 className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
               />
-              
+
               {/* Drawer Panel */}
               <motion.div
                 initial={{ x: "-100%" }}
