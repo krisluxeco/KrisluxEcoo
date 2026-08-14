@@ -595,7 +595,7 @@ export default function Home({ featuredProducts = [], savedProductIds = [], impa
       <Platforms />
       <ImpactCarousel />
 
-      {/* ─── LIVE CARBON FOOTPRINT TRACKER ──────────────────────────────────── */}
+      {/* --- LIVE CARBON FOOTPRINT TRACKER ------------------------------------ */ }
       <LiveCarbonFootprint impactStats={impactStats} detailedStats={detailedStats} recentItems={recentItems} />
       
       <style dangerouslySetInnerHTML={{__html: `

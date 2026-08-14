@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import connectDb from "@/lib/db";
 import Quote from "@/models/quote.model";
 import User from "@/models/user.model";
+import Email from "@/models/Email.model";
 
 export async function POST(req) {
   try {
@@ -189,6 +190,17 @@ export async function POST(req) {
     } else {
       console.log("Email tracking (simulated - SMTP not configured):", mailOptions.subject);
     }
+
+    // Save to the new Admin Inbox so it appears in the Email Dashboard
+    await Email.create({
+      senderName: contactPerson || companyName || "Guest",
+      senderEmail: email,
+      recipientEmail: process.env.ADMIN_EMAIL || "admin@krisluxeco.com",
+      subject: mailOptions.subject,
+      body: htmlContent,
+      folder: "inbox",
+      isRead: false,
+    });
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {

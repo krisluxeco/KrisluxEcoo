@@ -18,11 +18,15 @@ import {
   MessageSquare,
   Star,
   Activity,
+  Mail,
+  Briefcase,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 
 const navItems = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { label: "B2B Leads", href: "/admin/leads", icon: Briefcase },
+  { label: "Emails", href: "/admin/emails", icon: Mail },
   { label: "Social Hub", href: "/admin/social", icon: Activity },
   { label: "Products", href: "/admin/products", icon: Package },
   { label: "Orders", href: "/admin/orders", icon: ShoppingCart },
