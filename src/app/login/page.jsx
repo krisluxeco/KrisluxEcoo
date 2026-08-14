@@ -94,14 +94,18 @@ function FloatField({
 
   return (
     <div
-      className={`relative flex items-end gap-3 border-b pb-2 transition-all duration-300 ${focused ? "border-[#1C1C1A]" : "border-[#E8DDD0]"}`}
-      style={{ height: 58 }}
+      className={`relative flex items-center gap-3 rounded-xl border bg-white/60 backdrop-blur-md px-5 transition-all duration-500 ${
+        focused
+          ? "border-[#C8A97A] shadow-[0_4px_20px_rgba(200,169,122,0.15)]"
+          : "border-[#E8DDD0] hover:border-[#C8A97A]/50"
+      }`}
+      style={{ height: 64 }}
     >
-      <span className={`shrink-0 mb-1 transition-colors duration-300 ${focused ? "text-[#1C1C1A]" : "text-[#9E9088]"}`}>
+      <span className={`shrink-0 transition-colors duration-500 ${focused ? "text-[#C8A97A]" : "text-[#9E9088]"}`}>
         {icon}
       </span>
 
-      <div className="relative flex-1 h-full flex items-end">
+      <div className="relative flex-1 h-full flex items-center">
         <input
           id={name}
           name={name}
@@ -117,7 +121,7 @@ function FloatField({
         />
         <label
           htmlFor={name}
-          className="absolute left-0 bottom-1 origin-left select-none pointer-events-none transition-all duration-200 ease-out text-[#9E9088] uppercase tracking-[0.15em] text-[10px] peer-focus:-translate-y-[24px] peer-focus:scale-100 peer-focus:text-[#1C1C1A] peer-[:not(:placeholder-shown)]:-translate-y-[24px] peer-[:not(:placeholder-shown)]:scale-100"
+          className="absolute left-0 top-1/2 -translate-y-1/2 origin-left select-none pointer-events-none transition-all duration-300 ease-out text-[#9E9088] uppercase tracking-[0.15em] text-[10px] peer-focus:-translate-y-[28px] peer-focus:scale-90 peer-focus:text-[#C8A97A] peer-[:not(:placeholder-shown)]:-translate-y-[28px] peer-[:not(:placeholder-shown)]:scale-90"
           style={{ fontFamily: sans }}
         >
           {label}
@@ -134,10 +138,14 @@ function PasswordField({ label, name, value, onChange }) {
 
   return (
     <div
-      className={`relative flex items-end gap-3 border-b pb-2 transition-all duration-300 ${focused ? "border-[#1C1C1A]" : "border-[#E8DDD0]"}`}
-      style={{ height: 58 }}
+      className={`relative flex items-center gap-3 rounded-xl border bg-white/60 backdrop-blur-md px-5 transition-all duration-500 ${
+        focused
+          ? "border-[#C8A97A] shadow-[0_4px_20px_rgba(200,169,122,0.15)]"
+          : "border-[#E8DDD0] hover:border-[#C8A97A]/50"
+      }`}
+      style={{ height: 64 }}
     >
-      <span className={`shrink-0 mb-1 transition-colors duration-300 ${focused ? "text-[#1C1C1A]" : "text-[#9E9088]"}`}>
+      <span className={`shrink-0 transition-colors duration-500 ${focused ? "text-[#C8A97A]" : "text-[#9E9088]"}`}>
         <svg
           width="17"
           height="17"
@@ -151,7 +159,7 @@ function PasswordField({ label, name, value, onChange }) {
         </svg>
       </span>
 
-      <div className="relative flex-1 h-full flex items-end">
+      <div className="relative flex-1 h-full flex items-center">
         <input
           id={name}
           name={name}
@@ -167,7 +175,7 @@ function PasswordField({ label, name, value, onChange }) {
         />
         <label
           htmlFor={name}
-          className="absolute left-0 bottom-1 origin-left select-none pointer-events-none transition-all duration-200 ease-out text-[#9E9088] uppercase tracking-[0.15em] text-[10px] peer-focus:-translate-y-[24px] peer-focus:scale-100 peer-focus:text-[#1C1C1A] peer-[:not(:placeholder-shown)]:-translate-y-[24px] peer-[:not(:placeholder-shown)]:scale-100"
+          className="absolute left-0 top-1/2 -translate-y-1/2 origin-left select-none pointer-events-none transition-all duration-300 ease-out text-[#9E9088] uppercase tracking-[0.15em] text-[10px] peer-focus:-translate-y-[28px] peer-focus:scale-90 peer-focus:text-[#C8A97A] peer-[:not(:placeholder-shown)]:-translate-y-[28px] peer-[:not(:placeholder-shown)]:scale-90"
           style={{ fontFamily: sans }}
         >
           {label}
@@ -177,7 +185,7 @@ function PasswordField({ label, name, value, onChange }) {
       <button
         type="button"
         onClick={() => setVisible((v) => !v)}
-        className="shrink-0 mb-1 text-[#9E9088] hover:text-[#1C1C1A] transition-colors duration-200"
+        className="shrink-0 text-[#9E9088] hover:text-[#C8A97A] transition-colors duration-300"
         aria-label="Toggle password visibility"
       >
         {visible ? (
@@ -190,55 +198,24 @@ function PasswordField({ label, name, value, onChange }) {
   );
 }
 
-// ─── Eco Jokes Component ────────────────────────────────────────────────────────
-const ecoJokes = [
-  "Why did the eco-friendly product break up with plastic? It just wasn't sustainable. 💔♻️",
-  "Logging you in... faster than our products biodegrade! ⏳🍃",
-  "Don't worry, your password is as secure as our commitment to the earth. 🌍🔒",
-  "Zero plastic, 100% Eco-Luxury... and a 0% chance we'd sell your data. 🤫✨",
-  "Why are sustainable products so calm? Because they have a lot of inner peace! 🧘‍♀️🌿",
-];
-
-function EcoJokeAnimation() {
-  const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setIndex((prev) => (prev + 1) % ecoJokes.length);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, []);
-
+// ─── Luxury Brand Philosophy Component ──────────────────────────────────────────
+function BrandPhilosophy() {
   return (
-    <div className="mt-8 p-5 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 relative overflow-hidden min-h-[140px] flex flex-col items-center justify-center gap-4">
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#8FBD84] to-transparent opacity-50" />
+    <div className="mt-10 p-8 rounded-2xl bg-[#1C1C1A]/40 backdrop-blur-xl border border-white/10 relative overflow-hidden flex flex-col justify-center gap-5 shadow-2xl">
+      <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#C8A97A] to-transparent opacity-40" />
+      <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#C8A97A] to-transparent opacity-20" />
       
-      {/* Humorous Eco Meme Illustration */}
-      <motion.div
-        initial={{ rotate: -5, scale: 0.9 }}
-        animate={{ rotate: 5, scale: 1 }}
-        transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+      <p
+        className="text-[#E8DDD0] text-[16px] italic text-center leading-relaxed font-light"
+        style={{ fontFamily: serif }}
       >
-        <img 
-          src="/images/eco-meme.png" 
-          alt="Eco friendly meme" 
-          className="w-16 h-16 rounded-full object-cover border-2 border-[#8FBD84]/40"
-        />
-      </motion.div>
-
-      <AnimatePresence mode="wait">
-        <motion.p
-          key={index}
-          initial={{ opacity: 0, y: 10, filter: "blur(4px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
-          transition={{ duration: 0.5 }}
-          className="text-[#E8DDD0] text-sm text-center leading-relaxed font-medium"
-          style={{ fontFamily: sans }}
-        >
-          {ecoJokes[index]}
-        </motion.p>
-      </AnimatePresence>
+        "True luxury lies in the harmony between exquisite craftsmanship and profound respect for our natural world."
+      </p>
+      <div className="flex items-center justify-center gap-3 mt-2">
+         <span className="h-px w-8 bg-[#C8A97A]/40" />
+         <span className="text-[9px] uppercase tracking-[0.3em] text-[#C8A97A]">The KrisluxECO Promise</span>
+         <span className="h-px w-8 bg-[#C8A97A]/40" />
+      </div>
     </div>
   );
 }
@@ -255,7 +232,7 @@ function GoogleButton() {
         boxShadow: "0 10px 30px rgba(28,28,26,0.08)",
       }}
       whileTap={{ scale: 0.98 }}
-      className="w-full flex items-center justify-center gap-3 rounded-2xl border border-[#E8DDD0] bg-white px-5 py-4 text-sm font-medium text-[#1C1C1A] transition-all"
+      className="w-full flex items-center justify-center gap-3 rounded-xl border border-[#E8DDD0] bg-white/70 hover:bg-white backdrop-blur-md px-5 py-4 text-sm font-medium text-[#1C1C1A] transition-all hover:border-[#C8A97A]/50"
       style={{ fontFamily: sans }}
     >
       <svg width="18" height="18" viewBox="0 0 24 24">
@@ -533,9 +510,10 @@ export default function LoginPage() {
 
               <motion.button
                 type="submit"
-                className="group relative w-full flex items-center justify-center gap-4 bg-[#1C1C1A] text-white px-8 py-5 overflow-hidden transition-all hover:bg-[#333] mt-8"
+                className="group relative w-full flex items-center justify-center gap-4 bg-gradient-to-r from-[#1C1C1A] to-[#2A2A28] text-[#E8DDD0] border border-[#333] px-8 py-4 rounded-xl overflow-hidden transition-all hover:shadow-[0_8px_30px_rgba(28,28,26,0.15)] mt-8"
               >
-                <span className="relative z-10 text-[11px] uppercase tracking-[0.3em] font-medium" style={{ fontFamily: sans }}>
+                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
+                <span className="relative z-10 text-[11px] uppercase tracking-[0.3em] font-medium text-[#E8DDD0]" style={{ fontFamily: sans }}>
                   Sign In
                 </span>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="relative z-10 text-[#C8A97A] transform group-hover:translate-x-1 transition-transform">
@@ -667,7 +645,7 @@ export default function LoginPage() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              <EcoJokeAnimation />
+              <BrandPhilosophy />
             </motion.div>
           </div>
 

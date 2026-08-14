@@ -31,7 +31,7 @@ const footerColumns = [
     links: [
       { label: "Contact Us", href: "/user/bulk-order" },
       { label: "Track Order", href: "user/profile" },
-     
+      { label: "Share Catalog", href: "/share-catalog" },
       { label: "FAQs", href: "/user/bulk-order" },
     ],
   },

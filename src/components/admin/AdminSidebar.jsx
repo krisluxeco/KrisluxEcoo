@@ -35,6 +35,7 @@ const navItems = [
   { label: "Reviews", href: "/admin/reviews", icon: Star },
   { label: "Promos", href: "/admin/promos", icon: Tags },
   { label: "Custom Designs", href: "/admin/custom-designs", icon: MessageSquare },
+  { label: "Catalogs", href: "/admin/catalogs", icon: Briefcase },
   { label: "Profile", href: "/admin/profile", icon: User },
   // { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
