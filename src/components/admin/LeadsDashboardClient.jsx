@@ -200,8 +200,16 @@ export default function LeadsDashboardClient() {
           
           <div className="flex-1 overflow-y-auto bg-[#FAF7F2]/20">
             {loading ? (
-              <div className="flex items-center justify-center h-32 text-[#9E9088]">
-                <Loader2 className="animate-spin" size={24} />
+              <div className="p-4 space-y-3">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="p-4 rounded-xl bg-white border border-[#ECE6DF] space-y-2 animate-pulse">
+                    <div className="flex justify-between">
+                      <div className="h-4 w-32 bg-[#E8DDD0] rounded-md" />
+                      <div className="h-4 w-16 bg-[#E8DDD0] rounded-full" />
+                    </div>
+                    <div className="h-3 w-48 bg-[#E8DDD0]/50 rounded-full" />
+                  </div>
+                ))}
               </div>
             ) : leads.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-48 text-[#9E9088]">

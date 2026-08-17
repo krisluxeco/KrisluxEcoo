@@ -59,8 +59,8 @@ export default function AdminCatalogs() {
   }, []);
 
   const filteredCatalogs = catalogs.filter(c => 
-    c.shopName.toLowerCase().includes(search.toLowerCase()) || 
-    c.email.toLowerCase().includes(search.toLowerCase())
+    (c.organisationName && c.organisationName.toLowerCase().includes(search.toLowerCase())) || 
+    (c.email && c.email.toLowerCase().includes(search.toLowerCase()))
   );
 
   return (
@@ -90,7 +90,8 @@ export default function AdminCatalogs() {
           <table className="w-full text-left text-sm text-gray-600">
             <thead className="text-xs text-gray-500 uppercase bg-[#FAF7F2] border-b border-[#E8DDD0]">
               <tr>
-                <th className="px-6 py-4 font-medium">Shop / Contact</th>
+                <th className="px-6 py-4 font-medium">Organisation / Contact</th>
+                <th className="px-6 py-4 font-medium">Details</th>
                 <th className="px-6 py-4 font-medium">Status</th>
                 <th className="px-6 py-4 font-medium">Submitted On</th>
                 <th className="px-6 py-4 font-medium text-right">Actions</th>
@@ -99,11 +100,11 @@ export default function AdminCatalogs() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={4} className="text-center py-8 text-gray-500">Loading catalogs...</td>
+                  <td colSpan={5} className="text-center py-8 text-gray-500">Loading catalogs...</td>
                 </tr>
               ) : filteredCatalogs.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="text-center py-8 text-gray-500">No catalogs found.</td>
+                  <td colSpan={5} className="text-center py-8 text-gray-500">No catalogs found.</td>
                 </tr>
               ) : (
                 filteredCatalogs.map((catalog) => (
@@ -120,7 +121,7 @@ export default function AdminCatalogs() {
                         </div>
                         <div>
                           <div className="font-semibold text-gray-900 text-base">
-                            {catalog.shopName}
+                            {catalog.organisationName}
                           </div>
                           <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
                             <Mail size={12} /> {catalog.email}
@@ -130,6 +131,14 @@ export default function AdminCatalogs() {
                           </div>
                         </div>
                       </div>
+                    </td>
+                    <td className="px-6 py-4 text-xs text-gray-500">
+                      <div><span className="font-medium text-gray-700">Owner:</span> {catalog.ownerName || '-'}</div>
+                      <div><span className="font-medium text-gray-700">Location:</span> {catalog.location || '-'}</div>
+                      <div><span className="font-medium text-gray-700">Product:</span> {catalog.productType || '-'}</div>
+                      <div><span className="font-medium text-gray-700">Material:</span> {catalog.sustainableMaterial || '-'}</div>
+                      <div><span className="font-medium text-gray-700">MOQ:</span> {catalog.moq || '-'}</div>
+                      <div><span className="font-medium text-gray-700">Model:</span> {catalog.collaborationModel || '-'}</div>
                     </td>
                     <td className="px-6 py-4">
                        <select

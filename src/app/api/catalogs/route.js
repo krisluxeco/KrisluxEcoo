@@ -9,14 +9,20 @@ export async function POST(req) {
     await connectDb();
     const formData = await req.formData();
     
-    const shopName = formData.get("shopName");
+    const organisationName = formData.get("organisationName");
+    const ownerName = formData.get("ownerName");
+    const location = formData.get("location");
     const email = formData.get("email");
     const phone = formData.get("phone");
+    const moq = formData.get("moq");
+    const sustainableMaterial = formData.get("sustainableMaterial");
+    const productType = formData.get("productType");
+    const collaborationModel = formData.get("collaborationModel");
     const file = formData.get("file"); // The PDF file
 
-    if (!shopName || !email || !phone || !file) {
+    if (!organisationName || !ownerName || !location || !email || !phone || !file) {
       return NextResponse.json(
-        { message: "All fields are required (shopName, email, phone, file)." },
+        { message: "Organisation Name, Owner Name, Location, Email, Phone, and File are required." },
         { status: 400 }
       );
     }
@@ -41,9 +47,15 @@ export async function POST(req) {
     const pdfUrl = `/uploads/catalogs/${fileName}`;
 
     const newCatalog = await Catalog.create({
-      shopName,
+      organisationName,
+      ownerName,
+      location,
       email,
       phone,
+      moq,
+      sustainableMaterial,
+      productType,
+      collaborationModel,
       pdfUrl,
     });
 

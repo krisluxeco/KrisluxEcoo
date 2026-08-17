@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { LineChart, Line, AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { TrendingUp, CalendarDays, Wallet, Package, Users, Truck } from "lucide-react";
 
 // Custom SVG Icons for robust rendering
@@ -31,8 +32,17 @@ const GlobeIcon = ({ className }) => (
 
 const serif = "var(--font-playfair), Georgia, serif";
 
-const AdminDashBoardClient = ({ earning, stats, chartData, trafficData }) => {
-  const [filter, setFilter] = useState("sevenDays");
+const AdminDashBoardClient = ({ earning, stats, chartData, trafficData, trafficChartData, advancedTrafficStats }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const filter = searchParams.get("filter") || "sevenDays";
+
+  const handleFilterChange = (e) => {
+    const newFilter = e.target.value;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("filter", newFilter);
+    router.push(`?${params.toString()}`);
+  };
 
   const currentEarning =
     filter === "today" ? earning.today : filter === "sevenDays" ? earning.sevenDays : earning.total;
@@ -73,7 +83,7 @@ const AdminDashBoardClient = ({ earning, stats, chartData, trafficData }) => {
 
           <select
             value={filter}
-            onChange={(e) => setFilter(e.target.value)}
+            onChange={handleFilterChange}
             className="rounded-full border border-[#E8DDD0] bg-white px-4 py-2 text-sm font-medium text-[#1C1C1A] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4A6741]/30 transition"
           >
             <option value="sevenDays">Last 7 Days</option>
@@ -279,6 +289,123 @@ const AdminDashBoardClient = ({ earning, stats, chartData, trafficData }) => {
             </div>
           </motion.div>
         </div>
+
+        {/* Advanced Traffic Stats Row */}
+        <div className="mt-6 grid grid-cols-1 sm:grid-cols-4 gap-4">
+          <motion.div
+            whileHover={{ y: -3 }}
+            className="rounded-2xl border border-[#ECE6DF] bg-white p-5 shadow-sm transition"
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-[#9E9088]">Total Visits</p>
+              <GlobeIcon className="h-5 w-5 text-[#4A6741]" />
+            </div>
+            <p className="mt-3 text-2xl font-semibold text-[#1C1C1A]">
+              {advancedTrafficStats?.total?.toLocaleString() || 0}
+            </p>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ y: -3 }}
+            className="rounded-2xl border border-[#ECE6DF] bg-white p-5 shadow-sm transition"
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-[#9E9088]">Unique Visitors</p>
+              <Users className="h-5 w-5 text-[#C8A97A]" />
+            </div>
+            <p className="mt-3 text-2xl font-semibold text-[#1C1C1A]">
+              {advancedTrafficStats?.unique?.toLocaleString() || 0}
+            </p>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ y: -3 }}
+            className="rounded-2xl border border-[#ECE6DF] bg-white p-5 shadow-sm transition"
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-[#9E9088]">This Month</p>
+              <CalendarDays className="h-5 w-5 text-[#8FBD84]" />
+            </div>
+            <p className="mt-3 text-2xl font-semibold text-[#1C1C1A]">
+              {advancedTrafficStats?.thisMonth?.toLocaleString() || 0}
+            </p>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ y: -3 }}
+            className="rounded-2xl border border-[#ECE6DF] bg-white p-5 shadow-sm transition relative overflow-hidden"
+          >
+            <div className="flex items-center justify-between relative z-10">
+              <p className="text-sm font-medium text-[#9E9088]">Growth (MoM)</p>
+              <TrendingUp className="h-5 w-5 text-[#1C1C1A]" />
+            </div>
+            <div className="mt-3 flex items-center gap-2 relative z-10">
+              <p className={`text-2xl font-semibold ${(advancedTrafficStats?.growth >= 0) ? 'text-[#4A6741]' : 'text-red-600'}`}>
+                {advancedTrafficStats?.growth >= 0 ? '+' : ''}{advancedTrafficStats?.growth || 0}%
+              </p>
+              <span className="text-xs font-medium text-[#9E9088]">vs Last Month</span>
+            </div>
+            {/* Background highlight depending on growth */}
+            <div className={`absolute -right-10 -bottom-10 h-32 w-32 rounded-full blur-2xl ${(advancedTrafficStats?.growth >= 0) ? 'bg-[#4A6741]/10' : 'bg-red-500/10'}`} />
+          </motion.div>
+        </div>
+
+        {/* Website Traffic Overview */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mt-6 rounded-2xl border border-[#ECE6DF] bg-white p-6 shadow-sm"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+            <div>
+              <h2 className="text-lg font-semibold text-[#1C1C1A]" style={{ fontFamily: serif }}>
+                Website Traffic Overview
+              </h2>
+              <p className="text-sm text-[#9E9088]">Total visitors over the last 7 days</p>
+            </div>
+            <div className="mt-4 sm:mt-0 flex items-center gap-3">
+              <div className="px-4 py-2 rounded-xl bg-[#C8A97A]/10 border border-[#C8A97A]/20">
+                <p className="text-xs font-medium text-[#C8A97A] uppercase tracking-wider">Total Visits</p>
+                <p className="text-xl font-bold text-[#1C1C1A]">{trafficData?.total || 0}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="h-[300px] w-full mt-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={trafficChartData}>
+                <defs>
+                  <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#C8A97A" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="#C8A97A" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#ECE6DF" vertical={false} />
+                <XAxis dataKey="day" stroke="#9E9088" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis allowDecimals={false} stroke="#9E9088" fontSize={12} tickLine={false} axisLine={false} />
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: 12,
+                    border: "1px solid #ECE6DF",
+                    boxShadow: "0 4px 15px rgba(0,0,0,0.05)",
+                    fontSize: 13,
+                  }}
+                  itemStyle={{ color: "#1C1C1A", fontWeight: 600 }}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="visitors" 
+                  stroke="#C8A97A" 
+                  strokeWidth={3}
+                  fillOpacity={1} 
+                  fill="url(#colorVisitors)" 
+                  activeDot={{ r: 6, fill: "#C8A97A", stroke: "#fff", strokeWidth: 2 }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </motion.div>
       </motion.div>
     </div>
   );

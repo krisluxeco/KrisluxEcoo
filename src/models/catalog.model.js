@@ -2,7 +2,15 @@ import mongoose, { Schema } from "mongoose";
 
 const catalogSchema = new Schema(
   {
-    shopName: {
+    organisationName: {
+      type: String,
+      required: true,
+    },
+    ownerName: {
+      type: String,
+      required: true,
+    },
+    location: {
       type: String,
       required: true,
     },
@@ -13,6 +21,18 @@ const catalogSchema = new Schema(
     phone: {
       type: String,
       required: true,
+    },
+    moq: {
+      type: String,
+    },
+    sustainableMaterial: {
+      type: String,
+    },
+    productType: {
+      type: String,
+    },
+    collaborationModel: {
+      type: String,
     },
     pdfUrl: {
       type: String,

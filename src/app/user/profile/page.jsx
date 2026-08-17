@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { User, Mail, Phone, Check, Loader2, Camera, LayoutDashboard, History, Settings, FileText, Package, Clock, TrendingUp, LogOut, ArrowLeft, X, Menu, Printer, Download, Palette } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import Link from "next/link";
+import ProfileLoading from "./loading";
 
 const serif = "var(--font-playfair), Georgia, serif";
 const sans = "var(--font-montserrat), sans-serif";
@@ -227,16 +228,7 @@ export default function UserProfilePage() {
   };
 
   if (status === "loading" || (loading && loadingQuotes && loadingCustomDesigns)) {
-    return (
-      <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 className="animate-spin text-[#4A6741] h-8 w-8 stroke-[1.5]" />
-          <p className="text-xs text-[#9E9088] uppercase tracking-widest" style={{ fontFamily: sans }}>
-            Loading Dashboard...
-          </p>
-        </div>
-      </div>
-    );
+    return <ProfileLoading />;
   }
 
   // Get user initials
@@ -532,7 +524,17 @@ export default function UserProfilePage() {
                 </div>
 
                 {loadingQuotes ? (
-                  <div className="py-24 text-center text-sm text-[#9E9088] uppercase tracking-widest font-bold">Loading orders...</div>
+                  <div className="space-y-4">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="bg-white border border-[#ECE6DF] p-8 rounded-2xl space-y-4 animate-pulse">
+                        <div className="flex justify-between">
+                          <div className="h-4 w-40 bg-[#E8DDD0] rounded-md" />
+                          <div className="h-4 w-20 bg-[#E8DDD0] rounded-full" />
+                        </div>
+                        <div className="h-12 w-full bg-[#FAF7F2] rounded-xl" />
+                      </div>
+                    ))}
+                  </div>
                 ) : quotes.length === 0 ? (
                   <div className="bg-[#FAF7F2] border border-[#ECE6DF] p-24 text-center">
                     <p className="text-[#6B6560] font-light">You haven't requested any bulk quotes yet.</p>
@@ -626,7 +628,14 @@ export default function UserProfilePage() {
                 </div>
 
                 {loadingCustomDesigns ? (
-                  <div className="py-24 text-center text-sm text-[#9E9088]">Loading designs...</div>
+                  <div className="space-y-4">
+                    {[1, 2].map((i) => (
+                      <div key={i} className="bg-white rounded-3xl border border-[#ECE6DF] p-8 space-y-4 animate-pulse">
+                        <div className="h-5 w-48 bg-[#E8DDD0] rounded-md" />
+                        <div className="h-16 w-full bg-[#FAF7F2] rounded-xl" />
+                      </div>
+                    ))}
+                  </div>
                 ) : customDesigns.length === 0 ? (
                   <div className="bg-white rounded-3xl border border-[#ECE6DF] p-24 text-center shadow-sm">
                     <p className="text-[#6B6560]">You haven't requested any custom designs yet.</p>

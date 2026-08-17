@@ -156,14 +156,14 @@ const SocialDashBoardClient = ({ trafficData }) => {
                   <Users className="w-5 h-5 text-gray-400 mb-2" />
                   <p className="text-sm text-gray-500 mb-1">Followers</p>
                   <p className="text-2xl font-semibold text-[#1C1C1A]">
-                    {igData.loading ? "..." : (igData.data?.followers?.toLocaleString() || "0")}
+                    {igData.loading ? <span className="inline-block w-16 h-6 bg-gray-200 rounded animate-pulse" /> : (igData.data?.followers?.toLocaleString() || "0")}
                   </p>
                 </div>
                 <div className="p-4 rounded-xl border border-[#ECE6DF] bg-gray-50/50">
                   <Activity className="w-5 h-5 text-gray-400 mb-2" />
                   <p className="text-sm text-gray-500 mb-1">Reach (Live)</p>
                   <p className="text-2xl font-semibold text-[#1C1C1A]">
-                    {igData.loading ? "..." : (igData.data?.reach?.toLocaleString() || "0")}
+                    {igData.loading ? <span className="inline-block w-16 h-6 bg-gray-200 rounded animate-pulse" /> : (igData.data?.reach?.toLocaleString() || "0")}
                   </p>
                 </div>
                 <div className="p-4 rounded-xl border border-pink-100 bg-pink-50">
@@ -175,7 +175,7 @@ const SocialDashBoardClient = ({ trafficData }) => {
                   <MessageSquare className="w-5 h-5 text-gray-400 mb-2" />
                   <p className="text-sm text-gray-500 mb-1">Engagements</p>
                   <p className="text-2xl font-semibold text-[#1C1C1A]">
-                    {igData.loading ? "..." : (igData.data?.engagements?.toLocaleString() || "0")}
+                    {igData.loading ? <span className="inline-block w-16 h-6 bg-gray-200 rounded animate-pulse" /> : (igData.data?.engagements?.toLocaleString() || "0")}
                   </p>
                 </div>
               </div>
@@ -208,14 +208,14 @@ const SocialDashBoardClient = ({ trafficData }) => {
                   <Users className="w-5 h-5 text-gray-400 mb-2" />
                   <p className="text-sm text-gray-500 mb-1">Followers</p>
                   <p className="text-2xl font-semibold text-[#1C1C1A]">
-                    {liData.loading ? "..." : (liData.data?.followers?.toLocaleString() || "0")}
+                    {liData.loading ? <span className="inline-block w-16 h-6 bg-gray-200 rounded animate-pulse" /> : (liData.data?.followers?.toLocaleString() || "0")}
                   </p>
                 </div>
                 <div className="p-4 rounded-xl border border-[#ECE6DF] bg-gray-50/50">
                   <Activity className="w-5 h-5 text-gray-400 mb-2" />
                   <p className="text-sm text-gray-500 mb-1">Post Views (Live)</p>
                   <p className="text-2xl font-semibold text-[#1C1C1A]">
-                    {liData.loading ? "..." : (liData.data?.views?.toLocaleString() || "0")}
+                    {liData.loading ? <span className="inline-block w-16 h-6 bg-gray-200 rounded animate-pulse" /> : (liData.data?.views?.toLocaleString() || "0")}
                   </p>
                 </div>
                 <div className="p-4 rounded-xl border border-blue-100 bg-blue-50">

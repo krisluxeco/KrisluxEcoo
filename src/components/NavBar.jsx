@@ -38,7 +38,22 @@ const initialNavLinks = [
     ],
   },
   { label: "Sustainability", href: "/user/sustainability" },
-  { label: "Partners", href: "/user/partners" },
+  {
+    label: "Partners",
+    href: "/user/partners",
+    children: [
+      {
+        label: "Partners Overview",
+        href: "/user/partners",
+        desc: "Learn about our partnerships",
+      },
+      {
+        label: "Share Catalog",
+        href: "/share-catalog",
+        desc: "Share our product catalog",
+      },
+    ],
+  },
   { label: "Blog", href: "/blog" },
   { label: "Custom Design", href: "/user/custom-design" },
 ];

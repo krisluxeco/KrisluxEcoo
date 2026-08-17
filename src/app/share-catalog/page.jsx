@@ -169,9 +169,15 @@ export default function ShareCatalogPage() {
   const router = useRouter();
   
   const [formData, setFormData] = useState({
-    shopName: "",
+    organisationName: "",
+    ownerName: "",
+    location: "",
     email: "",
     phone: "",
+    moq: "",
+    sustainableMaterial: "",
+    productType: "",
+    collaborationModel: "",
     file: null,
   });
   
@@ -201,9 +207,15 @@ export default function ShareCatalogPage() {
 
     try {
       const data = new FormData();
-      data.append("shopName", formData.shopName);
+      data.append("organisationName", formData.organisationName);
+      data.append("ownerName", formData.ownerName);
+      data.append("location", formData.location);
       data.append("email", formData.email);
       data.append("phone", formData.phone);
+      data.append("moq", formData.moq);
+      data.append("sustainableMaterial", formData.sustainableMaterial);
+      data.append("productType", formData.productType);
+      data.append("collaborationModel", formData.collaborationModel);
       data.append("file", formData.file);
 
       const res = await fetch("/api/catalogs", {
@@ -216,7 +228,10 @@ export default function ShareCatalogPage() {
         setError(result.message);
       } else {
         setSuccess("Catalog uploaded successfully! We will review it shortly.");
-        setFormData({ shopName: "", email: "", phone: "", file: null });
+        setFormData({ 
+          organisationName: "", ownerName: "", location: "", email: "", phone: "", 
+          moq: "", sustainableMaterial: "", productType: "", collaborationModel: "", file: null 
+        });
       }
     } catch (err) {
       setError("An error occurred. Please try again later.");
@@ -227,7 +242,7 @@ export default function ShareCatalogPage() {
 
   return (
     <main
-      className="relative min-h-screen bg-[#FAF7F2] text-[#1C1C1A] overflow-hidden"
+      className="relative min-h-screen bg-[#FAF7F2] text-[#1C1C1A]"
       style={{ fontFamily: sans }}
     >
       <style>{`
@@ -236,7 +251,7 @@ export default function ShareCatalogPage() {
 
       <div className="relative min-h-screen grid lg:grid-cols-[1fr_1.05fr]">
         {/* LEFT — Form panel */}
-        <section className="relative flex items-center justify-center px-6 sm:px-10 py-14 lg:py-12 order-2 lg:order-1">
+        <section className="relative flex flex-col items-center justify-center px-6 sm:px-10 pt-32 pb-16 lg:pt-32 lg:pb-16 order-2 lg:order-1 min-h-screen overflow-hidden">
           <div className="absolute inset-0 z-0 lg:hidden opacity-60">
             {leaves.slice(0, 6).map((l) => (
               <Leaf key={l.id} style={l.style} />
@@ -297,11 +312,11 @@ export default function ShareCatalogPage() {
               onSubmit={handleSubmit}
             >
               <FloatField
-                label="Shop Name"
-                name="shopName"
+                label="Organisation Name"
+                name="organisationName"
                 type="text"
                 required={true}
-                value={formData.shopName}
+                value={formData.organisationName}
                 onChange={handleChange}
                 icon={
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -310,32 +325,131 @@ export default function ShareCatalogPage() {
                   </svg>
                 }
               />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FloatField
+                  label="Owner Name"
+                  name="ownerName"
+                  type="text"
+                  required={true}
+                  value={formData.ownerName}
+                  onChange={handleChange}
+                  icon={
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                  }
+                />
+                <FloatField
+                  label="Location"
+                  name="location"
+                  type="text"
+                  required={true}
+                  value={formData.location}
+                  onChange={handleChange}
+                  icon={
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                  }
+                />
+              </div>
               
+              <div className="grid grid-cols-2 gap-4">
+                <FloatField
+                  label="Email Address"
+                  name="email"
+                  type="email"
+                  required={true}
+                  value={formData.email}
+                  onChange={handleChange}
+                  icon={
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                      <rect x="3" y="5" width="18" height="14" rx="2" />
+                      <path d="M3 7l9 6 9-6" />
+                    </svg>
+                  }
+                />
+                <FloatField
+                  label="Phone Number"
+                  name="phone"
+                  type="tel"
+                  required={true}
+                  value={formData.phone}
+                  onChange={handleChange}
+                  icon={
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                    </svg>
+                  }
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FloatField
+                  label="MOQ"
+                  name="moq"
+                  type="text"
+                  required={false}
+                  value={formData.moq}
+                  onChange={handleChange}
+                  icon={
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                      <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                      <line x1="12" y1="22.08" x2="12" y2="12" />
+                    </svg>
+                  }
+                />
+                <FloatField
+                  label="Type of Product"
+                  name="productType"
+                  type="text"
+                  required={false}
+                  value={formData.productType}
+                  onChange={handleChange}
+                  icon={
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                      <line x1="8" y1="6" x2="21" y2="6" />
+                      <line x1="8" y1="12" x2="21" y2="12" />
+                      <line x1="8" y1="18" x2="21" y2="18" />
+                      <line x1="3" y1="6" x2="3.01" y2="6" />
+                      <line x1="3" y1="12" x2="3.01" y2="12" />
+                      <line x1="3" y1="18" x2="3.01" y2="18" />
+                    </svg>
+                  }
+                />
+              </div>
+
               <FloatField
-                label="Email address"
-                name="email"
-                type="email"
-                required={true}
-                value={formData.email}
+                label="Sustainable Material"
+                name="sustainableMaterial"
+                type="text"
+                required={false}
+                value={formData.sustainableMaterial}
                 onChange={handleChange}
                 icon={
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                    <rect x="3" y="5" width="18" height="14" rx="2" />
-                    <path d="M3 7l9 6 9-6" />
+                    <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 4-8 4 .83-.83 3-2.67 4-5-2.5 1-5.33 2.5-7 4.5C9 8 8.5 11 9 14c-1-1.5-1.5-4-1-6-2 2-3 6-3 8a8 8 0 0 0 8 8c4-2 5-9 4-16z" />
                   </svg>
                 }
               />
 
               <FloatField
-                label="Phone Number"
-                name="phone"
-                type="tel"
-                required={true}
-                value={formData.phone}
+                label="Collaboration Model"
+                name="collaborationModel"
+                type="text"
+                required={false}
+                value={formData.collaborationModel}
                 onChange={handleChange}
                 icon={
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                   </svg>
                 }
               />
@@ -406,7 +520,7 @@ export default function ShareCatalogPage() {
         </section>
 
         {/* RIGHT — Editorial / brand panel */}
-        <section className="relative hidden lg:flex flex-col justify-between overflow-hidden bg-[#1C1C1A] px-14 py-12 order-1 lg:order-2">
+        <section className="relative hidden lg:flex flex-col justify-between overflow-hidden bg-[#1C1C1A] px-14 py-12 order-1 lg:order-2 sticky top-0 h-screen">
           {/* Background image */}
           <div className="absolute inset-0">
             <motion.div

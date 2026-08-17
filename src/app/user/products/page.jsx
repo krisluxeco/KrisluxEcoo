@@ -10,6 +10,8 @@ export const metadata = {
   description: "Browse our premium eco-friendly collection, handcrafted by traditional artisan partners using natural, sustainable materials.",
 };
 
+import ProductsLoading from "./loading";
+
 export default async function UserProductsPage() {
   await connectDb();
 
@@ -31,7 +33,7 @@ export default async function UserProductsPage() {
   const serializedProducts = JSON.parse(JSON.stringify(products));
 
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-screen text-[#4A6741]">Loading...</div>}>
+    <Suspense fallback={<ProductsLoading />}>
       <ProductsListClient
         initialProducts={serializedProducts}
         savedProductIds={savedProductIds}

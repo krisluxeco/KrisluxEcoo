@@ -262,8 +262,17 @@ export default function EmailDashboardClient() {
           
           <div className="flex-1 overflow-y-auto">
             {loading ? (
-              <div className="flex items-center justify-center h-32 text-[#9E9088]">
-                <Loader2 className="animate-spin" size={24} />
+              <div className="p-4 space-y-3">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="p-4 rounded-xl bg-white border border-[#ECE6DF] space-y-2 animate-pulse">
+                    <div className="flex justify-between">
+                      <div className="h-4 w-36 bg-[#E8DDD0] rounded-md" />
+                      <div className="h-3 w-16 bg-[#E8DDD0]/60 rounded-full" />
+                    </div>
+                    <div className="h-4 w-4/5 bg-[#E8DDD0]/80 rounded-md" />
+                    <div className="h-3 w-full bg-[#E8DDD0]/40 rounded-full" />
+                  </div>
+                ))}
               </div>
             ) : emails.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-48 text-[#9E9088]">

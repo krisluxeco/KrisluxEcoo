@@ -8,6 +8,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Package, Loader2, ArrowLeft } from "lucide-react";
 import { StorefrontProductCard } from "@/components/ProductsListClient";
 
+import SavedLoading from "./loading";
+
 const serif = "var(--font-playfair), Georgia, serif";
 const sans = "var(--font-montserrat), sans-serif";
 
@@ -53,16 +55,7 @@ export default function SavedProductsPage() {
   };
 
   if (status === "loading" || loading) {
-    return (
-      <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center pt-24">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 className="animate-spin text-[#4A6741] h-8 w-8 stroke-[1.5]" />
-          <p className="text-xs text-[#9E9088] uppercase tracking-widest" style={{ fontFamily: sans }}>
-            Loading Saved Products...
-          </p>
-        </div>
-      </div>
-    );
+    return <SavedLoading />;
   }
 
   return (

@@ -35,14 +35,14 @@ const footerColumns = [
       { label: "FAQs", href: "/user/bulk-order" },
     ],
   },
-  // {
-  //   title: "Legal",
-  //   links: [
-  //     { label: "Privacy Policy", href: "/privacy-policy" },
-  //     { label: "Terms of Service", href: "/terms" },
-  //     { label: "Refund Policy", href: "/refund-policy" },
-  //   ],
-  // },
+  {
+    title: "Legal",
+    links: [
+      { label: "Privacy Policy", href: "/privacy-policy" },
+      { label: "Terms of Service", href: "/terms" },
+      { label: "Refund Policy", href: "/refund-policy" },
+    ],
+  },
 ];
 
 const socialLinks = [

@@ -6,10 +6,21 @@ import User from "@/models/user.model";
 import Product from "@/models/product.model"; // Ensure model is registered
 import Visit from "@/models/visit.model";
 
-const AdminDashBoard = async () => {
+const AdminDashBoard = async ({ searchParams }) => {
   await connectDb();
+  
+  // URL Filter logic
+  const filter = searchParams?.filter || "sevenDays";
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfSevenDaysAgo = new Date(startOfToday);
+  startOfSevenDaysAgo.setDate(startOfSevenDaysAgo.getDate() - 6);
 
-  // 1. Total Customers
+  let globalStartDate = new Date(0); // For "total"
+  if (filter === "today") globalStartDate = startOfToday;
+  if (filter === "sevenDays") globalStartDate = startOfSevenDaysAgo;
+
+  // 1. Total Customers (All-time, as it represents the total user base)
   const totalCustomers = await User.countDocuments({ role: "user" });
 
   // 2. Fetch all orders (Quotes) with products to calculate earnings
@@ -21,10 +32,6 @@ const AdminDashBoard = async () => {
   let pendingOrders = 0;
   let canceledOrders = 0;
   
-  const now = new Date();
-  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const startOfSevenDaysAgo = new Date(startOfToday);
-  startOfSevenDaysAgo.setDate(startOfSevenDaysAgo.getDate() - 6);
 
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -42,6 +49,7 @@ const AdminDashBoard = async () => {
       totalEarning += orderValue;
 
       const orderDate = new Date(order.createdAt);
+      // Calculate earnings for the static cards (independent of global filter)
       if (orderDate >= startOfToday) {
         todayEarning += orderValue;
       }
@@ -50,14 +58,17 @@ const AdminDashBoard = async () => {
       }
     }
 
+    // Stats based on all-time (so older pending orders don't disappear)
     if (order.status === "Pending") {
       pendingOrders += 1;
     }
-    
     if (order.status === "Rejected") {
       canceledOrders += 1;
     }
   });
+
+  // Calculate all-time active orders
+  const activeOrdersCount = allOrders.filter(o => o.status !== "Rejected").length;
 
   const chartData = [];
   for (let i = 6; i >= 0; i--) {
@@ -82,8 +93,6 @@ const AdminDashBoard = async () => {
     total: totalEarning,
   };
 
-  const activeOrdersCount = allOrders.filter(o => o.status !== "Rejected").length;
-
   const stats = [
     { title: "Total Orders", value: activeOrdersCount },
     { title: "Total Customers", value: totalCustomers },
@@ -91,8 +100,9 @@ const AdminDashBoard = async () => {
     { title: "Canceled Orders", value: canceledOrders },
   ];
 
-  // 3. Fetch Traffic/Referral Data
+  // 3. Fetch Traffic/Referral Data (Filtered)
   const visits = await Visit.aggregate([
+    { $match: { ...(globalStartDate.getTime() > 0 && { createdAt: { $gte: globalStartDate } }) } },
     { $group: { _id: "$source", count: { $sum: 1 } } }
   ]);
 
@@ -113,12 +123,63 @@ const AdminDashBoard = async () => {
     trafficData.total += v.count;
   });
 
+  const allVisits = await Visit.find({ createdAt: { $gte: startOfSevenDaysAgo } });
+  const trafficChartData = [];
+  
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(startOfToday);
+    d.setDate(d.getDate() - i);
+    
+    const visitsOnDate = allVisits.filter(v => {
+       const vDate = new Date(v.createdAt);
+       return vDate.getFullYear() === d.getFullYear() && 
+              vDate.getMonth() === d.getMonth() && 
+              vDate.getDate() === d.getDate();
+    }).length;
+
+    trafficChartData.push({ day: days[d.getDay()], visitors: visitsOnDate });
+  }
+
+  // 4. Advanced Traffic Stats (Unique, Growth)
+  const allVisitsFull = await Visit.find();
+  const uniqueIPs = new Set(allVisitsFull.map(v => v.ipAddress));
+  
+  const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+
+  let thisMonthVisits = 0;
+  let lastMonthVisits = 0;
+
+  allVisitsFull.forEach(v => {
+    const vDate = new Date(v.createdAt);
+    if (vDate >= thisMonthStart) {
+      thisMonthVisits++;
+    } else if (vDate >= lastMonthStart && vDate <= lastMonthEnd) {
+      lastMonthVisits++;
+    }
+  });
+
+  const growth = lastMonthVisits === 0 
+    ? (thisMonthVisits > 0 ? 100 : 0) 
+    : Math.round(((thisMonthVisits - lastMonthVisits) / lastMonthVisits) * 100);
+
+  const advancedTrafficStats = {
+    total: allVisitsFull.length,
+    unique: uniqueIPs.size,
+    thisMonth: thisMonthVisits,
+    lastMonth: lastMonthVisits,
+    growth: growth,
+  };
+
   return (
     <AdminDashBoardClient
       earning={earning}
       stats={stats}
       chartData={chartData}
       trafficData={trafficData}
+      trafficChartData={trafficChartData}
+      advancedTrafficStats={advancedTrafficStats}
     />
   );
 };

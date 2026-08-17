@@ -71,8 +71,22 @@ export default function AdminSidebar({
         </button>
       </div>
 
-      {/* Nav */}
-      <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+      `}</style>
+      <nav className="custom-scrollbar flex-1 overflow-y-auto py-4 px-3 space-y-1">
         {navItems.map((item) => {
           const active = pathname === item.href;
           const Icon = item.icon;
@@ -82,8 +96,8 @@ export default function AdminSidebar({
               href={item.href}
               onClick={() => setMobileOpen(false)}
               className={`group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all ${active
-                  ? "bg-[#4A6741] text-white"
-                  : "text-white/60 hover:text-white hover:bg-white/5"
+                ? "bg-[#4A6741] text-white"
+                : "text-white/60 hover:text-white hover:bg-white/5"
                 }`}
             >
               <Icon size={18} className="flex-shrink-0" />
