@@ -11,7 +11,7 @@ import Link from "next/link";
 import Deck from "./Deck";
 import DustParticles from "./DustParticles";
 import ImpactCarousel from "./ImpactCarousel";
-import Lenis from "lenis";
+
 import Platforms from "./Platforms";
 
 // ─── Shared Typography ────────────────────────────────────────────────────────
@@ -329,24 +329,7 @@ export default function Home({ featuredProducts = [], savedProductIds = [], impa
     if (typeof window !== "undefined") {
       gsap.registerPlugin(ScrollTrigger);
 
-      // Initialize Lenis Smooth Scroll
-      const lenis = new Lenis({
-        duration: 1.5,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        orientation: 'vertical',
-        gestureOrientation: 'vertical',
-        smoothWheel: true,
-        wheelMultiplier: 1,
-        touchMultiplier: 2,
-        infinite: false,
-      });
 
-      // Sync Lenis with GSAP ScrollTrigger
-      lenis.on('scroll', ScrollTrigger.update);
-      gsap.ticker.add((time) => {
-        lenis.raf(time * 1000);
-      });
-      gsap.ticker.lagSmoothing(0);
 
       let ctx = gsap.context(() => {
         // 1. Hero Text Reveal
@@ -436,7 +419,6 @@ export default function Home({ featuredProducts = [], savedProductIds = [], impa
 
       return () => {
         ctx.revert();
-        lenis.destroy();
       };
     }
   }, []);

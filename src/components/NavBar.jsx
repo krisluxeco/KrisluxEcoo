@@ -532,7 +532,7 @@ export default function NavBar() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: "100%" }}
               transition={{ type: "spring", stiffness: 320, damping: 32 }}
-              className="fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-[#FAF7F2] flex flex-col px-8 pt-8 pb-10 shadow-[-8px_0_40px_rgba(0,0,0,0.18)] lg:hidden"
+              className="fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-[#FAF7F2] flex flex-col px-8 pt-8 pb-10 shadow-[-8px_0_40px_rgba(0,0,0,0.18)] lg:hidden overflow-y-auto"
             >
               <div className="flex items-center justify-between mb-10">
                 <div className="flex items-center gap-2.5">
