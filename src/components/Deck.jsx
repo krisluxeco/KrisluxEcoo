@@ -67,12 +67,19 @@ export default function Deck({ cards = [], onIndexChange }) {
         <animated.div className="absolute flex items-center justify-center touch-none w-[300px] h-[400px] md:w-[450px] md:h-[600px] xl:w-[500px] xl:h-[700px]" key={i} style={{ x, y }}>
           <animated.div
             {...bind(i)}
-            className="w-full h-full bg-white rounded-2xl shadow-[0_20px_60px_-10px_rgba(50,50,73,0.3),0_10px_20px_-10px_rgba(50,50,73,0.2)] bg-cover bg-center bg-no-repeat will-change-transform touch-none cursor-grab active:cursor-grabbing border-8 md:border-[12px] border-white"
+            className="w-full h-full relative bg-white rounded-2xl shadow-[0_20px_60px_-10px_rgba(50,50,73,0.3),0_10px_20px_-10px_rgba(50,50,73,0.2)] overflow-hidden will-change-transform touch-none cursor-grab active:cursor-grabbing border-8 md:border-[12px] border-white"
             style={{
               transform: interpolate([rot, scale], trans),
-              backgroundImage: `url(${cards[i].image || cards[i]})`,
             }}
-          />
+          >
+            <Image
+              src={cards[i].image || cards[i]}
+              alt="Collection Card"
+              fill
+              sizes="(max-width: 768px) 300px, 500px"
+              className="object-cover pointer-events-none"
+            />
+          </animated.div>
         </animated.div>
       ))}
     </div>

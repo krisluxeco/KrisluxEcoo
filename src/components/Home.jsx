@@ -149,11 +149,19 @@ function HeroSlideshow() {
           >
             {/* Background Image with Ken Burns continuous zoom effect */}
             <div
-              className={`absolute inset-0 bg-cover bg-center transition-transform duration-[6000ms] ease-linear ${
+              className={`absolute inset-0 transition-transform duration-[6000ms] ease-linear ${
                 isActive ? "scale-110" : "scale-100"
               }`}
-              style={{ backgroundImage: `url(${slide.url})` }}
-            />
+            >
+              <Image 
+                src={slide.url} 
+                alt={slide.caption} 
+                fill 
+                priority={i === 0} 
+                sizes="100vw" 
+                className="object-cover" 
+              />
+            </div>
           </div>
         );
       })}
