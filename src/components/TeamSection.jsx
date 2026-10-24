@@ -31,14 +31,14 @@ const teamMembers = [
     }
   },
   {
-    name: "Deepali Kumari",
-    role: "Head Manager",
+    name: "Vickey Kumar",
+    role: "Admin & PR Head",
     university: "IIT Patna",
-    image: "/our_team/Deepali.jpeg",
+    image: "/our_team/AdminPrHead.jpg",
     socials: {
-      linkedin: "https://www.linkedin.com/in/deepali-kumari-545a23314/",
-      instagram: "https://www.instagram.com/attitude_deepsr/",
-      mail: "deepalixyz01@gmail.com"
+      linkedin: "#",
+      instagram: "#",
+      mail: "#"
     }
   },
   {
@@ -195,7 +195,7 @@ export default function TeamSection() {
             <TeamCard member={teamMembers[0]} index={0} />
           </div>
 
-          {/* Bottom Row - Patil (Index 3), Deepali Kumari (Index 2) and CTO (Alok Ranjan - Index 1) */}
+          {/* Bottom Row - Patil (Index 3), Vickey Kumar (Index 2) and CTO (Alok Ranjan - Index 1) */}
           <div className="flex flex-col md:flex-row justify-center gap-6 lg:gap-8 w-full">
             <TeamCard member={teamMembers[3]} index={1} />
             <TeamCard member={teamMembers[2]} index={2} />
