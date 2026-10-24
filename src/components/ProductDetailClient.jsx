@@ -408,11 +408,11 @@ _Sent via KrisluxECO B2B Portal_`;
               </div>
 
               {/* MOQ Indicator */}
-              <div className="flex items-center gap-2 text-xs text-[#6B6560] pt-1">
-                <span className="h-5 w-5 rounded-full bg-[#FAF7F2] border border-[#ECE6DF] flex items-center justify-center text-[#C8A97A] font-bold">
-                  ○
+              <div className="flex items-center gap-2 text-xs text-[#525E55] pt-1">
+                <span className="h-5 w-5 rounded-full bg-[#FAF8F5] border border-[#EAE3D6] flex items-center justify-center text-[#C29B5D] font-bold text-[10px]">
+                  ●
                 </span>
-                <span>Minimum Order: <span className="font-semibold">{product.minOrderQty || 50} units</span></span>
+                <span>Minimum Order Quantity: <strong className="text-[#141E17] font-semibold">{product.minOrderQty || 50} units</strong></span>
               </div>
 
               {/* Status Badge */}
@@ -424,15 +424,49 @@ _Sent via KrisluxECO B2B Portal_`;
                 ) : (
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-semibold uppercase tracking-wider px-3 py-1 border border-emerald-200">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
-                    In Stock
+                    Available for Commercial Procurement
                   </span>
                 )}
               </div>
             </div>
 
+            {/* B2B Wholesale Volume Pricing Matrix */}
+            <div className="bg-[#FAF8F5] border border-[#EAE3D6] rounded-xl p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[#141E17]">
+                  Wholesale Volume Tiers
+                </span>
+                <span className="text-[10px] text-[#3E634A] font-semibold uppercase tracking-wider">
+                  Direct Factory Pricing
+                </span>
+              </div>
+              <div className="grid grid-cols-3 gap-2.5 text-center">
+                <div className="p-3 bg-white rounded-lg border border-[#EAE3D6]">
+                  <span className="text-[10px] text-[#68736B] block">Tier 1 ({product.minOrderQty || 50}–199)</span>
+                  <span className="text-sm font-bold text-[#141E17] font-mono mt-1 block">₹{displayPrice.toLocaleString()}</span>
+                  <span className="text-[9px] text-[#759E81] font-medium">Standard Wholesale</span>
+                </div>
+                <div className="p-3 bg-white rounded-lg border border-[#C29B5D]/60 shadow-xs">
+                  <span className="text-[10px] text-[#68736B] block">Tier 2 (200–499)</span>
+                  <span className="text-sm font-bold text-[#C29B5D] font-mono mt-1 block">₹{Math.round(displayPrice * 0.9).toLocaleString()}</span>
+                  <span className="text-[9px] text-[#C29B5D] font-bold">10% Tier Discount</span>
+                </div>
+                <div className="p-3 bg-white rounded-lg border border-[#141E17]">
+                  <span className="text-[10px] text-[#68736B] block">Tier 3 (500+)</span>
+                  <span className="text-sm font-bold text-[#141E17] font-mono mt-1 block">₹{Math.round(displayPrice * 0.8).toLocaleString()}</span>
+                  <span className="text-[9px] text-[#3E634A] font-bold">20% Off + Custom Logo</span>
+                </div>
+              </div>
+              <div className="mt-3 pt-3 border-t border-[#EAE3D6] flex flex-wrap items-center justify-between gap-2 text-[10px] text-[#525E55]">
+                <span>⏱️ Sample: <strong>3–5 Days</strong></span>
+                <span>📦 Bulk: <strong>14–21 Days</strong></span>
+                <span>🌿 100% Biodegradable</span>
+              </div>
+            </div>
+
             {/* Description paragraph (Truncated) */}
             <div className="relative">
-              <p className="text-[#6B6560] text-sm leading-relaxed font-light line-clamp-3">
+              <p className="text-[#525E55] text-sm leading-relaxed font-light line-clamp-3">
                 {product.description}
               </p>
               {product.description?.length > 150 && (
@@ -441,9 +475,9 @@ _Sent via KrisluxECO B2B Portal_`;
                     setActiveTab("description");
                     document.getElementById('product-accordions')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                   }}
-                  className="text-[10px] uppercase tracking-wider font-bold text-[#C8A97A] hover:text-[#1C1C1A] transition-colors mt-2 inline-block"
+                  className="text-[10px] uppercase tracking-wider font-bold text-[#C29B5D] hover:text-[#141E17] transition-colors mt-2 inline-block cursor-pointer"
                 >
-                  Read full description ↓
+                  Read full specifications & craft details ↓
                 </button>
               )}
             </div>

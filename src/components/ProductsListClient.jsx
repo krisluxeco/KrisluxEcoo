@@ -144,30 +144,12 @@ export function StorefrontProductCard({ product, isLiked = false, onToggleSaved 
   const [showBurst, setShowBurst] = useState(false);
   const [showCartBurst, setShowCartBurst] = useState(false);
 
-  // 3D tilt-on-hover state
-  const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
-  const cardRef = useRef(null);
-
   useEffect(() => {
     setLiked(isLiked);
   }, [isLiked]);
 
-  const handlePointerMoveCard = (e) => {
-    const card = cardRef.current;
-    if (!card) return;
-    const rect = card.getBoundingClientRect();
-    const px = (e.clientX - rect.left) / rect.width;
-    const py = (e.clientY - rect.top) / rect.height;
-    const maxTilt = 5;
-    setTilt({
-      ry: (px - 0.5) * maxTilt * 2,
-      rx: (0.5 - py) * maxTilt * 2,
-    });
-  };
-
-  const resetTilt = () => setTilt({ rx: 0, ry: 0 });
-
   const coverImg = product.images?.[0]?.url || "";
+  const secondaryImg = product.images?.[1]?.url || coverImg;
   const displayPrice = product.discountPrice ?? product.price;
   const isOutOfStock = product.stock === 0;
 
@@ -210,12 +192,12 @@ export function StorefrontProductCard({ product, isLiked = false, onToggleSaved 
   };
 
   const badgeStyles = {
-    "BEST SELLER": "bg-[#C8A97A] text-white",
-    "ECO CHOICE": "bg-[#FAF7F2] text-[#1C1C1A] border border-[#1C1C1A]/10",
-    "NEW": "bg-[#1C1C1A] text-white",
-    "LIMITED": "bg-[#C8A97A] text-white",
-    "SPECIAL OFFER": "bg-[#1C1C1A] text-white",
-    "OUT OF STOCK": "bg-white/90 text-[#1C1C1A]",
+    "BEST SELLER": "bg-[#C29B5D] text-[#0D140F] font-bold",
+    "ECO CHOICE": "bg-[#1E3125] text-white border border-white/10",
+    "NEW": "bg-[#141E17] text-white",
+    "LIMITED": "bg-[#C29B5D] text-[#0D140F] font-bold",
+    "SPECIAL OFFER": "bg-[#C97249] text-white",
+    "OUT OF STOCK": "bg-white/95 text-[#141E17] border border-gray-200",
   };
 
   const getBadgeText = () => {
@@ -231,139 +213,136 @@ export function StorefrontProductCard({ product, isLiked = false, onToggleSaved 
   const badgeText = getBadgeText();
 
   return (
-    <motion.div
-      ref={cardRef}
-      style={{ perspective: 1000 }}
-      className="group relative flex-shrink-0 w-full select-none"
-    >
-      <motion.div
-        animate={{ rotateX: tilt.rx, rotateY: tilt.ry }}
-        whileHover={{ y: -8, scale: 1.02 }}
-        transition={{ type: "spring", stiffness: 220, damping: 18 }}
-        onPointerMove={handlePointerMoveCard}
-        onPointerLeave={resetTilt}
-        style={{ transformStyle: "preserve-3d" }}
-        className="relative bg-white rounded-sm overflow-hidden border border-[#E8DDD0] group-hover:border-[#C8A97A]/40 shadow-[0_2px_10px_rgba(0,0,0,0.04)] group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.12)] transition-[border-color,box-shadow] duration-500 h-fit flex flex-col"
+    <div className="group relative w-full flex flex-col bg-white rounded-[2px] overflow-hidden border border-[#EAE3D6] hover:border-[#C29B5D]/60 hover:shadow-[0_16px_36px_rgba(20,30,23,0.08)] transition-all duration-300">
+      {/* Product Image Stage */}
+      <Link 
+        href={`/user/products/${product._id}`} 
+        className="block relative aspect-[4/5] w-full overflow-hidden bg-[#F4EFE6]"
       >
-        {/* Image */}
-        <Link href={`/user/products/${product._id}`} className="block relative aspect-[4/5] w-full overflow-hidden bg-[#F8F6F3]">
-          {badgeText && (
-            <span
-              className={`absolute top-3 left-3 z-10 text-[10px] font-bold tracking-[0.2em] px-2.5 py-1 uppercase shadow-sm ${badgeStyles[badgeText] ?? "bg-[#1C1C1A] text-white"
-                }`}
-            >
-              {badgeText}
-            </span>
-          )}
+        {badgeText && (
+          <span
+            className={`absolute top-3 left-3 z-10 text-[9px] tracking-[0.2em] px-2.5 py-1 uppercase rounded-[2px] shadow-sm ${
+              badgeStyles[badgeText] ?? "bg-[#141E17] text-white"
+            }`}
+          >
+            {badgeText}
+          </span>
+        )}
 
-          <div className="absolute inset-0">
-            {coverImg ? (
-              <Image width={800} height={800}
-                src={coverImg}
-                alt={product.name}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-[#9E9088]">
-                <Package size={32} className="stroke-1" />
-              </div>
+        {/* Wishlist Button (Almost Zero Radius) */}
+        <button
+          onClick={handleLikeClick}
+          aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
+          className="absolute top-3 right-3 z-10 w-8 h-8 rounded-[2px] bg-white/85 hover:bg-white backdrop-blur-sm border border-[#EAE3D6] flex items-center justify-center transition-transform hover:scale-110 shadow-sm cursor-pointer"
+        >
+          <AnimatePresence>{showBurst && <LikeBurst />}</AnimatePresence>
+          <Heart 
+            size={14} 
+            className={`transition-colors ${liked ? "fill-[#C29B5D] text-[#C29B5D]" : "text-[#525E55]"}`} 
+          />
+        </button>
+
+        {/* Base Primary Image */}
+        <div className="absolute inset-0">
+          {coverImg ? (
+            <Image
+              src={coverImg}
+              alt={product.name}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-[#9E9088]">
+              <Package size={32} className="stroke-1" />
+            </div>
+          )}
+        </div>
+
+        {/* Secondary Hover Image (Simple, Smooth, Fast Fade) */}
+        {secondaryImg && secondaryImg !== coverImg && (
+          <div className="absolute inset-0 z-[1] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
+            <Image
+              src={secondaryImg}
+              alt={`${product.name} detail`}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent pointer-events-none" />
+          </div>
+        )}
+      </Link>
+
+      {/* Body & Procurement Details */}
+      <div className="p-5 flex flex-col flex-1 justify-between bg-white">
+        <div>
+          <div className="flex items-center justify-between gap-2 mb-1.5">
+            <span
+              className="text-[10px] uppercase tracking-[0.2em] text-[#C29B5D] font-bold truncate"
+              style={{ fontFamily: sans }}
+            >
+              {product.category}
+            </span>
+            <span className="text-[10px] font-mono tracking-wider text-[#3E634A] bg-[#F4EFE6] px-2 py-0.5 rounded-[2px] font-semibold whitespace-nowrap">
+              MOQ: {product.minOrderQty || 25} Units
+            </span>
+          </div>
+
+          <Link href={`/user/products/${product._id}`}>
+            <h3
+              className="text-base font-normal leading-snug text-[#141E17] group-hover:text-[#3E634A] transition-colors line-clamp-2 mb-3"
+              style={{ fontFamily: serif }}
+            >
+              {product.name}
+            </h3>
+          </Link>
+        </div>
+
+        <div>
+          {/* Pricing Row */}
+          <div className="flex items-baseline justify-between mb-4 pt-3 border-t border-[#F4EFE6]">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-base font-bold text-[#141E17] font-mono">
+                ₹{displayPrice.toLocaleString()}
+              </span>
+              <span className="text-[10px] text-[#68736B] uppercase tracking-wider">
+                / unit wholesale
+              </span>
+            </div>
+            {product.discountPrice && product.discountPrice < product.price && (
+              <span className="text-xs text-[#9E9088] line-through font-mono">
+                ₹{product.price.toLocaleString()}
+              </span>
             )}
           </div>
 
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent pointer-events-none"
-            initial={{ x: "-120%" }}
-            whileHover={{ x: "120%" }}
-            transition={{ duration: 0.7, ease: "easeInOut" }}
-          />
-        </Link>
-
-        {/* Body */}
-        <div className="p-4 flex flex-col" style={{ transform: "translateZ(20px)" }}>
-          <p
-            className="text-[11px] uppercase tracking-[0.14em] text-[#C8A97A] italic mb-1.5 truncate"
-            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
-          >
-            {product.category}
-          </p>
-
-          <h3
-            className="text-lg leading-snug text-[#1C1C1A] mb-1 line-clamp-2"
-            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
-          >
-            {product.name}
-          </h3>
-
-          <div className="flex items-center justify-between mb-4 text-xs gap-2 mt-3">
-            <span className="flex items-center gap-1.5 text-[#9E9088] whitespace-nowrap uppercase tracking-widest text-[9px] font-bold">
-              MOQ: {product.minOrderQty || 1}
-            </span>
-            <div className="flex flex-col items-end">
-              <span className="text-[#1C1C1A] font-medium whitespace-nowrap">
-                ₹{displayPrice.toLocaleString()}{" "}
-                <span className="text-[#9E9088] font-light italic text-[10px]">onwards</span>
-              </span>
-              {product.discountPrice && product.discountPrice < product.price && (
-                <span className="text-[#9E9088] text-[9px] line-through decoration-[#9E9088]/60 mt-0.5">
-                  ₹{product.price.toLocaleString()}
-                </span>
-              )}
-            </div>
-          </div>
-
+          {/* Action Row */}
           <div className="flex items-center gap-2">
             <Link
               href={`/user/products/${product._id}`}
               className="flex-1"
             >
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                className="w-full relative flex items-center justify-center bg-white border border-[#1C1C1A] hover:bg-[#1C1C1A] hover:text-white text-[#1C1C1A] text-[10px] font-bold tracking-[0.2em] uppercase py-3 transition-colors overflow-hidden cursor-pointer"
-              >
-                VIEW DETAILS
-              </motion.button>
+              <button className="w-full py-2.5 px-3 bg-[#FAF8F5] hover:bg-[#141E17] text-[#141E17] hover:text-white border border-[#EAE3D6] hover:border-[#141E17] rounded-[2px] text-[10px] font-bold tracking-[0.18em] uppercase transition-all duration-200 cursor-pointer text-center">
+                View Specifications
+              </button>
             </Link>
 
             {!isOutOfStock && (
-              <motion.button
+              <button
                 onClick={handleAddToCart}
-                aria-label="Add to cart"
-                whileTap={{ scale: 0.8 }}
-                whileHover={{ scale: 1.08 }}
-                className="relative w-10 h-10 flex-shrink-0 flex items-center justify-center border border-[#ECE6DF] hover:border-[#4A6741] text-[#1C1C1A] hover:text-[#4A6741] transition-colors cursor-pointer"
+                aria-label="Add to Quote Cart"
+                className="relative w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-[2px] bg-[#141E17] hover:bg-[#C29B5D] text-white hover:text-[#0D140F] transition-all cursor-pointer shadow-sm"
+                title="Add to Quote Cart"
               >
                 <AnimatePresence>{showCartBurst && <CartBurst />}</AnimatePresence>
-                <ShoppingCart size={14} strokeWidth={2} />
-              </motion.button>
+                <ShoppingCart size={15} strokeWidth={2} />
+              </button>
             )}
-
-            <motion.button
-              onClick={handleLikeClick}
-              aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
-              whileTap={{ scale: 0.8 }}
-              whileHover={{ scale: 1.08 }}
-              className="relative w-10 h-10 flex-shrink-0 flex items-center justify-center border border-[#ECE6DF] hover:border-[#C8A97A] transition-colors cursor-pointer"
-            >
-              <AnimatePresence>{showBurst && <LikeBurst />}</AnimatePresence>
-              <motion.svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill={liked ? "#C8A97A" : "none"}
-                stroke={liked ? "#C8A97A" : "#9E9088"}
-                strokeWidth="2"
-                animate={liked ? { scale: [1, 1.4, 1] } : { scale: 1 }}
-                transition={{ duration: 0.35, ease: "easeOut" }}
-              >
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-              </motion.svg>
-            </motion.button>
           </div>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
 

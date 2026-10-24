@@ -1,93 +1,48 @@
 "use client";
+
 import Image from "next/image";
-
-import { useRef, useState, useEffect, useCallback } from "react";
-
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { motion, useInView, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { Package } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Heart, ArrowRight, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 
-/**
- * ─── FEATURED PRODUCTS ──────────────────────────────────────────────────────
- * Horizontally scrollable, animation-rich product rail. Works with:
- *  - Mouse: click-and-drag to scroll, with momentum "flick" on release
- *  - Trackpad/touch: native horizontal swipe
- *  - Shift + mouse wheel: native horizontal scroll (standard browser convention)
- *  - Arrow buttons: animated, auto-disable at scroll bounds
- *  - Live scroll-progress bar under the rail
- *
- * IMPORTANT: plain vertical mouse-wheel scrolling over the rail is left
- * completely alone and bubbles up to scroll the PAGE, not the rail. Hijacking
- * vertical wheel input to drive horizontal scroll breaks normal page
- * scrolling for anyone whose cursor happens to be resting over this section
- * (a classic "scroll-jacking" anti-pattern) — that's why the previous
- * version made the heading appear to vanish mid-scroll.
- *
- * Swap the `products` array below with your real catalogue. Badge colors
- * are keyed off `badge` text so you can add new badge types freely.
- */
+const serif = "var(--font-playfair), Georgia, serif";
+const sans = "var(--font-montserrat), sans-serif";
 
-const badgeStyles = {
-  "BEST SELLER": "bg-[#C8A97A] text-white",
-  "ECO CHOICE": "bg-[#FAF7F2] text-[#1C1C1A] border border-[#1C1C1A]/10",
-  "NEW": "bg-[#1C1C1A] text-white",
-  "POPULAR": "bg-[#C8A97A] text-white",
-  "SPECIAL OFFER": "bg-[#1C1C1A] text-white",
-  "OUT OF STOCK": "bg-white/90 text-[#1C1C1A]",
-};
+const CARD_WIDTH = 320; // Card width + gap for smooth paging
 
-const CARD_WIDTH = 296; // card width + gap, used for arrow-button paging
-
-/* ── Little floating "+1 liked" burst shown above the heart button ── */
+/* ── Floating "+1 liked" burst animation ── */
 function LikeBurst() {
   return (
     <motion.div
       initial={{ opacity: 0, y: 0, scale: 0.6 }}
-      animate={{ opacity: 1, y: -26, scale: 1 }}
-      exit={{ opacity: 0, y: -38 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className="pointer-events-none absolute -top-1 right-0 text-[#C8A97A]"
+      animate={{ opacity: 1, y: -24, scale: 1 }}
+      exit={{ opacity: 0, y: -36 }}
+      transition={{ duration: 0.45, ease: "easeOut" }}
+      className="pointer-events-none absolute -top-1 right-0 text-[#C29B5D]"
     >
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="#C8A97A">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="#C29B5D">
         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
       </svg>
     </motion.div>
   );
 }
 
-function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggleSaved }) {
+/* ── Premium Editorial Product Card (Butter-Smooth Hardware Rendered) ── */
+function ProductCard({ product, isLiked = false, onToggleSaved }) {
   const { status } = useSession();
   const router = useRouter();
   const [liked, setLiked] = useState(isLiked);
   const [showBurst, setShowBurst] = useState(false);
-  const cardRef = useRef(null);
-  const inView = useInView(cardRef, { once: true, margin: "-40px" });
-
-  // 3D tilt-on-hover, driven by pointer position relative to the card
-  const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
 
   useEffect(() => {
     setLiked(isLiked);
   }, [isLiked]);
 
-  const handlePointerMoveCard = (e) => {
-    const card = cardRef.current;
-    if (!card) return;
-    const rect = card.getBoundingClientRect();
-    const px = (e.clientX - rect.left) / rect.width; // 0..1
-    const py = (e.clientY - rect.top) / rect.height; // 0..1
-    const maxTilt = 5; // degrees, kept subtle so it stays elegant
-    setTilt({
-      ry: (px - 0.5) * maxTilt * 2,
-      rx: (0.5 - py) * maxTilt * 2,
-    });
-  };
-
-  const resetTilt = () => setTilt({ rx: 0, ry: 0 });
-
   const handleLikeClick = async (e) => {
+    e.preventDefault();
     e.stopPropagation();
 
     if (status !== "authenticated") {
@@ -98,9 +53,7 @@ function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggle
     try {
       const res = await fetch("/api/user/saved-products", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId: product._id }),
       });
       const data = await res.json();
@@ -118,185 +71,164 @@ function ProductCard({ product, index, onDragStateRef, isLiked = false, onToggle
     }
   };
 
-  const coverImg = product.images?.[0]?.url || "";
+  const primaryImg = product.images?.[0]?.url || "";
+  const secondaryImg = product.images?.[1]?.url || primaryImg;
   const displayPrice = product.discountPrice ?? product.price;
+  const originalPrice = product.price;
+  const hasDiscount = product.discountPrice && product.discountPrice < product.price;
+  const discountSavings = hasDiscount ? originalPrice - product.discountPrice : 0;
   const isOutOfStock = product.stock === 0;
 
-  const getBadgeText = () => {
-    if (isOutOfStock) return "OUT OF STOCK";
-    if (product.category === "Eco & Sustainable") return "ECO CHOICE";
-    if (product.discountPrice) return "SPECIAL OFFER";
-    if (product.isBestSeller) return "BEST SELLER";
-    return "NEW";
-  };
-  const badgeText = getBadgeText();
-
   return (
-    <motion.div
-      ref={cardRef}
-      initial={{ opacity: 0, y: 40, scale: 0.94 }}
-      animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
-      transition={{
-        duration: 0.6,
-        delay: index * 0.09,
-        ease: [0.25, 0.46, 0.45, 0.94],
-      }}
-      style={{
-        perspective: 1000,
-      }}
-      className="group relative flex-shrink-0 w-[260px] md:w-[280px] select-none"
-      draggable={false}
-    >
-      <motion.div
-        animate={{
-          rotateX: tilt.rx,
-          rotateY: tilt.ry,
-        }}
-        whileTap={{ scale: 0.98 }}
-        transition={{ type: "spring", stiffness: 220, damping: 18 }}
-        onPointerMove={(e) => {
-          // Skip tilt while the rail itself is mid-drag
-          if (onDragStateRef?.current?.active) return;
-          handlePointerMoveCard(e);
-        }}
-        onPointerLeave={resetTilt}
-        style={{ transformStyle: "preserve-3d" }}
-        className="relative bg-[#1C1C1A] rounded-[24px] overflow-hidden border border-white/10 group-hover:border-white/30 shadow-[0_2px_10px_rgba(0,0,0,0.2)] group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] transition-[border-color,box-shadow] duration-500"
-      >
-        {/* Full Card Image Background */}
-        <div className="absolute inset-0 z-0 bg-[#111] overflow-hidden">
-          {coverImg ? (
-            <Image
-              src={coverImg}
-              alt={product.name}
-              fill
-              draggable={false}
-              sizes="(max-width: 768px) 260px, 280px"
-              className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-            />
+    <div className="group relative flex-shrink-0 w-[280px] sm:w-[310px] select-none snap-start">
+      <div className="relative bg-white rounded-[2px] overflow-hidden border border-[#EAE3D6] hover:border-[#C29B5D]/70 shadow-[0_4px_20px_rgba(20,30,23,0.04)] hover:shadow-[0_20px_45px_rgba(20,30,23,0.1)] transition-all duration-500 flex flex-col h-[465px]">
+        {/* ─── Product Image Showcase ─── */}
+        <Link
+          href={`/user/products/${product._id}`}
+          className="relative h-[270px] w-full bg-[#F5F2EC] overflow-hidden block"
+        >
+          {primaryImg ? (
+            <>
+              {/* Primary Base Photography */}
+              <div className="absolute inset-0">
+                <Image
+                  src={primaryImg}
+                  alt={product.name}
+                  fill
+                  draggable={false}
+                  sizes="(max-width: 768px) 280px, 310px"
+                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                />
+              </div>
+
+              {/* Secondary Hover Image (Simple, Smooth, Fast Fade) */}
+              {secondaryImg && secondaryImg !== primaryImg && (
+                <div className="absolute inset-0 z-[1] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
+                  <Image
+                    src={secondaryImg}
+                    alt={`${product.name} detail`}
+                    fill
+                    draggable={false}
+                    sizes="(max-width: 768px) 280px, 310px"
+                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent pointer-events-none" />
+                </div>
+              )}
+            </>
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-[#9E9088]">
-              <Package size={32} className="stroke-1" />
+            <div className="w-full h-full flex items-center justify-center text-[#A3998F]">
+              <Sparkles className="w-8 h-8 stroke-1 text-[#C29B5D]" />
             </div>
           )}
-          {/* Gradient Overlay for Text Legibility (Fades out on hover) */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/50 to-transparent group-hover:opacity-0 transition-opacity duration-700 ease-out" />
-          
-          {/* Soft gradient sheen that sweeps across on hover */}
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent z-10"
-            initial={{ x: "-120%" }}
-            whileHover={{ x: "120%" }}
-            transition={{ duration: 0.7, ease: "easeInOut" }}
-          />
-        </div>
 
-        {/* Relative Content Overlay */}
-        <div className="relative z-10 p-5 flex flex-col h-full justify-between pointer-events-none" style={{ minHeight: "380px" }}>
-          
-          {/* Top Row: Badge & Floating Price */}
-          <div className="flex justify-between items-start group-hover:opacity-0 transition-opacity duration-500 ease-out">
-            <motion.span
-              initial={{ opacity: 0, scale: 0.5, x: -10 }}
-              animate={inView ? { opacity: 1, scale: 1, x: 0 } : {}}
-              transition={{ delay: index * 0.09 + 0.25, type: "spring", stiffness: 300, damping: 16 }}
-              className={`text-[9px] font-bold tracking-[0.2em] px-2.5 py-1 uppercase shadow-sm ${badgeStyles[badgeText] ?? "bg-white text-[#1C1C1A]"}`}
-            >
-              {badgeText === "BEST SELLER" || badgeText === "NEW" ? (
-                <motion.span
-                  className="inline-block"
-                  animate={{ scale: [1, 1.12, 1] }}
-                  transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                >
-                  {badgeText}
-                </motion.span>
-              ) : (
-                badgeText
-              )}
-            </motion.span>
-
-            {/* Floating Price Tag */}
-            <div className="flex flex-col items-end bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-sm border border-white/10">
-              <span className="text-white font-medium text-xs whitespace-nowrap">
-                ₹{displayPrice.toLocaleString()}{" "}
-                <span className="text-white/50 font-light italic text-[9px]">onwards</span>
+          {/* Floating Editorial Pill Badges (Almost Zero Radius) */}
+          <div className="absolute top-3.5 left-3.5 right-3.5 flex items-start justify-between z-10 pointer-events-none">
+            {isOutOfStock ? (
+              <span className="text-[9px] uppercase tracking-widest font-mono px-2.5 py-1 rounded-[2px] bg-white/95 text-[#68736B] font-semibold shadow-sm border border-black/5 backdrop-blur-md">
+                Made To Order
               </span>
-              {product.discountPrice && product.discountPrice < product.price && (
-                <span className="text-white/40 text-[9px] line-through decoration-white/30 mt-0.5">
-                  ₹{product.price.toLocaleString()}
-                </span>
-              )}
-            </div>
+            ) : hasDiscount ? (
+              <span className="text-[9px] uppercase tracking-widest font-mono px-2.5 py-1 rounded-[2px] bg-[#141E17] text-[#FAF8F5] font-semibold shadow-sm backdrop-blur-md">
+                Save ₹{discountSavings.toLocaleString()}
+              </span>
+            ) : (
+              <span className="text-[9px] uppercase tracking-widest font-mono px-2.5 py-1 rounded-[2px] bg-white/95 text-[#141E17] font-semibold shadow-sm border border-black/5 backdrop-blur-md">
+                100% Water Hyacinth
+              </span>
+            )}
+
+            {/* Wishlist Heart Button (Almost Zero Radius) */}
+            <button
+              onClick={handleLikeClick}
+              aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
+              className="pointer-events-auto relative w-8 h-8 rounded-[2px] bg-white/90 hover:bg-white text-[#141E17] backdrop-blur-md border border-black/5 shadow-sm flex items-center justify-center transition-transform hover:scale-110 active:scale-95 cursor-pointer"
+            >
+              <AnimatePresence>{showBurst && <LikeBurst />}</AnimatePresence>
+              <Heart
+                size={14}
+                className={`transition-colors duration-200 ${
+                  liked ? "fill-[#C29B5D] text-[#C29B5D]" : "text-[#141E17]/80 hover:text-[#141E17]"
+                }`}
+              />
+            </button>
           </div>
 
-          {/* Bottom Row: Details & Buttons */}
-          <div className="flex flex-col mt-auto pointer-events-auto" style={{ transform: "translateZ(20px)" }}>
-            
-            {/* Text details fade out on hover */}
-            <div className="group-hover:opacity-0 transition-opacity duration-500 ease-out">
-              <p
-                className="text-[11px] uppercase tracking-[0.14em] text-[#C8A97A] italic mb-1.5 truncate drop-shadow-md"
-                style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
-              >
-                {product.category}
-              </p>
+          <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white/30 to-transparent pointer-events-none" />
+        </Link>
 
+        {/* ─── Product Spec & Pricing Content ─── */}
+        <div className="p-5 flex flex-col flex-1 justify-between bg-white">
+          <div>
+            {/* Category Eyebrow & MOQ Pill */}
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <span
+                className="text-[10px] uppercase tracking-[0.2em] font-mono text-[#8C7A6B] font-semibold truncate"
+                style={{ fontFamily: sans }}
+              >
+                {product.category || "Sustainable Craft"}
+              </span>
+
+              <span className="text-[10px] font-mono text-[#2B4B38] bg-[#EBF2ED] px-2 py-0.5 rounded-[2px] font-semibold whitespace-nowrap">
+                MOQ: {product.minOrderQty || 15} pcs
+              </span>
+            </div>
+
+            {/* Product Name in Editorial Serif */}
+            <Link href={`/user/products/${product._id}`} className="group/title block">
               <h3
-                className="text-xl leading-snug text-white mb-5 line-clamp-2 min-h-[3.2rem] drop-shadow-md"
-                style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+                className="text-lg font-normal leading-snug text-[#141E17] group-hover/title:text-[#C29B5D] transition-colors line-clamp-1"
+                style={{ fontFamily: serif }}
               >
                 {product.name}
               </h3>
+            </Link>
+
+            {/* Lead Time & Craft Origin */}
+            <p className="text-[11px] text-[#78857C] mt-1 font-light flex items-center gap-1.5 truncate">
+              <span>Bihar Artisan Guild</span>
+              <span>•</span>
+              <span>Lead: {product.leadTime || "3–4 wks"}</span>
+            </p>
+          </div>
+
+          {/* Pricing & Interactive CTA Action */}
+          <div className="pt-3 border-t border-[#F0ECE3] mt-auto">
+            <div className="flex items-baseline justify-between mb-3">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-lg font-bold text-[#141E17] font-mono">
+                  ₹{displayPrice.toLocaleString()}
+                </span>
+                <span className="text-[10px] text-[#78857C] uppercase font-mono tracking-wider">
+                  / unit
+                </span>
+              </div>
+
+              {hasDiscount && (
+                <span className="text-xs text-[#9B9E9B] line-through font-mono">
+                  ₹{originalPrice.toLocaleString()}
+                </span>
+              )}
             </div>
 
-            {/* Action Buttons (Remain visible) */}
-            <div className="flex items-center gap-2">
-              <Link href={`/user/products/${product._id}`} className="flex-1">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                  className="w-full relative flex items-center justify-center bg-white border border-white hover:bg-transparent hover:text-white text-[#1C1C1A] text-[10px] font-bold tracking-[0.2em] uppercase py-3 rounded-[12px] transition-colors overflow-hidden cursor-pointer"
-                >
-                  REQUEST QUOTE
-                </motion.button>
-              </Link>
-              
-              <div className="relative">
-                <AnimatePresence>{showBurst && <LikeBurst />}</AnimatePresence>
-                <motion.button
-                  onClick={handleLikeClick}
-                  aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
-                  whileTap={{ scale: 0.8 }}
-                  whileHover={{ scale: 1.08 }}
-                  className={`relative w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-[12px] border transition-colors cursor-pointer ${
-                    isLiked
-                      ? "border-[#C8A97A] text-[#C8A97A] bg-[#C8A97A]/20 backdrop-blur-md"
-                      : "border-white/20 text-white bg-black/20 backdrop-blur-md hover:bg-white/20"
-                  }`}
-                >
-                  <motion.svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill={liked ? "#C8A97A" : "none"}
-                    stroke={liked ? "#C8A97A" : "white"}
-                    strokeWidth="2"
-                    animate={liked ? { scale: [1, 1.4, 1] } : { scale: 1 }}
-                    transition={{ duration: 0.35, ease: "easeOut" }}
-                  >
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                  </motion.svg>
-                </motion.button>
-              </div>
-            </div>
+            <Link href={`/user/products/${product._id}`} className="block w-full">
+              <button className="w-full py-2.5 px-3 bg-[#141E17] hover:bg-[#C29B5D] text-[#FAF8F5] hover:text-[#0D140F] font-semibold text-[10px] tracking-[0.2em] uppercase rounded-[2px] transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 group/btn shadow-sm">
+                <span>View Specifications</span>
+                <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover/btn:translate-x-0.5" />
+              </button>
+            </Link>
           </div>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
 
+/**
+ * ─── FEATURED PRODUCTS CAROUSEL ──────────────────────────────────────────────
+ * Butter-smooth, zero-vibration horizontal scrolling powered directly by native
+ * GPU-accelerated browser momentum scrolling and smooth snap points.
+ */
 export default function FeaturedProducts({
   products = [],
   savedProductIds = [],
@@ -306,283 +238,168 @@ export default function FeaturedProducts({
   backgroundLess = false,
 }) {
   const railRef = useRef(null);
-  const sectionRef = useRef(null);
-  const inView = useInView(sectionRef, { once: true, margin: "-60px" });
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"]
-  });
-  // The rail moves slowly upwards as the user scrolls down past it, creating a deep parallax effect
-  const parallaxY = useTransform(scrollYProgress, [0, 1], [60, -60]);
-
-  const [scrollProgress, setScrollProgress] = useState(0); // 0..1
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
 
-  // ── Unified scroll-physics state, shared by drag and arrow buttons ──
-  // `target` is where we WANT scrollLeft to end up; the rAF loop eases
-  // scrollLeft toward it every frame, so drag/arrows never fight.
-  const physics = useRef({
-    target: 0,
-    velocity: 0, // px/ms, used for momentum flick on drag release
-    running: false,
-  });
+  // Extract distinct categories
+  const categories = useMemo(() => {
+    const set = new Set();
+    products.forEach((p) => {
+      if (p.category) set.add(p.category);
+    });
+    return ["All", ...Array.from(set)];
+  }, [products]);
 
-  const drag = useRef({
-    active: false,
-    startX: 0,
-    startScroll: 0,
-    lastX: 0,
-    lastT: 0,
-  });
+  // Filter products by category
+  const filteredProducts = useMemo(() => {
+    if (activeCategory === "All") return products;
+    return products.filter((p) => p.category === activeCategory);
+  }, [products, activeCategory]);
 
-  const updateEdgeState = useCallback(() => {
+  // Native passive scroll listener for progress and edge state
+  const handleScroll = useCallback(() => {
     const rail = railRef.current;
     if (!rail) return;
     const max = rail.scrollWidth - rail.clientWidth;
-    setScrollProgress(max > 0 ? rail.scrollLeft / max : 0);
-    setAtStart(rail.scrollLeft <= 2);
-    setAtEnd(rail.scrollLeft >= max - 2);
+    if (max > 0) {
+      setScrollProgress(rail.scrollLeft / max);
+      setAtStart(rail.scrollLeft <= 5);
+      setAtEnd(rail.scrollLeft >= max - 5);
+    } else {
+      setScrollProgress(0);
+      setAtStart(true);
+      setAtEnd(true);
+    }
   }, []);
 
-  const runPhysics = useCallback(() => {
-    const rail = railRef.current;
-    const p = physics.current;
-    if (!rail) {
-      p.running = false;
-      return;
-    }
-    const max = rail.scrollWidth - rail.clientWidth;
-    p.target = Math.min(max, Math.max(0, p.target));
-
-    const diff = p.target - rail.scrollLeft;
-
-    if (Math.abs(diff) < 0.4 && Math.abs(p.velocity) < 0.02) {
-      rail.scrollLeft = p.target;
-      updateEdgeState();
-      p.running = false;
-      return;
-    }
-
-    rail.scrollLeft += diff * 0.18;
-    updateEdgeState();
-    requestAnimationFrame(runPhysics);
-  }, [updateEdgeState]);
-
-  const kickPhysics = useCallback(() => {
-    if (!physics.current.running) {
-      physics.current.running = true;
-      requestAnimationFrame(runPhysics);
-    }
-  }, [runPhysics]);
-
-  // ── Pointer drag-to-scroll, with momentum flick on release ──
-  const onPointerDown = (e) => {
-    const rail = railRef.current;
-    if (!rail) return;
-    drag.current.active = true;
-    drag.current.startX = e.clientX;
-    drag.current.startScroll = rail.scrollLeft;
-    drag.current.lastX = e.clientX;
-    drag.current.lastT = performance.now();
-    physics.current.velocity = 0;
-    rail.style.cursor = "grabbing";
-  };
-
-  const onPointerMove = (e) => {
-    const rail = railRef.current;
-    if (!drag.current.active || !rail) return;
-    const dx = e.clientX - drag.current.startX;
-    const newScroll = drag.current.startScroll - dx;
-    rail.scrollLeft = newScroll;
-    physics.current.target = newScroll;
-    updateEdgeState();
-
-    const now = performance.now();
-    const dt = now - drag.current.lastT;
-    if (dt > 0) {
-      physics.current.velocity = (drag.current.lastX - e.clientX) / dt; // px/ms
-    }
-    drag.current.lastX = e.clientX;
-    drag.current.lastT = now;
-  };
-
-  const endDrag = () => {
-    if (!drag.current.active) return;
-    drag.current.active = false;
-    const rail = railRef.current;
-    if (rail) rail.style.cursor = "grab";
-
-    // Project a momentum "flick" forward based on release velocity
-    const v = physics.current.velocity; // px/ms
-    const flickDistance = v * 220; // tune for feel
-    physics.current.target = (rail?.scrollLeft ?? 0) + flickDistance;
-    kickPhysics();
-  };
-
-  // ── Keep edge state (arrow disabled/enabled, progress bar) in sync ──
-  // Note: deliberately NOT intercepting the wheel event here. Native
-  // vertical wheel scrolling is left alone so it scrolls the page, exactly
-  // as a user expects. Holding Shift while using the wheel already
-  // triggers native horizontal scroll in every browser, so trackpad users
-  // and shift-scrollers get horizontal movement "for free" without any
-  // custom JS — and nobody's page scroll gets hijacked.
   useEffect(() => {
     const rail = railRef.current;
     if (!rail) return;
-    physics.current.target = rail.scrollLeft;
-    updateEdgeState();
-
-    const handleNativeScroll = () => updateEdgeState();
-    rail.addEventListener("scroll", handleNativeScroll, { passive: true });
-
-    return () => {
-      rail.removeEventListener("scroll", handleNativeScroll);
-    };
-  }, [updateEdgeState]);
+    handleScroll();
+    rail.addEventListener("scroll", handleScroll, { passive: true });
+    return () => rail.removeEventListener("scroll", handleScroll);
+  }, [handleScroll, filteredProducts]);
 
   const scrollByCards = (dir) => {
     const rail = railRef.current;
     if (!rail) return;
-    
-    // Stop physics if it's running so they don't fight
-    physics.current.running = false;
-    physics.current.target = rail.scrollLeft + dir * CARD_WIDTH;
-    
     rail.scrollBy({ left: dir * CARD_WIDTH, behavior: "smooth" });
   };
 
   return (
-    <section ref={sectionRef} className={`relative overflow-hidden text-[#1C1C1A] ${backgroundLess ? "pt-12 pb-6" : "py-20 px-6 bg-[#FAF7F2] border-y border-[#E8DDD0]"}`}>
-      <div className="relative z-10 max-w-7xl mx-auto">
-        
-        {/* Horizontal Split Header */}
-        <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-6 px-4 md:px-0">
-          
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.7 }}
-            className="flex-1"
-          >
-            <p className="flex items-center gap-3 text-[10px] md:text-xs tracking-[0.2em] uppercase text-[#C8A97A] mb-3">
-              <span className="h-px w-6 bg-[#C8A97A]/50" />
-              <span style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>{pretitle}</span>
-            </p>
+    <section
+      className={`relative overflow-hidden text-[#141E17] ${
+        backgroundLess ? "pt-8 pb-4" : "py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-[#FAF8F5]"
+      }`}
+      style={{ fontFamily: sans }}
+    >
+      <div className="relative z-10 max-w-[1520px] mx-auto">
+        {/* ─── Header Section (Editorial Split) ─── */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10 gap-6">
+          <div className="max-w-xl">
+            {/* Eyebrow */}
+            <div className="flex items-center gap-2.5 text-[10px] uppercase font-bold tracking-[0.25em] text-[#C29B5D] mb-3">
+              <span className="w-5 h-[1.5px] bg-[#C29B5D]" />
+              <span>{pretitle}</span>
+            </div>
 
+            {/* Headline */}
             <h2
-              className="text-4xl md:text-5xl font-light leading-tight text-[#1C1C1A]"
-              style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+              className="text-3xl sm:text-4xl lg:text-[44px] font-normal leading-[1.12] tracking-tight text-[#141E17]"
+              style={{ fontFamily: serif }}
             >
-              <span className="font-bold">{title} </span>
-              <span className="relative inline-block font-normal italic text-[#C8A97A]">
+              <span>{title} </span>
+              <span className="italic text-[#C29B5D] font-normal font-serif">
                 {subtitle}
-                <span className="absolute left-0 -bottom-1 h-[1px] w-full bg-[#C8A97A]/40" />
               </span>
             </h2>
-          </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="flex flex-col items-start md:items-end gap-4 max-w-sm"
-          >
-            <p className="text-sm text-[#6B6560] md:text-right">
-              Behind every Eco-Luxury product lies a soulful root story.
+            <p className="text-xs sm:text-sm text-[#5C665F] mt-2 font-light leading-relaxed">
+              Behind every eco-luxury piece lies a certified wetland regeneration story and verifiable artisan lineage.
             </p>
-            
-            {/* Arrows integrated into header right side */}
-            <div className="flex justify-end gap-3">
-              <motion.button
+          </div>
+
+          {/* Right Action & Arrow Navigation */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+            <Link
+              href="/user/products"
+              className="text-xs uppercase tracking-widest text-[#141E17] font-bold hover:text-[#C29B5D] inline-flex items-center gap-1.5 transition-colors group"
+            >
+              <span>View All 2026 Products</span>
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+
+            {/* Circular Paging Arrows */}
+            <div className="flex items-center gap-2.5">
+              <button
                 onClick={() => scrollByCards(-1)}
                 disabled={atStart}
                 aria-label="Scroll left"
-                animate={{ opacity: atStart ? 0.35 : 1 }}
-                whileHover={atStart ? {} : { scale: 1.08, backgroundColor: "rgba(0,0,0,0.05)" }}
-                whileTap={atStart ? {} : { scale: 0.92 }}
-                className="w-10 h-10 rounded-full border border-[#1C1C1A]/20 flex items-center justify-center hover:border-[#1C1C1A] disabled:cursor-not-allowed transition-colors"
+                className="w-10 h-10 rounded-full border border-[#D5CEC2] hover:border-[#141E17] text-[#141E17] disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 bg-white shadow-sm cursor-pointer"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1C1C1A" strokeWidth="2">
-                  <path d="M15 18l-6-6 6-6" />
-                </svg>
-              </motion.button>
-              <motion.button
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+
+              <button
                 onClick={() => scrollByCards(1)}
                 disabled={atEnd}
                 aria-label="Scroll right"
-                animate={{ opacity: atEnd ? 0.35 : 1 }}
-                whileHover={atEnd ? {} : { scale: 1.08, backgroundColor: "rgba(0,0,0,0.05)" }}
-                whileTap={atEnd ? {} : { scale: 0.92 }}
-                transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                className="w-10 h-10 rounded-full border border-[#1C1C1A]/20 flex items-center justify-center hover:border-[#1C1C1A] disabled:cursor-not-allowed transition-colors"
+                className="w-10 h-10 rounded-full border border-[#D5CEC2] hover:border-[#141E17] text-[#141E17] disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 bg-white shadow-sm cursor-pointer"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1C1C1A" strokeWidth="2">
-              <path d="M9 18l6-6-6-6" />
-            </svg>
-          </motion.button>
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
-          </motion.div>
+          </div>
         </div>
 
-        {/* Rail wrapper — overflow-hidden lives HERE, not on the whole section,
-            so headings above are never clipped; edge fades hint at more content */}
-        <motion.div className="relative" style={{ y: parallaxY }}>
-          {/* Dynamic mask: only fade the sides when there is more content to scroll to */}
-          <div
-            ref={railRef}
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={endDrag}
-            onPointerLeave={endDrag}
-            className="flex gap-5 overflow-x-auto pb-4 cursor-grab [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
-            style={{ 
-              scrollSnapType: "x proximity",
-              maskImage: `linear-gradient(to right, ${atStart ? 'black 0%' : 'transparent 0%, black 5%'}, ${atEnd ? 'black 100%' : 'black 95%, transparent 100%'})`,
-              WebkitMaskImage: `linear-gradient(to right, ${atStart ? 'black 0%' : 'transparent 0%, black 5%'}, ${atEnd ? 'black 100%' : 'black 95%, transparent 100%'})`
-            }}
-          >
-            {products.map((product, i) => (
-              <div key={product._id} style={{ scrollSnapAlign: "start" }}>
-                <ProductCard
-                  product={product}
-                  index={i}
-                  onDragStateRef={drag}
-                  isLiked={savedProductIds?.includes(product._id.toString())}
-                />
-              </div>
+        {/* ─── Category Filter Chips ─── */}
+        {categories.length > 2 && (
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-4 mb-6">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-3.5 py-1.5 rounded-full text-[11px] font-mono tracking-wider transition-all duration-300 cursor-pointer whitespace-nowrap ${
+                  activeCategory === cat
+                    ? "bg-[#141E17] text-[#FAF8F5] shadow-sm font-semibold"
+                    : "bg-white text-[#5C665F] hover:text-[#141E17] border border-[#EAE3D6] hover:border-[#C29B5D]"
+                }`}
+              >
+                {cat === "All" ? `All Pieces (${products.length})` : cat}
+              </button>
             ))}
           </div>
-        </motion.div>
+        )}
 
-        {/* Live scroll-progress indicator */}
-        <div className="relative h-[2px] w-full max-w-[220px] mx-auto mt-1 bg-[#1C1C1A]/10 overflow-hidden">
-          <motion.div
-            className="absolute left-0 top-0 h-full w-[30%] bg-[#1C1C1A]"
-            animate={{ x: `${scrollProgress * 233}%` }}
-            transition={{ type: "spring", stiffness: 300, damping: 30, mass: 0.3 }}
-          />
+        {/* ─── Hardware-Accelerated Smooth Horizontal Product Rail (Zero Vibration) ─── */}
+        <div className="relative">
+          <div
+            ref={railRef}
+            className="flex gap-4 sm:gap-5 overflow-x-auto pb-6 scrollbar-none snap-x snap-mandatory"
+            style={{
+              scrollBehavior: "smooth",
+              WebkitOverflowScrolling: "touch",
+            }}
+          >
+            {filteredProducts.map((product) => (
+              <ProductCard
+                key={product._id}
+                product={product}
+                isLiked={savedProductIds?.includes(product._id.toString())}
+              />
+            ))}
+          </div>
         </div>
 
-        <div className="flex justify-center">
-          <Link href="/user/products" passHref legacyBehavior>
-            <motion.a
-              initial={{ opacity: 0, y: 10 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.6 }}
-              whileHover={{ x: 4 }}
-              className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] font-bold text-[#1C1C1A] border-b border-[#1C1C1A]/40 pb-0.5 hover:border-[#1C1C1A] transition-colors mt-8"
-            >
-              View all products
-              <motion.span
-                animate={{ x: [0, 4, 0] }}
-                transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
-              >
-                →
-              </motion.span>
-            </motion.a>
-          </Link>
+        {/* ─── Scroll Progress Indicator ─── */}
+        <div className="relative h-[2px] w-full max-w-[200px] mx-auto mt-2 bg-[#E2DBD0] overflow-hidden rounded-full">
+          <div
+            className="h-full bg-[#C29B5D] rounded-full transition-all duration-150"
+            style={{ width: `${Math.max(scrollProgress * 100, 25)}%` }}
+          />
         </div>
       </div>
     </section>

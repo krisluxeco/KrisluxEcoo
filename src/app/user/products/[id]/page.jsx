@@ -21,6 +21,8 @@ export async function generateMetadata({ params }) {
   }
 }
 
+export const revalidate = 60;
+
 export default async function ProductDetailPage({ params }) {
   await connectDb();
 
@@ -49,16 +51,6 @@ export default async function ProductDetailPage({ params }) {
         })
           .limit(4)
           .lean();
-      }
-
-      // Check if product is saved by the logged-in user
-      const session = await auth();
-      if (session?.user?.id) {
-        const user = await User.findById(session.user.id).select("savedProducts").lean();
-        if (user && user.savedProducts) {
-          savedProductIds = user.savedProducts.map((id) => id.toString());
-          isLiked = savedProductIds.includes(product._id.toString());
-        }
       }
     }
   } catch (error) {

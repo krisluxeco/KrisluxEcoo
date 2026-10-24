@@ -10,34 +10,28 @@ export const metadata = {
   description: "Browse our premium eco-friendly collection, handcrafted by traditional artisan partners using natural, sustainable materials.",
 };
 
+export const revalidate = 60;
+
 import ProductsLoading from "./loading";
 
-export default async function UserProductsPage() {
+async function ProductListSection() {
   await connectDb();
-
-  // Fetch user session to determine saved products
-  const session = await auth();
-  let savedProductIds = [];
-  
-  if (session?.user?.id) {
-    const user = await User.findById(session.user.id).select("savedProducts").lean();
-    if (user && user.savedProducts) {
-      savedProductIds = user.savedProducts.map((id) => id.toString());
-    }
-  }
-
-  // Fetch all listed products
+  const savedProductIds = [];
   const products = await Product.find({}).sort({ createdAt: -1 }).lean();
-
-  // Serialize Mongoose models for dynamic client rendering
   const serializedProducts = JSON.parse(JSON.stringify(products));
 
   return (
+    <ProductsListClient
+      initialProducts={serializedProducts}
+      savedProductIds={savedProductIds}
+    />
+  );
+}
+
+export default function UserProductsPage() {
+  return (
     <Suspense fallback={<ProductsLoading />}>
-      <ProductsListClient
-        initialProducts={serializedProducts}
-        savedProductIds={savedProductIds}
-      />
+      <ProductListSection />
     </Suspense>
   );
 }

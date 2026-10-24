@@ -6,19 +6,12 @@ import { auth } from "@/auth";
 import Quote from "@/models/quote.model";
 import React from 'react';
 
+export const dynamic = "force-dynamic";
+
 const page = async () => {
   await connectDb();
 
-  // Fetch session to determine saved products
-  const session = await auth();
-  let savedProductIds = [];
-  
-  if (session?.user?.id) {
-    const user = await User.findById(session.user.id).select("savedProducts").lean();
-    if (user && user.savedProducts) {
-      savedProductIds = user.savedProducts.map((id) => id.toString());
-    }
-  }
+  const savedProductIds = [];
 
   // Fetch active products to show in the featured slider (up to 8 products)
   const products = await Product.find({ status: "active" })

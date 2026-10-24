@@ -30,17 +30,17 @@ const footerColumns = [
     title: "Support",
     links: [
       { label: "Contact Us", href: "/user/bulk-order" },
-      { label: "Track Order", href: "user/profile" },
+      { label: "Track Order", href: "/user/profile" },
       { label: "Share Catalog", href: "/share-catalog" },
-      { label: "FAQs", href: "/user/bulk-order" },
+      { label: "FAQs & Bulk Inquiries", href: "/user/bulk-order" },
     ],
   },
   {
-    title: "Legal",
+    title: "Legal & ESG",
     links: [
       { label: "Privacy Policy", href: "/privacy-policy" },
-      { label: "Terms of Service", href: "/terms" },
-      { label: "Refund Policy", href: "/refund-policy" },
+      { label: "Terms & Conditions", href: "/terms-and-conditions" },
+      { label: "Sustainability Report", href: "/user/sustainability" },
     ],
   },
 ];
@@ -223,10 +223,10 @@ export default function Footer() {
             <Link href="/privacy-policy" className="hover:text-white/70 transition-colors">
               Privacy
             </Link>
-            <Link href="/terms" className="hover:text-white/70 transition-colors">
+            <Link href="/terms-and-conditions" className="hover:text-white/70 transition-colors">
               Terms
             </Link>
-            <Link href="/sustainability" className="hover:text-white/70 transition-colors">
+            <Link href="/user/sustainability" className="hover:text-white/70 transition-colors">
               Sustainability
             </Link>
           </div>

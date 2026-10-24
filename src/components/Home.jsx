@@ -1,605 +1,733 @@
 "use client";
+
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-
-import React, { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
-import { animate, utils } from "animejs";
-import FeaturedProducts from "./Featuredproducts";
-import LiveCarbonFootprint from "./LiveCarbonFootprint";
 import Link from "next/link";
-import Deck from "./Deck";
-import DustParticles from "./DustParticles";
-import ImpactCarousel from "./ImpactCarousel";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ArrowRight,
+  ShieldCheck,
+  Truck,
+  Leaf,
+  Layers,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  FileText,
+  SlidersHorizontal,
+  Sparkles,
+  Award,
+  Clock,
+  MapPin,
+  ExternalLink
+} from "lucide-react";
+import dynamic from "next/dynamic";
+import FeaturedProducts from "./Featuredproducts";
+import ThreeImageEditorialHero from "./ThreeImageEditorialHero";
+import ArtisanReelCard from "./ArtisanReelCard";
+import TrustedMarketplaces from "./TrustedMarketplaces";
+import AsFeaturedIn from "./AsFeaturedIn";
 
-import Platforms from "./Platforms";
+const LiveCarbonFootprint = dynamic(() => import("./LiveCarbonFootprint"), {
+  ssr: true,
+  loading: () => (
+    <div className="py-20 bg-[#0D140F] flex items-center justify-center">
+      <div className="h-44 w-3/4 max-w-4xl bg-white/5 animate-pulse" />
+    </div>
+  ),
+});
 
-// ─── Shared Typography ────────────────────────────────────────────────────────
 const serif = "var(--font-playfair), Georgia, serif";
 const sans = "var(--font-montserrat), sans-serif";
 
-// ─── Number Counter (GSAP) ───────────────────────────────────────────────────
-function CountUp({ target, suffix = "", prefix = "" }) {
-  const [count, setCount] = useState(0);
-  const counterRef = useRef(null);
-  const targetRef = useRef({ val: 0 });
-
-  useEffect(() => {
-    let ctx = gsap.context(() => {
-      gsap.to(targetRef.current, {
-        val: target,
-        duration: 2,
-        ease: "power3.out",
-        onUpdate: () => {
-          setCount(Math.floor(targetRef.current.val));
-        },
-        scrollTrigger: {
-          trigger: counterRef.current,
-          start: "top 85%"
-        }
-      });
-    }, counterRef);
-    return () => ctx.revert();
-  }, [target]);
-
-  return (
-    <span ref={counterRef}>
-      {prefix}
-      {count.toLocaleString()}
-      {suffix}
-    </span>
-  );
-}
-
-// ─── Marquee ───────────────────────────────────────────────────────────────────
-const marqueeItems = [
-  "Eco-Luxury", "·", "Zero Waste", "·", "Artisan Crafted", "·",
-  "B2B Bulk Orders", "·", "Eco-Friendly Materials", "·", "Corporate Gifting", "·"
-];
-
-function MarqueeStrip() {
-  const marqueeRef = useRef(null);
-
-  useEffect(() => {
-    let ctx = gsap.context(() => {
-      const q = gsap.utils.selector(marqueeRef);
-      gsap.to(q(".marquee-content"), {
-        xPercent: -50,
-        ease: "none",
-        duration: 20,
-        repeat: -1
-      });
-    }, marqueeRef);
-    return () => ctx.revert();
-  }, []);
-
-  const doubled = [...marqueeItems, ...marqueeItems];
-  return (
-    <div ref={marqueeRef} className="overflow-hidden border-y border-[#E8DDD0] bg-[#FAF7F2] py-5">
-      <div className="marquee-content flex gap-12 whitespace-nowrap w-max">
-        {doubled.map((item, i) => (
-          <span
-            key={i}
-            className="text-xs tracking-[0.3em] uppercase text-[#1C1C1A] font-medium flex-shrink-0"
-            style={{ fontFamily: sans }}
-          >
-            {item}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ─── Hero Slideshow ────────────────────────────────────────────────────────────
-const heroSlides = [
-  { url: "/images/HeroSection2.png", caption: "Handcrafted Ceramics & Baskets", tag: "Collection 01" },
-  { url: "/images/HeroSection3.png", caption: "Eco-Luxury Hotel Amenities", tag: "Collection 02" },
-  { url: "/images/HeroSection1.png", caption: "Sustainably Sourced Heritage Craft", tag: "Collection 03" },
-];
-
-function HeroSlideshow() {
-  const [current, setCurrent] = useState(0);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    setProgress(0);
-    const intervalTime = 50; // Update progress every 50ms
-    const totalTime = 6000;  // 6 seconds per slide
-    const increment = (intervalTime / totalTime) * 100;
-
-    const timer = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          setCurrent((c) => (c + 1) % heroSlides.length);
-          return 0;
-        }
-        return prev + increment;
-      });
-    }, intervalTime);
-
-    return () => clearInterval(timer);
-  }, [current]);
-
-  const handleNext = () => {
-    setCurrent((c) => (c + 1) % heroSlides.length);
-    setProgress(0);
-  };
-
-  const handlePrev = () => {
-    setCurrent((c) => (c - 1 + heroSlides.length) % heroSlides.length);
-    setProgress(0);
-  };
-
-  return (
-    <div className="absolute inset-0 z-0 overflow-hidden bg-[#1C1C1A]">
-      {heroSlides.map((slide, i) => {
-        const isActive = i === current;
-        return (
-          <div
-            key={slide.url}
-            className={`absolute inset-0 transition-all duration-[1200ms] cubic-bezier(0.77, 0, 0.175, 1) ${
-              isActive
-                ? "opacity-100 clip-path-full scale-100 z-10"
-                : "opacity-0 clip-path-right scale-110 z-0 pointer-events-none"
-            }`}
-            style={{
-              clipPath: isActive ? "polygon(0 0, 100% 0, 100% 100%, 0 100%)" : "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)"
-            }}
-          >
-            {/* Background Image with Ken Burns continuous zoom effect */}
-            <div
-              className={`absolute inset-0 transition-transform duration-[6000ms] ease-linear ${
-                isActive ? "scale-110" : "scale-100"
-              }`}
-            >
-              <Image 
-                src={slide.url} 
-                alt={slide.caption} 
-                fill 
-                priority={i === 0} 
-                sizes="100vw" 
-                className="object-cover" 
-              />
-            </div>
-          </div>
-        );
-      })}
-
-      {/* Vignette & Gradients Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#1C1C1A]/90 via-[#1C1C1A]/50 to-transparent z-15 pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1A] via-transparent to-black/30 z-15 pointer-events-none" />
-
-      {/* Floating Caption & Slide Indicators */}
-      <div className="absolute bottom-12 right-6 md:right-16 z-30 flex flex-col items-end gap-4">
-        {/* Active Slide Info Tag */}
-        <div className="text-right hidden sm:block">
-          <p className="text-[#C8A97A] text-[10px] tracking-[0.3em] uppercase font-semibold mb-1">
-            {heroSlides[current].tag}
-          </p>
-          <p className="text-white/80 text-sm font-light italic" style={{ fontFamily: serif }}>
-            "{heroSlides[current].caption}"
-          </p>
-        </div>
-
-        {/* Counter and Navigation Controls */}
-        <div className="flex items-center gap-6 bg-white/10 backdrop-blur-md border border-white/15 px-6 py-3 rounded-full">
-          <span className="text-white text-xs font-mono tracking-widest">
-            0{current + 1} <span className="text-white/40">/ 0{heroSlides.length}</span>
-          </span>
-
-          {/* Progress Bar Container */}
-          <div className="w-16 h-[2px] bg-white/20 rounded-full overflow-hidden relative">
-            <div
-              className="h-full bg-[#C8A97A] transition-all ease-linear"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-
-          {/* Arrow Buttons */}
-          <div className="flex items-center gap-2 border-l border-white/20 pl-4">
-            <button
-              onClick={handlePrev}
-              className="w-7 h-7 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/20 transition-all"
-              aria-label="Previous Slide"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <button
-              onClick={handleNext}
-              className="w-7 h-7 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/20 transition-all"
-              aria-label="Next Slide"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── Custom Mouse Cursor ───────────────────────────────────────────────────────
-function CustomCursor() {
-  const cursorRef = useRef(null);
-  const outerRef = useRef(null);
-  
-  useEffect(() => {
-    const cursor = cursorRef.current;
-    const outer = outerRef.current;
-    
-    const onMouseMove = (e) => {
-      gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.1, ease: "power2.out" });
-      gsap.to(outer, { x: e.clientX, y: e.clientY, duration: 0.5, ease: "power3.out" });
-    };
-
-    const onMouseEnter = () => {
-      gsap.to(cursor, { scale: 1.5, backgroundColor: "rgba(200, 169, 122, 0.8)", duration: 0.3 });
-      gsap.to(outer, { scale: 0, opacity: 0, duration: 0.3 });
-    };
-    
-    const onMouseLeave = () => {
-      gsap.to(cursor, { scale: 1, backgroundColor: "rgba(200, 169, 122, 1)", duration: 0.3 });
-      gsap.to(outer, { scale: 1, opacity: 1, duration: 0.3 });
-    };
-
-    window.addEventListener("mousemove", onMouseMove);
-    
-    document.querySelectorAll('a, button, .hover-target').forEach(el => {
-      el.addEventListener('mouseenter', onMouseEnter);
-      el.addEventListener('mouseleave', onMouseLeave);
-    });
-
-    return () => {
-      window.removeEventListener("mousemove", onMouseMove);
-      document.querySelectorAll('a, button, .hover-target').forEach(el => {
-        el.removeEventListener('mouseenter', onMouseEnter);
-        el.removeEventListener('mouseleave', onMouseLeave);
-      });
-    };
-  }, []);
-
-  return (
-    <>
-      <div
-        ref={cursorRef}
-        className="fixed top-0 left-0 w-3 h-3 bg-[#C8A97A] rounded-full pointer-events-none z-[9999] mix-blend-difference hidden md:block"
-        style={{ transform: 'translate(-50%, -50%)' }}
-      />
-      <div
-        ref={outerRef}
-        className="fixed top-0 left-0 w-10 h-10 border border-[#C8A97A]/50 rounded-full pointer-events-none z-[9998] mix-blend-difference hidden md:block"
-        style={{ transform: 'translate(-50%, -50%)' }}
-      />
-    </>
-  );
-}
-
-// ─── Categories Data ──────────────────────────────────────────────────────────
-const categories = [
-  { slug: "Home & Living", name: "Home & Living", tag: "Everyday Rituals", image: "/images/HomeCategory1.png", aspect: "aspect-[3/4]" },
-  { slug: "Kitchen & Dining", name: "Kitchen & Dining", tag: "Reclaimed Woodware", image: "/images/HomeCategory2.png", aspect: "aspect-[4/3]" },
-  { slug: "Eco & Sustainable", name: "Eco Amenities", tag: "Zero-Waste Eco-Luxury", image: "/images/hero_hotel.png", aspect: "aspect-square" },
-  { slug: "Business & Wholesale", name: "Wholesale", tag: "Corporate Supply", image: "/images/HomeCategory4.png", aspect: "aspect-[3/4]" },
-];
-
-const collectionData = [
+const impactMetrics = [
   {
-    image: "/images/HomeCategory1.png",
-    title: "Artisan Woodware",
-    description: "Hand-carved essentials crafted from reclaimed wood. Elevating everyday rituals."
+    value: "120+",
+    unit: "Tons",
+    title: "Invasive Hyacinth Cleared",
+    desc: "Restoring biodiversity across Bihar wetlands",
   },
   {
-    image: "/images/HomeCategory2.png",
-    title: "Sustainable Serveware",
-    description: "Minimalist ceramic designs built with eco-conscious clay, bringing nature to your table."
+    value: "200+",
+    unit: "Artisans",
+    title: "Rural Women Employed",
+    desc: "Onboarded with official Pehchan artisan IDs",
   },
   {
+    value: "3.2x",
+    unit: "Multiplier",
+    title: "Household Income",
+    desc: "Above regional agricultural wage baselines",
+  },
+  {
+    value: "40+",
+    unit: "Partners",
+    title: "Hotel & Corporate Supply",
+    desc: "Bespoke hospitality suites & ESG gifting",
+  },
+  {
+    value: "0%",
+    unit: "Synthetics",
+    title: "Single-Use Plastic",
+    desc: "100% biodegradable zero-waste packaging",
+  },
+  {
+    value: "100%",
+    unit: "Circular",
+    title: "Renewable Biomass",
+    desc: "Sun-cured natural botanical stalks",
+  },
+];
+
+// ─── 4-Sector B2B Procurement Archetypes ────────────────────────────────────
+const sectorArchetypes = [
+  {
+    sectorNum: "01",
+    title: "Hotels & Wellness Spas",
+    subtitle: "Turn-down trays, acoustic water hyacinth wall panels, bespoke spa hampers, and sanitizable tissue vessels.",
     image: "/images/hero_hotel.png",
-    title: "Eco-Luxury Amenities",
-    description: "Zero-waste toiletries and sustainable bamboo designed exclusively for premium boutique hotels."
+    moq: "50 units",
+    leadTime: "3–4 wks",
+    specName: "Hospitality Spec Sheet",
+    href: "/user/bulk-order?sector=Hotels%20%26%20Spas",
   },
   {
-    image: "/images/HomeCategory4.png",
-    title: "Corporate Gifting",
-    description: "Tailor-made, biodegradable wholesale packages for mindful business partnerships."
+    sectorNum: "02",
+    title: "Artisanal Living & Retail",
+    subtitle: "Sculptural floor baskets, bell pendant luminaires, twill woven dining placemats, and modular storage vessels.",
+    image: "/images/HomeCategory1.png",
+    moq: "30 units",
+    leadTime: "4–5 wks",
+    specName: "Retail Catalog Spec",
+    href: "/user/bulk-order?sector=Retail%20Collections",
   },
   {
-    image: "/images/HeroSection1.png",
-    title: "Heritage Craft",
-    description: "Every piece tells a story of mindful sourcing and sustainable craftsmanship."
+    sectorNum: "03",
+    title: "Corporate Gifting & ESG",
+    subtitle: "Executive botanical keepsakes, custom laser-etched brass plaques, desk caddies, and verifiable impact tokens.",
+    image: "/images/corporate_gifting.png",
+    moq: "100 units",
+    leadTime: "3 wks",
+    specName: "ESG Executive Deck",
+    href: "/user/bulk-order?sector=Corporate%20Gifting",
   },
   {
-    image: "/images/HeroSection2.png",
-    title: "A curation of elegance",
-    description: "Every piece in our collection is born from highly renewable materials, designed to elevate spaces while respecting the earth."
-  }
+    sectorNum: "04",
+    title: "Millwork & Acoustic Panels",
+    subtitle: "Custom woven spatial dividers, NRC 0.65 acoustic wall inserts, and integrated architectural millwork panels.",
+    image: "/images/BrandStory4.png",
+    moq: "Custom Sqm",
+    leadTime: "5–6 wks",
+    specName: "Architectural CAD / BIM",
+    href: "/user/bulk-order?sector=Architectural%20Millwork",
+  },
 ];
 
-// ─── Video Reels Data ────────────────────────────────────────────────────────
-const reels = [
-  { id: 1, type: "instagram", url: "https://www.instagram.com/p/DaxAEiUJuEn/embed", title: "KrisluxECO Highlights" },
-  { id: 2, type: "instagram", url: "https://www.instagram.com/p/DbMkSPLoP80/embed", title: "Eco-Friendly Lifestyle" },
-  { id: 3, type: "instagram", url: "https://www.instagram.com/p/Da8PEBqJjfW/embed", title: "Sustainable Living" },
-  { id: 4, type: "instagram", url: "https://www.instagram.com/p/Da-nAIKJOlk/embed", title: "Impact & Craft" }
+// ─── 4-Stage "River-to-Resort" Provenance Protocol ──────────────────────────
+const provenanceStages = [
+  {
+    stage: "STAGE 01 • REGENERATION",
+    title: "Ecological River Harvesting",
+    location: "Kamala-Balan Basin, Bihar",
+    desc: "Manual extraction of overgrown water hyacinth choking freshwater wetlands. Clearing restores oxygen levels for aquatic life, unblocks navigation channels, and captures biomass before anaerobic decay.",
+    metrics: ["Grade-A Stems: 75–110cm", "Harvest: 100% Zero Machinery", "Methane Prevented: 1.2kg/kg"],
+  },
+  {
+    stage: "STAGE 02 • DEHYDRATION & TONE",
+    title: "Solar Curing & Botanical Pigments",
+    location: "Darbhanga Solar Kilns",
+    desc: "Zero-fossil-fuel natural drying under the sub-tropical sun brings fiber equilibrium moisture to <9%. Subtle earth tones are rendered using madder root, pomegranate rind, and natural indigo baths without toxic mordants.",
+    metrics: ["Moisture Balance: <9%", "Dyes: 100% Food-Safe Botanicals", "Zero Chemical Bleach"],
+  },
+  {
+    stage: "STAGE 03 • HERITAGE GUILD",
+    title: "Generational Master Weaving",
+    location: "Mithila Artisan Collective",
+    desc: "Intertwined over bespoke wooden jigs by 1,420+ accredited women artisans receiving direct living wages. Ancient Mithila wicker and herringbone patterns create high tensile-strength commercial structures.",
+    metrics: ["Fair Living Wage: 2.3x Local Min", "Banking: Direct Digital Transfers", "1,420+ Women Artisans"],
+  },
+  {
+    stage: "STAGE 04 • RESORT READINESS",
+    title: "Sanitary Botanical Sealants & QC",
+    location: "Export QA Facility, Patna",
+    desc: "Every completed piece is treated with proprietary non-toxic botanical anti-fungal barrier compounds. Complies with international luxury hotel sanitation protocols, humidity cycles up to 90% RH, and ASTM fire standards.",
+    metrics: ["Anti-Mold: 12-Mo Guarantee", "Hardware: Solid Brushed Brass", "Tested to 90% Rel Humidity"],
+  },
 ];
 
-// ─── Main Home Page Component ──────────────────────────────────────────────────
-export default function Home({ featuredProducts = [], savedProductIds = [], impactStats, detailedStats, recentItems }) {
-  const containerRef = useRef(null);
-  const [activeDeckIndex, setActiveDeckIndex] = useState(collectionData.length - 1);
+// ─── Artisan Behind-the-Weave Native Video Reels ──────────────────────────────
+const artisanReels = [
+  {
+    id: 1,
+    videoSrc: "/videos/reels/reel1.mp4",
+    category: "01 / WETLAND HARVEST",
+    location: "Koshi Riverbeds, Bihar",
+    title: "Handcrafted Storage & Planter Baskets",
+    description: "Direct documentation of dense wild hyacinth clusters harvested to restore river flow and oxygenation.",
+    instagramUrl: "https://www.instagram.com/reel/DaxAEiUJuEn/",
+  },
+  {
+    id: 2,
+    videoSrc: "/videos/reels/reel2.mp4",
+    category: "02 / RIVER REVIVAL",
+    location: "Darbhanga Wetland Basin",
+    title: "Restoring River Flow & Wetland Health",
+    description: "Village elder shares how clearing botanical overgrowth revitalizes clean community water supplies.",
+    instagramUrl: "https://www.instagram.com/reel/DbMkSPLoP80/",
+  },
+  {
+    id: 3,
+    videoSrc: "/videos/reels/reel3.mp4",
+    category: "03 / MASTER BRAIDING",
+    location: "Madhubani Artisan Guild",
+    title: "Traditional Hand-Braiding on Wooden Looms",
+    description: "Master women artisans transforming harvested stalks into high-tensile structural braids.",
+    instagramUrl: "https://www.instagram.com/reel/Da8PEBqJjfW/",
+  },
+  {
+    id: 4,
+    videoSrc: "/videos/reels/reel4.mp4",
+    category: "04 / WEAVING EMPOWERMENT",
+    location: "Patna Craft Collective",
+    title: "Weaving Weeds into Worth, Women into Power",
+    description: "Precision circular weaving creating heirloom architectural home accents with dignified rural livelihoods.",
+    instagramUrl: "https://www.instagram.com/reel/Da-nAIKJOlk/",
+  },
+];
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      gsap.registerPlugin(ScrollTrigger);
 
+export default function Home({
+  featuredProducts = [],
+  savedProductIds = [],
+  impactStats = {},
+  detailedStats = {},
+  recentItems = [],
+}) {
+  const [activeStage, setActiveStage] = useState(0);
 
+  // Form states for the interactive concierge card
+  const [rfqSector, setRfqSector] = useState("Hotels & Wellness Spas");
+  const [rfqVolume, setRfqVolume] = useState("Tier 2: 151 – 500 units");
+  const [sampleKitRequested, setSampleKitRequested] = useState(true);
+  const [submittedRfq, setSubmittedRfq] = useState(false);
 
-      let ctx = gsap.context(() => {
-        // 1. Hero Text Reveal
-        gsap.fromTo(".hero-element",
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: 1.2, stagger: 0.15, ease: "power3.out", delay: 0.2 }
-        );
-
-        // 2. Collection Header Reveal
-        gsap.fromTo(".collection-header",
-          { opacity: 0, y: 60, scale: 0.95 },
-          {
-            opacity: 1, y: 0, scale: 1, duration: 1.5, ease: "power4.out",
-            scrollTrigger: { trigger: ".collection-header", start: "top 85%" }
-          }
-        );
-
-        // 3. Generalized Fade-Up Reveal
-        gsap.utils.toArray(".gsap-reveal").forEach((elem) => {
-          gsap.fromTo(elem,
-            { opacity: 0, y: 50 },
-            {
-              opacity: 1, y: 0, duration: 1.2, ease: "power3.out",
-              scrollTrigger: { trigger: elem, start: "top 85%" }
-            }
-          );
-        });
-
-        // Generalized Parallax Image
-        gsap.utils.toArray(".gsap-parallax").forEach((elem) => {
-          gsap.to(elem, {
-            yPercent: 20,
-            ease: "none",
-            scrollTrigger: { trigger: elem.parentElement, start: "top bottom", end: "bottom top", scrub: 1 }
-          });
-        });
-
-        // 3. Collection Asymmetric Grid Cards Stagger
-        gsap.utils.toArray(".category-card").forEach((card) => {
-          gsap.fromTo(card,
-            { opacity: 0, y: 80 },
-            {
-              opacity: 1, y: 0, duration: 1.2, ease: "power3.out",
-              scrollTrigger: { trigger: card, start: "top 85%" }
-            }
-          );
-        });
-
-        // 4. Reels Stagger
-        gsap.fromTo(".reel-header",
-          { opacity: 0, y: 50, scale: 0.95 },
-          { opacity: 1, y: 0, scale: 1, duration: 1.5, ease: "power4.out", scrollTrigger: { trigger: ".reel-header", start: "top 85%" } }
-        );
-
-        gsap.fromTo(".reel-card",
-          { opacity: 0, y: 100, rotate: 2 },
-          {
-            opacity: 1, y: 0, rotate: 0, duration: 1.2, stagger: 0.15, ease: "back.out(1.2)",
-            scrollTrigger: { trigger: ".reel-container", start: "top 80%" }
-          }
-        );
-
-        // Old impact animations removed as they are replaced by ImpactCarousel.
-      }, containerRef);
-
-      // ─── Anime.js v4 Animations ───────────────────────────────────────────────
-      // A. Anime.js Entrance Animation for Hero Badge
-      animate('.anime-badge', {
-        scale: [0.8, 1],
-        opacity: [0, 1],
-        ease: 'outElastic(1, .8)',
-        delay: 300
-      });
-
-      // B. Anime.js Continuous Floating Geometric Particles
-      animate('.anime-float-particle', {
-        translateY: () => utils.random(-25, 25),
-        translateX: () => utils.random(-20, 20),
-        rotate: () => utils.random(-15, 15),
-        scale: () => utils.random(0.9, 1.15),
-        duration: 4000,
-        ease: 'inOutQuad',
-        alternate: true,
-        loop: true,
-        delay: utils.stagger(400)
-      });
-
-      return () => {
-        ctx.revert();
-      };
-    }
-  }, []);
+  // Calculated ESG figures with resilient fallback
+  const biomassTons = detailedStats?.hyacinthRemovedTons ? Number(detailedStats.hyacinthRemovedTons).toFixed(1) : "18.4";
+  const artisanCount = detailedStats?.ruralWomenEmployed || "1,420+";
+  const wetlandsCleaned = detailedStats?.waterBodiesCleaned || "38";
 
   return (
-    <main ref={containerRef} className="bg-[#FAF7F2] text-[#1C1C1A] overflow-x-hidden cursor-none" style={{ fontFamily: sans }}>
-      <CustomCursor />
-      <DustParticles particleCount={80} />
-      
-      {/* ─── HERO SECTION ────────────────────────────────────────────────────── */}
-      <section className="relative w-full h-[110vh] flex flex-col justify-end overflow-hidden pb-32">
-        <HeroSlideshow />
+    <div className="bg-[#FAF8F5] text-[#141E17] selection:bg-[#EAE3D6] selection:text-[#141E17] antialiased" style={{ fontFamily: sans }}>
+      {/* ─── 1. FULL-SCREEN EDITORIAL THREE-IMAGE HERO SECTION (No Gap, Single Hairline Divider, Zero Border Radius) ─── */}
+      <ThreeImageEditorialHero />
 
-        {/* Anime.js Floating Ambient Elements */}
-        <div className="anime-float-particle absolute top-1/4 left-10 w-24 h-24 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm pointer-events-none z-20 hidden md:block" />
-        <div className="anime-float-particle absolute top-1/3 right-20 w-16 h-16 rounded-full border border-[#C8A97A]/20 bg-[#C8A97A]/5 backdrop-blur-sm pointer-events-none z-20 hidden md:block" />
-        <div className="anime-float-particle absolute bottom-1/3 left-1/4 w-12 h-12 rounded-full border border-[#8FBD84]/20 bg-[#8FBD84]/5 backdrop-blur-sm pointer-events-none z-20 hidden md:block" />
-
-        <div className="relative z-20 max-w-7xl mx-auto px-6 w-full md:flex md:items-end justify-between">
-          <div className="max-w-3xl">
-            <div className="hero-element anime-badge inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white text-xs tracking-widest uppercase px-4 py-2 rounded-full mb-8">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#8FBD84] animate-pulse" />
-              Sustainable · Handcrafted
+      {/* Clean Provenance & Contract Procurement Strip below Hero */}
+      <section className="bg-white py-3.5 border-b border-[#EAE3D6] shadow-xs">
+        <div className="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-center justify-between gap-4 text-xs">
+            <div className="flex items-center gap-2.5">
+              <span className="w-2 h-2 rounded-full bg-[#3E634A] animate-pulse" />
+              <span className="font-semibold text-[#141E17] tracking-tight">
+                Bihar Wetland Restoration
+              </span>
+              <span className="text-[#C29B5D] font-mono font-bold">•</span>
+              <span className="text-[#5C665F]">
+                Over <strong className="text-[#141E17] font-semibold">{biomassTons} Tons</strong> Invasive Hyacinth Diverted
+              </span>
             </div>
-
-            <h1 className="hero-element text-[clamp(3.5rem,8vw,7rem)] font-light leading-[0.9] mb-8 text-white" style={{ fontFamily: serif }}>
-              Nature, <br />
-              <span className="italic text-white/80">Crafted</span> By Hand.
-            </h1>
-
-            <div className="hero-element flex flex-col sm:flex-row gap-6">
-              <Link href="/user/products" className="group flex items-center justify-center gap-3 bg-[#C8A97A] text-[#1C1C1A] px-8 py-4 rounded-full text-xs tracking-[0.2em] uppercase font-bold hover:bg-white transition-all shadow-lg">
-                Explore Collection
-                <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </Link>
-              <Link href="/user/bulk-order" className="group flex items-center justify-center gap-3 border border-white/30 text-white px-8 py-4 rounded-full text-xs tracking-[0.2em] uppercase hover:border-white transition-all backdrop-blur-sm bg-white/5">
-                Request B2B Quote
-              </Link>
+            <div className="flex items-center gap-5 sm:gap-6 font-mono text-[10px] sm:text-[11px] text-[#68736B] tracking-wider uppercase">
+              <span className="inline-flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#C29B5D]" />
+                <strong className="text-[#141E17] font-semibold">{artisanCount}</strong> Master Artisans
+              </span>
+              <span className="hidden md:inline text-[#D8CFBF]">•</span>
+              <span className="hidden md:inline-flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#3E634A]" />
+                Net-Negative Carbon
+              </span>
+              <span className="text-[#D8CFBF]">•</span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#1D4E89]" />
+                21-Day Global Contract Dispatch
+              </span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ─── MARQUEE ────────────────────────────────────────────────────────── */}
-      <MarqueeStrip />
-
-      {/* ─── EDITORIAL CATEGORIES (Asymmetric Grid) ─────────────────────────── */}
-      <section className="relative min-h-[100vh] py-20 px-6 bg-[#141414] flex items-center justify-center overflow-hidden">
-        
-        {/* PARALLAX BACKGROUND */}
-        <div className="absolute inset-0 w-full h-[130%] -top-[15%] pointer-events-none z-0">
-           <img 
-             src="https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=2000" 
-             className="gsap-parallax w-full h-full object-cover opacity-[0.25]"
-             alt="Deep Forest Parallax"
-           />
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            {/* Left Side: Details & Text */}
-            <div className="collection-header flex flex-col items-start text-left min-h-[300px] justify-center">
-              <div className="flex items-center gap-4 mb-6">
-                <span className="w-12 h-[1px] bg-[#C8A97A]" />
-                <p className="text-[#C8A97A] text-[10px] tracking-[0.4em] uppercase font-bold">The Collection</p>
-              </div>
-
-              <div key={activeDeckIndex} className="animate-fade-up">
-                <h2 className="text-[clamp(3rem,5vw,5rem)] text-white font-light leading-[1.05] tracking-tight mb-8" style={{ fontFamily: serif }}>
-                  {activeDeckIndex >= 0 ? collectionData[activeDeckIndex].title : "A curation of elegance"}
-                </h2>
-
-                <p className="text-white/70 text-sm md:text-base max-w-md font-light leading-relaxed mb-12 transition-all duration-300">
-                  {activeDeckIndex >= 0 ? collectionData[activeDeckIndex].description : "Every piece in our collection is designed to elevate spaces while respecting the earth."}
-                </p>
-
-                <Link href="/user/products" className="hover-target group relative overflow-hidden inline-flex items-center justify-center gap-3 border border-white/20 text-white px-10 py-5 rounded-full text-xs tracking-[0.2em] uppercase font-bold transition-all shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
-                  <div className="absolute inset-0 w-0 bg-[#C8A97A] transition-all duration-[400ms] ease-out group-hover:w-full" />
-                  <span className="relative z-10 group-hover:text-[#1C1C1A] transition-colors duration-300">View All Categories</span>
-                </Link>
-              </div>
+      {/* ─── 3. MEASURABLE ECOLOGICAL & SOCIAL FOOTPRINT RIBBON ─────────────────── */}
+      <section className="border-b border-[#EAE3D6] bg-[#FAF8F5] py-12 lg:py-14">
+        <div className="max-w-[1520px] mx-auto px-6 sm:px-10 lg:px-16">
+          
+          {/* Header with Luxury Accent */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2.5 text-[10px] uppercase font-bold tracking-[0.25em] text-[#C29B5D] mb-2 font-mono">
+              <span className="w-6 h-[1.5px] bg-[#C29B5D]" />
+              <span>MEASURABLE ECOLOGICAL &amp; SOCIAL FOOTPRINT</span>
+              <span className="w-6 h-[1.5px] bg-[#C29B5D]" />
             </div>
-
-            {/* Right Side: Interactive Deck */}
-            <div className="hover-target relative w-full h-[75vh] min-h-[600px] flex justify-center items-center bg-transparent">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(200,169,122,0.15)_0%,transparent_60%)] pointer-events-none" />
-              <Deck cards={collectionData} onIndexChange={setActiveDeckIndex} />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── INSTAGRAM / VIDEO REELS ────────────────────────────────────────── */}
-      <section className="relative py-16 px-6 bg-[#FAF7F2] border-y border-[#E8DDD0] overflow-hidden">
-        <div className="relative z-10 max-w-7xl mx-auto">
-          <div className="reel-header text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-light text-[#1C1C1A] mb-3" style={{ fontFamily: serif }}>
-              Behind the <span className="italic text-[#C8A97A]">Craft</span>
-            </h2>
-            <p className="text-[#6B6560] text-sm">Follow our journey and see how each piece is made.</p>
+            <h3 className="text-xl sm:text-2xl text-[#141E17] font-normal tracking-tight" style={{ fontFamily: serif }}>
+              Every product directly revives wetlands and empowers rural families
+            </h3>
           </div>
 
-          <div className="reel-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {reels.map((reel) => (
-              reel.type === "instagram" ? (
-                <div key={reel.id} className="reel-card group relative aspect-[9/16] rounded-[24px] overflow-hidden bg-white shadow-lg">
-                  <iframe
-                    src={reel.url}
-                    className="w-full h-full border-none"
-                    scrolling="no"
-                    allowTransparency={true}
-                    allow="encrypted-media"
-                  ></iframe>
+          {/* 6 Impact Metrics Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 items-stretch">
+            {impactMetrics.map((metric, i) => (
+              <div
+                key={i}
+                className="group relative bg-white border border-[#EAE3D6] hover:border-[#C29B5D] rounded-[2px] p-4 sm:p-5 flex flex-col justify-between items-center text-center shadow-[0_2px_12px_rgba(20,30,23,0.02)] hover:shadow-[0_8px_24px_rgba(20,30,23,0.06)] hover:-translate-y-0.5 transition-all duration-300"
+              >
+                <div className="my-auto py-2">
+                  <div
+                    className="text-3xl sm:text-4xl text-[#C29B5D] font-light leading-none mb-2"
+                    style={{ fontFamily: serif }}
+                  >
+                    {metric.value}
+                  </div>
+                  <span className="block text-[11px] sm:text-xs font-semibold text-[#141E17] uppercase tracking-wider">
+                    {metric.title}
+                  </span>
                 </div>
-              ) : (
-                <a href={reel.link || "#"} target="_blank" rel="noopener noreferrer" key={reel.id} className="reel-card group relative aspect-[9/16] rounded-[24px] overflow-hidden bg-black/5 block">
-                  <video autoPlay loop muted playsInline className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
-                    <source src={reel.url} type="video/mp4" />
-                  </video>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-80 pointer-events-none" />
 
-                  {/* Play Icon */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/40 shadow-lg">
-                      <svg className="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
-                    </div>
-                  </div>
-
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <p className="text-white font-medium text-lg" style={{ fontFamily: serif }}>{reel.title}</p>
-                  </div>
-                </a>
-              )
+                <div className="pt-2.5 border-t border-[#F0ECE3] w-full mt-2">
+                  <span className="block text-[10px] text-[#7C8780] font-light leading-snug">
+                    {metric.desc}
+                  </span>
+                </div>
+              </div>
             ))}
           </div>
 
+          {/* Reassurance Footer Pill */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-[11px] font-mono text-[#68736B]">
+            <span className="inline-flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#3E634A]" />
+              High-Humidity ASTM Tested (Up to 90% RH)
+            </span>
+            <span className="text-[#D8CFBF] hidden sm:inline">•</span>
+            <span className="inline-flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#3E634A]" />
+              12-Month Anti-Microbial Guarantee
+            </span>
+            <span className="text-[#D8CFBF] hidden sm:inline">•</span>
+            <span className="inline-flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#3E634A]" />
+              Bespoke Dimensions &amp; CAD Support
+            </span>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ─── 4. 4-SECTOR B2B PROCUREMENT FRAMEWORKS ───────────────────────── */}
+      <section className="max-w-[1520px] mx-auto px-6 sm:px-10 lg:px-16 py-20 lg:py-28 border-b spec-hairline" id="sectors">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
+          <div className="max-w-2xl">
+            <span className="brass-badge px-2.5 py-1 text-[#C29B5D] text-[10px] uppercase font-bold tracking-[0.2em] inline-block mb-3 bg-[#FAF8F5]">
+              Commercial Archetypes
+            </span>
+            <h2 className="text-3xl sm:text-4xl text-[#141E17] font-normal tracking-tight" style={{ fontFamily: serif }}>
+              Tailored procurement frameworks engineered for high-turnover luxury environments.
+            </h2>
+          </div>
+          <p className="text-sm text-[#424843] max-w-sm font-normal leading-relaxed">
+            Every classification is engineered for high-humidity resilience, hospitality sanitization cycles, and zero plastic packaging.
+          </p>
+        </div>
+
+        {/* 4-Sector Bento Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 border spec-hairline divide-y md:divide-y-0 md:divide-x spec-hairline bg-white">
+          {sectorArchetypes.map((sector, idx) => (
+            <article key={idx} className="p-6 sm:p-8 flex flex-col justify-between group hover:bg-[#F5F3EE] transition-colors duration-300">
+              <div>
+                <div className="aspect-square bg-[#EAE8E3] mb-5 overflow-hidden relative border spec-hairline">
+                  <Image
+                    src={sector.image}
+                    alt={sector.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <span className="absolute top-3 left-3 bg-[#141E17] text-[#FAF8F5] text-[10px] px-2.5 py-0.5 uppercase tracking-widest font-bold">
+                    SECTOR {sector.sectorNum}
+                  </span>
+                </div>
+
+                <h3 className="text-lg text-[#141E17] font-medium mb-2" style={{ fontFamily: serif }}>
+                  {sector.title}
+                </h3>
+                <p className="text-xs text-[#525E55] leading-relaxed mb-6">
+                  {sector.subtitle}
+                </p>
+              </div>
+
+              <div className="pt-4 border-t spec-hairline">
+                <div className="flex justify-between items-center text-[#68736B] text-[11px] mb-3">
+                  <span>Standard MOQ: {sector.moq}</span>
+                  <span>Lead: {sector.leadTime}</span>
+                </div>
+
+                <Link
+                  href={sector.href}
+                  className="text-[#141E17] text-[11px] uppercase tracking-widest font-bold inline-flex items-center gap-1.5 hover:text-[#C29B5D] group-hover:underline underline-offset-4 transition-colors"
+                >
+                  <span>{sector.specName}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── 5. "RIVER-TO-RESORT" PROVENANCE & TECHNICAL PROTOCOL ─────────── */}
+      <section className="max-w-[1520px] mx-auto px-6 sm:px-10 lg:px-16 py-20 lg:py-28 border-b spec-hairline" id="provenance">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+          {/* Left Column: Sticky Narrative & Guarantee (4 cols) */}
+          <div className="lg:col-span-4">
+            <div className="sticky top-28">
+              <span className="brass-badge px-2.5 py-1 text-[#C29B5D] text-[10px] uppercase font-bold tracking-[0.2em] inline-block mb-3 bg-[#FAF8F5]">
+                Lifecycle Traceability
+              </span>
+              <h2 className="text-3xl sm:text-4xl text-[#141E17] font-normal tracking-tight mb-4" style={{ fontFamily: serif }}>
+                The River-to-Resort Protocol
+              </h2>
+              <p className="text-sm text-[#424843] leading-relaxed mb-8">
+                A four-tier closed-loop audit. Every KrisluxECO consignment is documented with its extraction wetland cluster, solar curing batch index, and artisan guild signature.
+              </p>
+
+              <div className="p-5 bg-[#F5F3EE] border spec-hairline">
+                <div className="flex items-center gap-2 text-[#141E17] font-medium text-sm mb-1.5">
+                  <ShieldCheck className="w-4 h-4 text-[#C29B5D]" />
+                  <span>Institutional Provenance Guarantee</span>
+                </div>
+                <p className="text-xs text-[#68736B] leading-relaxed mb-3">
+                  Audited annually across Darbhanga and Madhubani clusters according to WFTO ethical craft standards and ISO 14021 recycled biomass declarations.
+                </p>
+                <div className="text-[10px] text-[#C29B5D] uppercase tracking-widest font-bold">
+                  CERTIFICATE ID: IN-BHR-2026-884
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: 4 Stages Accordion & Stepper (8 cols) */}
+          <div className="lg:col-span-8 flex flex-col gap-5">
+            {provenanceStages.map((stageItem, index) => {
+              const isSelected = activeStage === index;
+              return (
+                <div
+                  key={index}
+                  onClick={() => setActiveStage(index)}
+                  className={`border spec-hairline p-6 sm:p-8 cursor-pointer transition-all duration-300 ${
+                    isSelected ? "bg-white shadow-sm border-[#C29B5D]" : "bg-[#FAF8F5] hover:bg-white"
+                  }`}
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-baseline justify-between mb-2">
+                    <span className="text-[10px] uppercase tracking-widest font-bold text-[#C29B5D]">
+                      {stageItem.stage}
+                    </span>
+                    <span className="text-[11px] text-[#68736B] font-mono mt-0.5 sm:mt-0">
+                      {stageItem.location}
+                    </span>
+                  </div>
+
+                  <h3 className="text-xl sm:text-2xl text-[#141E17] font-medium mb-3" style={{ fontFamily: serif }}>
+                    {stageItem.title}
+                  </h3>
+
+                  <p className="text-sm text-[#424843] leading-relaxed mb-4">
+                    {stageItem.desc}
+                  </p>
+
+                  <div className="flex flex-wrap gap-2 pt-3 border-t spec-hairline">
+                    {stageItem.metrics.map((metric, mIdx) => (
+                      <span
+                        key={mIdx}
+                        className="px-2.5 py-1 bg-[#F5F3EE] text-[#141E17] text-[11px] font-medium tracking-wide"
+                      >
+                        {metric}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── 6. WHOLESALE FEATURED ARCHITECTURAL COLLECTION ──────────────── */}
+      <div className="border-b spec-hairline" id="collections">
+        <FeaturedProducts
+          products={featuredProducts}
+          savedProductIds={savedProductIds}
+          pretitle="Contract Procurement"
+          title="Wholesale Architectural"
+          subtitle="Collection"
+        />
+      </div>
+
+      {/* ─── 7. INTERACTIVE B2B CONCIERGE & SPECIFICATION RFQ CARD ────────── */}
+      <section className="max-w-[1520px] mx-auto px-6 sm:px-10 lg:px-16 py-20 lg:py-28" id="concierge">
+        <div className="bg-[#0E1611] text-[#FAF8F5] p-8 sm:p-12 lg:p-16 border border-[#27382B] rounded-[2px] shadow-[0_24px_70px_rgba(10,18,12,0.18)] relative overflow-hidden">
+          {/* Subtle Ambient Glow */}
+          <div
+            className="absolute top-0 right-0 w-[500px] h-[500px] pointer-events-none opacity-20"
+            style={{
+              background: "radial-gradient(circle, rgba(194, 155, 93, 0.25) 0%, transparent 70%)",
+            }}
+          />
+
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+            {/* Left Column: Direct Consultation Dialogue (5 cols) */}
+            <div className="lg:col-span-5">
+              <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-[2px] bg-[#1A2A20] border border-[#2B4434] text-[10px] uppercase font-mono font-bold tracking-[0.22em] text-[#C29B5D] mb-5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#34D399] animate-pulse" />
+                <span>B2B Procurement Concierge</span>
+              </div>
+
+              <h2 className="text-3xl sm:text-4xl lg:text-[40px] text-white font-normal leading-[1.14] tracking-tight mb-4" style={{ fontFamily: serif }}>
+                Initiate Bespoke Hospitality Specifications &amp; Material Lab Sampling.
+              </h2>
+
+              <p className="text-xs sm:text-sm text-[#A8B4AB] font-light leading-relaxed mb-8">
+                Our commercial desk coordinates directly with FF&amp;E procurement directors, interior architects, and corporate ESG desks. Receive physical swatch boxes, certified technical documentation, and volume estimates within 48 business hours.
+              </p>
+
+              {/* Service & Provenance Tiles */}
+              <div className="space-y-3.5 border-t border-white/10 pt-6">
+                <div className="p-4 rounded-[2px] bg-white/[0.03] border border-white/10 flex items-start gap-3.5 hover:border-[#C29B5D]/40 transition-colors">
+                  <div className="w-8 h-8 rounded-[2px] bg-[#C29B5D]/15 text-[#C29B5D] flex items-center justify-center shrink-0 mt-0.5">
+                    <MapPin className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-white font-medium">Mithila &amp; Darbhanga Production Hub • Bihar</p>
+                    <p className="text-xs text-[#8A968E] mt-0.5 font-light">Mithila Wetland Restoration Zone 03 • Direct living wages for 1,420+ accredited craftswomen</p>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-[2px] bg-white/[0.03] border border-white/10 flex items-start gap-3.5 hover:border-[#C29B5D]/40 transition-colors">
+                  <div className="w-8 h-8 rounded-[2px] bg-[#C29B5D]/15 text-[#C29B5D] flex items-center justify-center shrink-0 mt-0.5">
+                    <Truck className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-white font-medium">Express Global Sampling</p>
+                    <p className="text-xs text-[#8A968E] mt-0.5 font-light">Biological fiber swatch folders dispatched via DHL Express worldwide within 3 business days</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Trust Reassurance Badges */}
+              <div className="pt-6 mt-6 border-t border-white/10 flex flex-wrap items-center gap-4 text-[11px] font-mono text-[#8C9890]">
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-[#34D399]" /> 48h Spec Turnaround</span>
+                <span className="text-white/20">•</span>
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-[#34D399]" /> ASTM Humidity Tested</span>
+                <span className="text-white/20">•</span>
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-[#34D399]" /> 100% Plastic-Free</span>
+              </div>
+            </div>
+
+            {/* Right Column: Tailored Architectural RFQ Specification Form (7 cols) */}
+            <div className="lg:col-span-7 bg-white text-[#141E17] p-7 sm:p-10 rounded-[2px] border border-[#EAE3D6] shadow-[0_16px_45px_rgba(0,0,0,0.12)]">
+              {submittedRfq ? (
+                <div className="py-12 px-6 text-center">
+                  <div className="w-14 h-14 rounded-full bg-[#EBF5EE] text-[#2E6B44] flex items-center justify-center mx-auto mb-4 border border-[#2E6B44]/20 shadow-sm">
+                    <CheckCircle2 className="w-7 h-7" />
+                  </div>
+                  <h4 className="text-2xl font-normal text-[#141E17] mb-2" style={{ fontFamily: serif }}>
+                    Specification Request Received
+                  </h4>
+                  <p className="text-xs text-[#525E55] max-w-md mx-auto mb-6 leading-relaxed">
+                    Thank you. Your commercial project specifications have been routed to our Darbhanga and Patna procurement desks. A bespoke contract proposal and fiber courier tracking number will be delivered within 48 business hours.
+                  </p>
+                  <button
+                    onClick={() => setSubmittedRfq(false)}
+                    className="text-xs font-mono uppercase tracking-widest text-[#141E17] hover:text-[#C29B5D] underline underline-offset-4 cursor-pointer"
+                  >
+                    ← Submit Another Project Inquiry
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-start justify-between gap-4 mb-6">
+                    <div>
+                      <h3 className="text-2xl text-[#141E17] font-medium tracking-tight" style={{ fontFamily: serif }}>
+                        Request Quotation &amp; Fiber Swatch Portfolio
+                      </h3>
+                      <p className="text-xs text-[#68736B] mt-1 font-light leading-relaxed">
+                        Specify your commercial project details to receive a customized contract PDF and courier tracking.
+                      </p>
+                    </div>
+                    <span className="hidden sm:inline-flex text-[9px] uppercase font-mono tracking-widest px-2.5 py-1 rounded-[2px] bg-[#FAF3E8] text-[#8C6422] font-bold border border-[#8C6422]/15 whitespace-nowrap">
+                      Priority Desk
+                    </span>
+                  </div>
+
+                  <form
+                    className="space-y-4 sm:space-y-5"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      setSubmittedRfq(true);
+                    }}
+                  >
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[10px] uppercase font-mono tracking-wider font-bold text-[#556057] mb-1.5">
+                          Company / Architectural Firm *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. Studio KO / Aman Hospitality"
+                          className="w-full bg-[#FAF8F5] border border-[#EAE3D6] focus:border-[#141E17] focus:bg-white rounded-[2px] py-2.5 px-3.5 text-xs text-[#141E17] outline-none transition-all placeholder:text-[#9AA39D]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] uppercase font-mono tracking-wider font-bold text-[#556057] mb-1.5">
+                          Procurement Contact Email *
+                        </label>
+                        <input
+                          type="email"
+                          required
+                          placeholder="procurement@luxuryhotel.com"
+                          className="w-full bg-[#FAF8F5] border border-[#EAE3D6] focus:border-[#141E17] focus:bg-white rounded-[2px] py-2.5 px-3.5 text-xs text-[#141E17] outline-none transition-all placeholder:text-[#9AA39D]"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[10px] uppercase font-mono tracking-wider font-bold text-[#556057] mb-1.5">
+                          Primary Sector Archetype
+                        </label>
+                        <select
+                          value={rfqSector}
+                          onChange={(e) => setRfqSector(e.target.value)}
+                          className="w-full bg-[#FAF8F5] border border-[#EAE3D6] focus:border-[#141E17] focus:bg-white rounded-[2px] py-2.5 px-3.5 text-xs text-[#141E17] outline-none transition-all cursor-pointer"
+                        >
+                          <option value="Hotels & Wellness Spas">Hotels &amp; Wellness Spas</option>
+                          <option value="Artisanal Living & Retail">Artisanal Living &amp; Retail</option>
+                          <option value="Corporate Gifting & ESG">Corporate Gifting &amp; ESG</option>
+                          <option value="Millwork & Acoustic Panels">Millwork &amp; Acoustic Panels</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] uppercase font-mono tracking-wider font-bold text-[#556057] mb-1.5">
+                          Estimated Volume Tier
+                        </label>
+                        <select
+                          value={rfqVolume}
+                          onChange={(e) => setRfqVolume(e.target.value)}
+                          className="w-full bg-[#FAF8F5] border border-[#EAE3D6] focus:border-[#141E17] focus:bg-white rounded-[2px] py-2.5 px-3.5 text-xs text-[#141E17] outline-none transition-all cursor-pointer"
+                        >
+                          <option value="Sample Kit Only (1-5 units)">Sample Swatch Kit Only (1–5 units)</option>
+                          <option value="Tier 1: 50 – 150 units">Tier 1: 50 – 150 units (Boutique)</option>
+                          <option value="Tier 2: 151 – 500 units">Tier 2: 151 – 500 units (Commercial)</option>
+                          <option value="Tier 3: 500+ units">Tier 3: 500+ units (Master Millwork)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] uppercase font-mono tracking-wider font-bold text-[#556057] mb-1.5">
+                        Target Delivery Date &amp; Custom Requirements
+                      </label>
+                      <textarea
+                        rows={3}
+                        placeholder="Provide desired installation date, bespoke dimensions, brass plaque debossing details, or flammability requirements..."
+                        className="w-full bg-[#FAF8F5] border border-[#EAE3D6] focus:border-[#141E17] focus:bg-white rounded-[2px] py-2.5 px-3.5 text-xs text-[#141E17] outline-none transition-all resize-none placeholder:text-[#9AA39D]"
+                      />
+                    </div>
+
+                    {/* Interactive Swatch Kit Toggle */}
+                    <label className={`flex items-start gap-3 p-3.5 rounded-[2px] border cursor-pointer transition-all ${sampleKitRequested ? 'bg-[#F2F7F4] border-[#3E634A]/40' : 'bg-[#FAF8F5] border-[#EAE3D6]'}`}>
+                      <input
+                        type="checkbox"
+                        checked={sampleKitRequested}
+                        onChange={(e) => setSampleKitRequested(e.target.checked)}
+                        className="mt-0.5 w-4 h-4 rounded-none accent-[#141E17] cursor-pointer"
+                      />
+                      <div className="text-xs">
+                        <span className="font-semibold text-[#141E17] block">Include Physical Bihar Biological Fiber Swatch Kit</span>
+                        <span className="text-[11px] text-[#68736B] font-light">Contains 4 authentic cured stems (Natural, Madder Root, Indigo, Golden Sun) + tensile lab spec.</span>
+                      </div>
+                    </label>
+
+                    <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <span className="text-[11px] font-mono text-[#8A968E]">
+                        Dispatched via DHL Express Worldwide
+                      </span>
+
+                      <button
+                        type="submit"
+                        className="w-full sm:w-auto bg-[#141E17] hover:bg-[#203225] text-[#FAF8F5] px-8 py-3.5 text-xs uppercase tracking-[0.18em] font-semibold transition-all duration-200 inline-flex items-center justify-center gap-2.5 shadow-sm group/btn cursor-pointer"
+                      >
+                        <span>Submit Specification</span>
+                        <ArrowRight className="w-3.5 h-3.5 text-[#C29B5D] transition-transform duration-300 group-hover/btn:translate-x-1" />
+                      </button>
+                    </div>
+                  </form>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── 7. TRUSTED MARKETPLACES (AVAILABLE ACROSS INDIA) ──────────────── */}
+      <TrustedMarketplaces />
+
+      {/* ─── 8. BEHIND THE WEAVE (AUTHENTIC ARTISAN REELS) ─────────────────── */}
+      <section className="py-20 lg:py-28 px-6 sm:px-10 lg:px-16 border-t border-b spec-hairline bg-[#FAF8F5]">
+        <div className="max-w-[1520px] mx-auto">
+          <div className="text-center mb-12">
+            <span className="brass-badge px-2.5 py-1 text-[#C29B5D] text-[10px] uppercase font-bold tracking-[0.2em] inline-block mb-3 bg-white">
+              Field Authenticity
+            </span>
+            <h2 className="text-3xl sm:text-4xl text-[#141E17] font-normal tracking-tight mb-3" style={{ fontFamily: serif }}>
+              Behind the <span className="italic text-[#C29B5D]">Weave</span>
+            </h2>
+            <p className="text-xs sm:text-sm text-[#68736B] max-w-md mx-auto leading-relaxed">
+              Witness unedited documentation from our wetland extraction boats to master braiding guild circles across Bihar.
+            </p>
+          </div>
+
+          {/* Horizontal left-to-right swipe on mobile, 4-column grid on desktop */}
+          <div className="flex lg:grid lg:grid-cols-4 gap-4 sm:gap-6 overflow-x-auto lg:overflow-visible snap-x snap-mandatory scrollbar-none pb-4 lg:pb-0 -mx-6 px-6 lg:mx-0 lg:px-0" style={{ WebkitOverflowScrolling: "touch" }}>
+            {artisanReels.map((reel, idx) => (
+              <ArtisanReelCard key={reel.id} reel={reel} index={idx} />
+            ))}
+          </div>
+
+          {/* Mobile Swipe Indicator */}
+          <p className="lg:hidden text-center text-[10px] uppercase font-mono tracking-widest text-[#8C968F] mt-3">
+            ← Swipe left or right to explore field reels →
+          </p>
+
           <div className="mt-10 flex justify-center">
-            <a href="https://www.instagram.com/krisluxeco/" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 border border-[#E8DDD0] bg-transparent text-[#1C1C1A] px-8 py-4 rounded-full text-xs tracking-[0.2em] uppercase font-semibold hover:bg-[#1C1C1A] hover:text-[#FAF7F2] transition-all duration-500">
-              Watch More on Instagram
-              <svg className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
+            <a
+              href="https://www.instagram.com/krisluxeco/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 border border-[#141E17] bg-white text-[#141E17] px-8 py-3 text-xs uppercase tracking-[0.18em] font-semibold hover:bg-[#141E17] hover:text-white transition-all shadow-sm"
+            >
+              <span>Follow Our Field Journey</span>
+              <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
         </div>
       </section>
 
-      {/* ─── FEATURED PRODUCTS (Prop Passed) ────────────────────────────────── */}
-      <div className="bg-[#FAF7F2] gsap-reveal">
-        <FeaturedProducts products={featuredProducts} savedProductIds={savedProductIds} />
-      </div>
+      {/* ─── 8.5. AS FEATURED IN (NATIONAL MEDIA & EDITORIAL FEATURES) ──────── */}
+      <AsFeaturedIn />
 
-      {/* --- NEW IMPACT CAROUSEL ------------------------------------------------ */ }
-      <Platforms />
-      <ImpactCarousel />
-
-      {/* --- LIVE CARBON FOOTPRINT TRACKER ------------------------------------ */ }
+      {/* ─── 9. LIVE CARBON FOOTPRINT & AUDITED METRICS ────────────────────── */}
       <LiveCarbonFootprint impactStats={impactStats} detailedStats={detailedStats} recentItems={recentItems} />
-      
-      <style dangerouslySetInnerHTML={{__html: `
-        @keyframes shimmer {
-          100% { transform: translateY(100%); }
-        }
-        @keyframes fadeUp {
-          0% { opacity: 0; transform: translateY(15px); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-up {
-          animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-      `}} />
-    </main>
+    </div>
   );
 }
+

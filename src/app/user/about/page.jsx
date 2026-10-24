@@ -1,385 +1,522 @@
 "use client";
+
 import Image from "next/image";
-import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import TeamSection from "@/components/TeamSection";
-import { motion } from "framer-motion";
 
 const serif = "var(--font-playfair), Georgia, serif";
 const sans = "var(--font-montserrat), sans-serif";
 
-function Eyebrow({ children, dark = false }) {
-  return (
-    <div className="flex items-center justify-start gap-3 mb-6">
-      <span className={`h-px w-8 ${dark ? "bg-[#C8A97A]" : "bg-[#C8A97A]/60"}`} />
-      <p
-        className={`text-xs tracking-[0.25em] uppercase ${dark ? "text-[#C8A97A]" : "text-[#C8A97A]"}`}
-        style={{ fontFamily: sans }}
-      >
-        {children}
-      </p>
-    </div>
-  );
-}
-
-const products = [
-  { name: "Home & Storage", tags: "Baskets, Trays, Organizers, Lampshades", desc: "Designed for eco-conscious home decor and functional living.", img: "/images/home_storage.png" },
-  { name: "Fashion & Bags", tags: "Handbags, Clutches, Wallets, Totes", desc: "Ergonomic, durable, and styled for the sustainable fashion market.", img: "/images/fashion_bags.png" },
-  { name: "Furniture & Décor", tags: "Stools, Mirror Frames, Wall Art", desc: "Premium statement pieces built for luxury interiors and hotel chains.", img: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=80" },
-  { name: "Corporate Gifting", tags: "Branded Hampers, Coasters, Stationery", desc: "High-impact, zero-waste gifting solutions aligned with ESG goals.", img: "/images/corporate_gifting.png" }
+const archetypes = [
+  {
+    id: "home-storage",
+    title: "Home & Living Storage",
+    category: "Interior Architecture",
+    description:
+      "Sculptural laundry hampers, bread trays, vanity organizers, and nesting baskets woven with tight herringbone braids. Naturally moisture-resistant and breathable.",
+    image: "/images/home_storage.png",
+    specs: ["Water hyacinth stalk fiber", "Zero synthetics or plastics", "Natural sun-cured finish"],
+    link: "/user/products?category=Storage",
+  },
+  {
+    id: "fashion-bags",
+    title: "Fashion & Tote Bags",
+    category: "Sustainable Apparel",
+    description:
+      "Ergonomic everyday shoulder totes, clutches, and structured weekenders pairing biological hyacinth canvas with vegetable-tanned accents and brass hardware.",
+    image: "/images/fashion_bags.png",
+    specs: ["Reinforced botanical weave", "Up to 12kg tensile capacity", "Naturally lightweight"],
+    link: "/user/products?category=Fashion",
+  },
+  {
+    id: "furniture-decor",
+    title: "Furniture & Statement Décor",
+    category: "Lounge & Hospitality",
+    description:
+      "Solid reclaimed teak and powder-coated steel frames hand-wrapped in dense biological hyacinth cordage. Ideal for five-star eco-resorts and luxury residences.",
+    image: "/premium_furniture.png",
+    specs: ["Custom architectural dimensions", "Commercial durability rating", "ASTM non-toxic finish"],
+    link: "/user/custom-design",
+  },
+  {
+    id: "corporate-gifting",
+    title: "Bespoke Corporate Gifting",
+    category: "Institutional & ESG",
+    description:
+      "Sustainable desk organizers, journal covers, executive coasters, and festive hampers customized with discreet debossed logos for global ESG alignment.",
+    image: "/images/corporate_gifting.png",
+    specs: ["Custom corporate branding", "Verified ESG impact certificate", "Zero single-use packaging"],
+    link: "/user/bulk-order",
+  },
 ];
 
-const sdgs = [
-  { num: "SDG 1", code: "No Poverty", impact: "Tripling artisan household incomes compared to traditional middleman systems." },
-  { num: "SDG 5", code: "Gender Equality", impact: "Formally employing and empowering an 80% female workforce." },
-  { num: "SDG 8", code: "Decent Work & Economic Growth", impact: "Providing formal wages and official Pehchan identification." },
-  { num: "SDG 12", code: "Responsible Production", impact: "Ensuring a 100% biodegradable, zero-waste manufacturing cycle." },
-  { num: "SDG 13", code: "Climate Action", impact: "Removing rotting, methane-emitting water hyacinth from waterways." },
-  { num: "SDG 14", code: "Life Below Water", impact: "Actively restoring natural freshwater biodiversity in Bihar's wetlands." },
-  { num: "SDG 17", code: "Partnerships for the Goals", impact: "Working closely with the Bihar Government, UMSAS, Bihar Khadi Mall, and international export pipelines." }
+const milestones = [
+  {
+    year: "2023",
+    title: "The Genesis at IIT Patna",
+    desc: "Founder Krishna Singh identified water hyacinth choking Begusarai wetlands and initiated pilot fiber-extraction trials in university laboratories.",
+  },
+  {
+    year: "2024",
+    title: "Artisan Cooperative Incubation",
+    desc: "Partnered with UMSAS and the Ministry of Textiles to establish our first cluster of 50 trained female artisans in rural Bihar.",
+  },
+  {
+    year: "2025",
+    title: "State Startup Recognition",
+    desc: "Awarded recognition and funding under the Bihar Startup Policy, scaling production to supply 40+ premier hospitality groups and boutiques.",
+  },
+  {
+    year: "2026",
+    title: "Global Export Horizon",
+    desc: "Expanding ethical trade corridors to the UK, Germany, and the UAE, while onboarding 200+ certified master craftswomen.",
+  },
+];
+
+const pillars = [
+  {
+    number: "01",
+    title: "Ecological Regeneration",
+    desc: "Water hyacinth multiplies exponentially, blocking sunlight and depleting oxygen in freshwater wetlands. We harvest over 100 tons annually, revitalizing native aquatic habitats.",
+    metric: "100+ Tons Biomass Harvested",
+  },
+  {
+    number: "02",
+    title: "Artisan Sovereignty",
+    desc: "We disintermediate traditional middlemen, ensuring our female craftswomen receive 3x standard regional wages, official Pehchan identity cards, and safe cooperative workspaces.",
+    metric: "80% Women-Led Cooperative",
+  },
+  {
+    number: "03",
+    title: "Zero Synthetic Chemistry",
+    desc: "From harvest to dispatch, no toxic varnishes, formaldehyde, or synthetic glues are ever used. Our pieces are 100% biodegradable, returning safely to the soil at the end of their lifecycle.",
+    metric: "100% Biodegradable & Safe",
+  },
 ];
 
 export default function AboutPage() {
-  const containerRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const iframeRef = useRef(null);
-
-  useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-    let ctx = gsap.context(() => {
-      // Horizontal Scroll Section (What We Make)
-      const hSections = gsap.utils.toArray(".h-card");
-      if (hSections.length > 0) {
-        gsap.to(hSections, {
-          xPercent: -100 * (hSections.length - 1),
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".h-scroll-container",
-            pin: true,
-            scrub: 1,
-            end: () => "+=" + document.querySelector(".h-scroll-container").offsetWidth
-          }
-        });
-      }
-
-      // SDG Grid Reveal
-      gsap.utils.toArray(".sdg-card").forEach((card, i) => {
-        gsap.fromTo(card, { opacity: 0, scale: 0.9 }, {
-          opacity: 1, scale: 1, duration: 0.8,
-          delay: (i % 4) * 0.1,
-          scrollTrigger: {
-            trigger: card,
-            start: "top 85%"
-          }
-        });
-      });
-
-      // Vision Reveal
-      gsap.fromTo(".vision-text",
-        { opacity: 0, y: 30, scale: 0.95 },
-        {
-          opacity: 1, y: 0, scale: 1,
-          duration: 1.5, ease: "power3.out",
-          scrollTrigger: {
-            trigger: ".vision-container",
-            start: "top 75%"
-          }
-        }
-      );
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, []);
-
-  const toggleVideoPlay = () => {
-    if (!iframeRef.current) return;
-    const command = isPlaying ? "pauseVideo" : "playVideo";
-    iframeRef.current.contentWindow.postMessage(`{"event":"command","func":"${command}","args":""}`, "*");
-    setIsPlaying(!isPlaying);
-  };
+  const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <main ref={containerRef} className="bg-[#FAF7F2] text-[#1C1C1A] overflow-x-hidden">
+    <main className="min-h-screen bg-[#FAF8F5] text-[#0D140F] selection:bg-[#C29B5D]/20 selection:text-[#0D140F]">
 
-      {/* 1. Cinematic Video Hero */}
-      <section className="relative w-full h-[90vh] md:h-screen flex items-center justify-center overflow-hidden bg-[#1C1C1A]">
-        <div className="absolute inset-0 w-full h-full">
-          <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none opacity-80">
-            <iframe
-              ref={iframeRef}
-              className="absolute top-1/2 left-1/2 w-[300vw] h-[300vh] md:w-[150vw] md:h-[150vh] min-w-full min-h-full -translate-x-1/2 -translate-y-1/2"
-              src={`https://www.youtube.com/embed/99RGtZgPe1w?enablejsapi=1&controls=0&modestbranding=1&rel=0&autoplay=0&mute=0`}
-              allow="autoplay; encrypted-media"
-              frameBorder="0"
-            ></iframe>
-          </div>
-
-          {/* Elegant Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C1A] via-[#1C1C1A]/40 to-[#1C1C1A]/10 pointer-events-none" />
-
-          <div className="absolute inset-0 flex flex-col justify-end pb-24 px-6 md:px-16 md:pb-32 max-w-7xl mx-auto w-full z-20 pointer-events-none">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
-            >
-              <Eyebrow dark>About KrisluxECO</Eyebrow>
-              <h1 className="text-[clamp(3.5rem,8vw,7rem)] font-light leading-[0.95] mb-4 text-white" style={{ fontFamily: serif }}>
-                The Story of KrisluxECO
-              </h1>
-              <p className="text-white/80 text-xl md:text-2xl font-light italic max-w-2xl" style={{ fontFamily: serif }}>
-                Watch our journey.
-              </p>
-            </motion.div>
-          </div>
-        </div>
-
-        {/* Custom Slide Controls */}
-        <div className="absolute bottom-8 right-6 md:right-16 z-30 flex items-center gap-6">
-          <button
-            onClick={toggleVideoPlay}
-            className="group flex items-center justify-center w-14 h-14 rounded-full border border-white/20 bg-white/5 backdrop-blur-md hover:bg-white/10 hover:border-white/40 transition-all text-white"
-          >
-            {isPlaying ? (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></svg>
-            ) : (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="ml-1"><path d="M8 5v14l11-7z" /></svg>
-            )}
-          </button>
-        </div>
-      </section>
-
-      {/* 2. Brand Ethos (Replacing solid green Who We Are section) */}
-      <section className="relative w-full py-32 px-6 md:px-16 bg-[#FAF7F2] overflow-hidden">
-        {/* Animated Background Blobs */}
-        <motion.div 
-          animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-[#E8DDD0] rounded-full mix-blend-multiply filter blur-[120px] opacity-70 pointer-events-none" 
-        />
-        <motion.div 
-          animate={{ scale: [1, 1.3, 1], rotate: [0, -90, 0] }}
-          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-[#C8A97A]/20 rounded-full mix-blend-multiply filter blur-[120px] opacity-70 pointer-events-none" 
+      {/* 1. EDITORIAL HERO SECTION */}
+      <section className="relative bg-[#0D140F] text-[#FAF8F5] pt-32 pb-24 lg:pt-40 lg:pb-32 px-6 lg:px-16 overflow-hidden">
+        {/* Subtle architectural background texture */}
+        <div
+          className="absolute inset-0 opacity-[0.035] pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(#C29B5D 1px, transparent 1px), linear-gradient(to right, #ffffff 1px, transparent 1px)",
+            backgroundSize: "40px 40px, 80px 80px",
+          }}
         />
 
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-16 md:gap-24 items-center relative z-10">
-          <motion.div 
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+        <div className="max-w-7xl mx-auto relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-full md:w-1/2"
+            className="max-w-4xl"
           >
-            <Eyebrow>Who We Are</Eyebrow>
-            <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-4xl md:text-5xl lg:text-7xl font-light leading-[1.1] mb-8" 
+            {/* Monospace Eyebrow Tag */}
+            <div className="inline-flex items-center gap-3 px-3.5 py-1.5 bg-white/5 border border-white/10 rounded-[2px] mb-8">
+              <span className="w-2 h-2 rounded-full bg-[#C29B5D] animate-pulse" />
+              <span
+                className="text-[11px] font-mono tracking-[0.2em] text-[#C29B5D] uppercase"
+              >
+                FOUNDED AT IIT PATNA · ACCREDITED ARTISAN ENTERPRISE
+              </span>
+            </div>
+
+            <h1
+              className="text-4xl sm:text-6xl lg:text-7xl font-light tracking-tight leading-[1.08] text-white mb-8"
               style={{ fontFamily: serif }}
             >
-              <span className="inline-block bg-gradient-to-r from-[#1C1C1A] to-[#6B6560] bg-clip-text text-transparent">Redefining</span> <br/> 
-              <span className="italic text-[#C8A97A]">Eco-</span>Luxury.
-            </motion.h2>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-[#1C1C1A]/70 text-lg md:text-xl font-light leading-relaxed mb-8"
-            >
-              Founded by students of IIT Patna, we are an artisan-led, zero-waste, and export-ready Eco-Luxury brand. We build a formal, sustainable ecosystem that sources free raw materials from wetlands, trains rural artisans, and connects their premium creations directly to conscious consumers and global buyers.
-            </motion.p>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              className="text-[#1C1C1A]/70 text-lg md:text-xl font-light leading-relaxed"
-            >
-              We believe that true Eco-Luxury is ethical and inclusive. Our ecosystem is built from the ground up to empower those who need it most.
-            </motion.p>
-          </motion.div>
+              Transforming Wetland Crisis into <br className="hidden sm:block" />
+              <span className="text-[#C29B5D] italic font-serif">Collectible Eco-Luxury</span>.
+            </h1>
 
-          <div className="w-full md:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-8 perspective-[1000px]">
-            <motion.div 
-              initial={{ opacity: 0, y: 50, rotateX: 10 }}
-              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              whileHover={{ scale: 1.05, y: -10, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.1)" }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-white/80 backdrop-blur-xl p-10 rounded-[2rem] shadow-sm border border-[#E8DDD0] transform-gpu transition-shadow"
+            <p
+              className="text-white/75 text-lg sm:text-xl font-light leading-relaxed max-w-3xl mb-12"
+              style={{ fontFamily: sans }}
             >
-              <h4 className="text-[3rem] leading-none text-[#C8A97A] font-light mb-4" style={{ fontFamily: serif }}>200+</h4>
-              <h5 className="text-lg font-medium mb-3 text-[#1C1C1A]">Artisans</h5>
-              <p className="text-[#1C1C1A]/60 text-sm font-light leading-relaxed">Trained and onboarded across Begusarai, Madhubani, and Gaya.</p>
-            </motion.div>
-            <motion.div 
-              initial={{ opacity: 0, y: 80, rotateX: 10 }}
-              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              whileHover={{ scale: 1.05, y: -10, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.1)" }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="bg-white/80 backdrop-blur-xl p-10 rounded-[2rem] shadow-sm border border-[#E8DDD0] sm:translate-y-8 transform-gpu transition-shadow"
-            >
-              <h4 className="text-[3rem] leading-none text-[#C8A97A] font-light mb-4" style={{ fontFamily: serif }}>80%</h4>
-              <h5 className="text-lg font-medium mb-3 text-[#1C1C1A]">Women-Led</h5>
-              <p className="text-[#1C1C1A]/60 text-sm font-light leading-relaxed">Predominantly driven by women, ensuring strong gender-lens credentials.</p>
-            </motion.div>
-            <motion.div 
-              initial={{ opacity: 0, y: 50, scale: 0.95 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: "-50px" }}
-              whileHover={{ scale: 1.02, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.15)" }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-              className="bg-gradient-to-br from-white to-[#FAF7F2] p-10 rounded-[2rem] shadow-lg border border-[#E8DDD0] sm:col-span-2 flex items-center justify-center min-h-[160px] relative overflow-hidden group"
-            >
-              <div className="absolute inset-0 bg-[#C8A97A]/5 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
-              <h4 className="text-[2rem] md:text-[2.5rem] leading-none text-[#C8A97A] font-light text-center uppercase tracking-widest relative z-10" style={{ fontFamily: serif }}>Founded in 2026, BIHAR</h4>
-            </motion.div>
+              KrisluxECO was founded by innovators from IIT Patna to solve an acute ecological threat. We harvest invasive water hyacinth choking Bihar&apos;s freshwater riverways, empowering over 200 rural women master weavers to craft heirloom homeware and sustainable corporate artifacts.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-4">
+              <Link
+                href="/user/products"
+                className="px-8 py-4 bg-[#C29B5D] text-[#0D140F] text-xs uppercase tracking-[0.2em] font-semibold rounded-[2px] hover:bg-[#d6af70] transition-colors shadow-sm"
+                style={{ fontFamily: sans }}
+              >
+                Explore Handcrafted Catalog
+              </Link>
+              <Link
+                href="/user/partners"
+                className="px-8 py-4 border border-white/20 text-white text-xs uppercase tracking-[0.2em] font-medium rounded-[2px] hover:bg-white/5 hover:border-white/40 transition-colors"
+                style={{ fontFamily: sans }}
+              >
+                Institutional Partnerships
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* 4-Stat Metric Ribbon */}
+        <div className="max-w-7xl mx-auto mt-20 pt-12 border-t border-white/10 grid grid-cols-2 lg:grid-cols-4 gap-8">
+          <div>
+            <div className="text-3xl lg:text-4xl font-serif text-[#C29B5D] mb-1">200+</div>
+            <div className="text-xs uppercase tracking-wider text-white/80 font-medium">Master Artisans</div>
+            <div className="text-[11px] text-white/50 mt-1">Begusarai, Madhubani &amp; Gaya clusters</div>
+          </div>
+          <div>
+            <div className="text-3xl lg:text-4xl font-serif text-[#C29B5D] mb-1">80%</div>
+            <div className="text-xs uppercase tracking-wider text-white/80 font-medium">Women Leadership</div>
+            <div className="text-[11px] text-white/50 mt-1">Economic sovereignty &amp; Pehchan IDs</div>
+          </div>
+          <div>
+            <div className="text-3xl lg:text-4xl font-serif text-[#C29B5D] mb-1">3.2x</div>
+            <div className="text-xs uppercase tracking-wider text-white/80 font-medium">Wage Multiplier</div>
+            <div className="text-[11px] text-white/50 mt-1">Above regional agricultural benchmarks</div>
+          </div>
+          <div>
+            <div className="text-3xl lg:text-4xl font-serif text-[#C29B5D] mb-1">100%</div>
+            <div className="text-xs uppercase tracking-wider text-white/80 font-medium">Circular Material</div>
+            <div className="text-[11px] text-white/50 mt-1">Zero synthetic glues, plastics, or dyes</div>
           </div>
         </div>
       </section>
 
-      {/* 3. Horizontal Scroll (What We Make) */}
-      <section className="h-scroll-container w-full h-[100vh] bg-[#1C1C1A] text-white overflow-hidden flex flex-col justify-center relative">
-        <div className="absolute top-16 left-6 md:left-16 z-20">
-          <Eyebrow dark>What We Make</Eyebrow>
-          <p className="text-white/60 text-sm max-w-sm mt-4 font-light">
-            The intersection of traditional Indian craftsmanship and global sustainability standards. 100% biodegradable, zero synthetics, naturally pest-resistant.
-          </p>
-        </div>
+      {/* 2. FOUNDER'S GENESIS & PHILOSOPHY */}
+      <section className="py-24 lg:py-32 px-6 lg:px-16 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          
+          {/* Left Text Narrative */}
+          <div className="lg:col-span-7">
+            <div className="inline-flex items-center gap-3 mb-6">
+              <span className="h-[1px] w-8 bg-[#C29B5D]" />
+              <span className="text-[11px] tracking-[0.25em] uppercase text-[#C29B5D] font-mono">
+                THE GENESIS STORY
+              </span>
+            </div>
 
-        <div className="h-wrap flex w-[400vw] h-[60vh] mt-24">
-          {products.map((p, i) => (
-            <div key={i} className="h-card w-[100vw] h-full flex items-center justify-center px-6 md:px-16 flex-shrink-0">
-              <div className="w-full max-w-5xl h-full flex flex-col md:flex-row items-center gap-12">
-                <div className="w-full md:w-1/2 h-64 md:h-[90%] overflow-hidden rounded-[2rem]">
-                  <Image width={800} height={800} src={p.img} alt={p.name} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" />
-                </div>
-                <div className="w-full md:w-1/2">
-                  <span className="text-[10px] tracking-[0.2em] uppercase text-[#C8A97A] mb-4 block" style={{ fontFamily: sans }}>Category {i + 1}</span>
-                  <h3 className="text-4xl md:text-6xl font-light mb-6" style={{ fontFamily: serif }}>{p.name}</h3>
-                  <p className="text-white/50 text-sm tracking-wider uppercase mb-6" style={{ fontFamily: sans }}>{p.tags}</p>
-                  <p className="text-white/80 text-lg md:text-xl font-light leading-relaxed">{p.desc}</p>
+            <h2
+              className="text-3xl sm:text-4xl lg:text-5xl font-light leading-tight text-[#0D140F] mb-8"
+              style={{ fontFamily: serif }}
+            >
+              When an ecological nuisance becomes a <span className="text-[#C29B5D] italic">beacon of rural dignity</span>.
+            </h2>
+
+            <div className="space-y-6 text-[#0D140F]/75 text-base sm:text-lg font-light leading-relaxed">
+              <p>
+                In the floodplains of Bihar, water hyacinth (*Eichhornia crassipes*) has long been regarded as an environmental scourge. Over 2.5 lakh hectares of wetlands choked under dense green canopies, blocking sunlight, decimating freshwater fisheries, and releasing methane as rotting vegetation sank to lakebeds.
+              </p>
+              <p>
+                During his engineering tenure at <strong className="text-[#0D140F] font-semibold">IIT Patna</strong>, founder <strong className="text-[#0D140F] font-semibold">Krishna Singh</strong>, born and raised in Begusarai, recognized that the fibrous stalk of this plant possessed extraordinary tensile strength, natural moisture resilience, and an organic tactile warmth akin to natural wicker.
+              </p>
+              <p>
+                What was missing was institutional design, rigorous quality control, and direct market pipelines. By uniting technical incubation from IIT Patna with the indigenous weaving traditions of local artisans, KrisluxECO was born—an enterprise where every artifact produced clears freshwater and generates dignity.
+              </p>
+            </div>
+
+            {/* Quote block */}
+            <div className="mt-8 p-6 bg-[#F4EFE6] border-l-2 border-[#C29B5D] rounded-[2px]">
+              <p className="text-[#0D140F] font-serif italic text-lg mb-2">
+                &ldquo;True luxury is never built on depletion. When you purchase a KrisluxECO creation, you are directly investing in Bihar&apos;s wetland rejuvenation and the financial autonomy of rural women.&rdquo;
+              </p>
+              <div className="text-xs uppercase tracking-widest text-[#C29B5D] font-semibold">
+                — Krishna Singh, Founder &amp; CEO (IIT Patna)
+              </div>
+            </div>
+          </div>
+
+          {/* Right Visual Collage */}
+          <div className="lg:col-span-5 space-y-6">
+            <div className="relative aspect-[4/5] bg-white border border-[#EAE3D6] p-3 rounded-[2px] shadow-[0_12px_40px_rgba(13,20,15,0.06)]">
+              <div className="relative w-full h-full overflow-hidden rounded-[2px]">
+                <Image
+                  src="/artisan_craft.png"
+                  alt="Rural female artisan hand-weaving water hyacinth product"
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0D140F]/80 via-transparent to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4 text-white">
+                  <span className="text-[10px] uppercase font-mono tracking-widest text-[#C29B5D] block mb-1">
+                    BEGUSARAI COOPERATIVE
+                  </span>
+                  <p className="text-sm font-medium leading-snug">
+                    Master weavers transforming sun-cured botanical stems into precision herringbone homeware.
+                  </p>
                 </div>
               </div>
             </div>
-          ))}
+
+            {/* Secondary Badge Card */}
+            <div className="bg-white border border-[#EAE3D6] p-6 rounded-[2px] flex items-center gap-5">
+              <div className="w-14 h-14 bg-[#3E634A]/10 border border-[#3E634A]/25 rounded-[2px] flex items-center justify-center flex-shrink-0 text-[#3E634A]">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="text-sm font-semibold text-[#0D140F] uppercase tracking-wider">
+                  Accredited &amp; Incubation Backed
+                </h4>
+                <p className="text-xs text-[#0D140F]/65 mt-1 leading-relaxed">
+                  Recognized by the Bihar Startup Policy, UMSAS, and mentored through the Incubation Centre, IIT Patna.
+                </p>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 
-      {/* 4. Global Impact SDGs (Modern Interactive Layout) */}
-      <section className="py-32 px-6 md:px-16 bg-[#1C1C1A] text-white relative overflow-hidden">
-        {/* Subtle background glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#C8A97A]/10 rounded-full blur-[150px] pointer-events-none" />
-        
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center mb-24">
-            <Eyebrow dark={false}>Our Global Impact</Eyebrow>
-            <motion.h2 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="text-[clamp(2.5rem,4vw,4.5rem)] font-light leading-tight text-white mb-6" 
+      {/* 3. THE 3-PILLAR REGENERATION EQUATION */}
+      <section className="py-24 bg-[#F4EFE6] border-y border-[#EAE3D6] px-6 lg:px-16">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <div className="inline-flex items-center gap-3 mb-4">
+              <span className="h-[1px] w-8 bg-[#C29B5D]" />
+              <span className="text-[11px] tracking-[0.25em] uppercase text-[#C29B5D] font-mono">
+                CIRCULAR METHODOLOGY
+              </span>
+              <span className="h-[1px] w-8 bg-[#C29B5D]" />
+            </div>
+            <h2
+              className="text-3xl sm:text-5xl font-light text-[#0D140F] mb-6 leading-tight"
               style={{ fontFamily: serif }}
             >
-              Aligned with 7 UN Sustainable <br className="hidden md:block"/> Development Goals
-            </motion.h2>
-            <motion.div 
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="h-[1px] w-24 bg-[#C8A97A] mx-auto origin-center" 
-            />
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-white/60 mt-8 max-w-2xl mx-auto text-lg md:text-xl font-light leading-relaxed"
-            >
-              Every product crafted in our ecosystem creates measurable, trackable impact.
-            </motion.p>
+              The Three Pillars of <span className="text-[#C29B5D] italic">KrisluxECO</span>
+            </h2>
+            <p className="text-base sm:text-lg text-[#0D140F]/70 font-light leading-relaxed">
+              Our triple-bottom-line operational model guarantees measurable positive outcomes for ecosystems, artisans, and design connoisseurs.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-[minmax(250px,auto)]">
-            {sdgs.map((s, i) => {
-              let colSpanClass = "col-span-1";
-              if (i === 6) colSpanClass = "md:col-span-2 lg:col-span-3";
-              else if (i === 0 || i === 3 || i === 5) colSpanClass = "md:col-span-2";
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {pillars.map((pillar) => (
+              <div
+                key={pillar.number}
+                className="bg-white border border-[#EAE3D6] p-8 rounded-[2px] shadow-[0_8px_30px_rgba(13,20,15,0.03)] flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="text-xs font-mono font-semibold tracking-widest text-[#C29B5D]">
+                      PILLAR {pillar.number}
+                    </span>
+                    <span className="w-2 h-2 rounded-full bg-[#3E634A]" />
+                  </div>
+                  <h3
+                    className="text-2xl font-serif text-[#0D140F] mb-4"
+                    style={{ fontFamily: serif }}
+                  >
+                    {pillar.title}
+                  </h3>
+                  <p className="text-sm text-[#0D140F]/70 font-light leading-relaxed mb-8">
+                    {pillar.desc}
+                  </p>
+                </div>
 
-              return (
-                <motion.div 
-                  key={i} 
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-50px" }}
-                  whileHover={{ y: -5, backgroundColor: "rgba(255, 255, 255, 0.08)" }}
-                  transition={{ duration: 0.5, delay: (i % 3) * 0.15 }}
-                  className={`group relative bg-white/5 border border-white/10 backdrop-blur-md rounded-[2rem] p-8 md:p-10 overflow-hidden cursor-default flex flex-col justify-end min-h-[280px] ${colSpanClass}`}
-                >
-                  {/* Huge faint background number */}
-                  <div className="absolute -top-6 -right-6 text-[140px] md:text-[180px] font-bold text-white/5 tracking-tighter leading-none pointer-events-none transition-transform duration-700 group-hover:scale-110 group-hover:-translate-x-4 group-hover:translate-y-4" style={{ fontFamily: sans }}>
-                    {s.num.replace("SDG", "").trim()}
-                  </div>
-                  
-                  <div className="relative z-10">
-                    <div className="text-sm tracking-[0.2em] uppercase text-[#C8A97A] font-semibold mb-3 flex items-center gap-3" style={{ fontFamily: sans }}>
-                      <span className="w-2 h-2 rounded-full bg-[#C8A97A] group-hover:animate-pulse" />
-                      {s.num}
-                    </div>
-                    <h3 className="text-2xl md:text-3xl font-light text-white mb-4 transition-colors duration-300" style={{ fontFamily: serif }}>{s.code}</h3>
-                    <p className="text-white/60 text-base md:text-lg leading-relaxed font-light transform-gpu transition-all duration-300">
-                      {s.impact}
-                    </p>
-                  </div>
-                </motion.div>
-              );
-            })}
+                <div className="pt-4 border-t border-[#EAE3D6] flex items-center justify-between text-xs">
+                  <span className="text-[#0D140F]/50 uppercase tracking-wider font-mono">Impact Factor</span>
+                  <span className="font-semibold text-[#3E634A]">{pillar.metric}</span>
+                </div>
+              </div>
+            ))}
           </div>
-
-          {/* Cinematic Quote */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            className="mt-32 text-center"
-          >
-            <div className="text-6xl text-[#C8A97A]/40 mb-4" style={{ fontFamily: serif }}>"</div>
-            <h3 className="text-[clamp(2rem,5vw,4.5rem)] font-light leading-tight text-white max-w-4xl mx-auto" style={{ fontFamily: serif }}>
-              Building a formal, <br/>
-              <span className="italic text-[#C8A97A]">sustainable</span> ecosystem.
-            </h3>
-            <div className="text-6xl text-[#C8A97A]/40 mt-4 rotate-180" style={{ fontFamily: serif }}>"</div>
-          </motion.div>
         </div>
       </section>
 
-      {/* Team Section */}
+      {/* 4. PRODUCT ARCHETYPES (WHAT WE MAKE) */}
+      <section className="py-24 lg:py-32 px-6 lg:px-16 max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+          <div>
+            <div className="inline-flex items-center gap-3 mb-4">
+              <span className="h-[1px] w-8 bg-[#C29B5D]" />
+              <span className="text-[11px] tracking-[0.25em] uppercase text-[#C29B5D] font-mono">
+                COLLECTIBLE PRODUCT ARCHETYPES
+              </span>
+            </div>
+            <h2
+              className="text-3xl sm:text-5xl font-light text-[#0D140F]"
+              style={{ fontFamily: serif }}
+            >
+              Woven for Modern <span className="text-[#C29B5D] italic">Conscious Living</span>
+            </h2>
+          </div>
+
+          <div className="flex gap-2">
+            {archetypes.map((item, idx) => (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(idx)}
+                className={`px-4 py-2 text-xs uppercase tracking-wider rounded-[2px] transition-all ${
+                  activeTab === idx
+                    ? "bg-[#0D140F] text-white"
+                    : "bg-white border border-[#EAE3D6] text-[#0D140F]/70 hover:bg-[#F4EFE6]"
+                }`}
+              >
+                0{idx + 1}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Selected Archetype Feature Banner */}
+        <div className="bg-white border border-[#EAE3D6] p-6 lg:p-12 rounded-[2px] shadow-[0_16px_50px_rgba(13,20,15,0.05)]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.4 }}
+              className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center"
+            >
+              <div className="lg:col-span-6 relative aspect-[4/3] rounded-[2px] overflow-hidden bg-[#FAF8F5] border border-[#EAE3D6]">
+                <Image
+                  src={archetypes[activeTab].image}
+                  alt={archetypes[activeTab].title}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+
+              <div className="lg:col-span-6 flex flex-col justify-center">
+                <span className="text-xs font-mono text-[#C29B5D] uppercase tracking-[0.2em] mb-2 block">
+                  {archetypes[activeTab].category}
+                </span>
+                <h3
+                  className="text-3xl sm:text-4xl font-serif text-[#0D140F] mb-4"
+                  style={{ fontFamily: serif }}
+                >
+                  {archetypes[activeTab].title}
+                </h3>
+                <p className="text-base text-[#0D140F]/75 font-light leading-relaxed mb-6">
+                  {archetypes[activeTab].description}
+                </p>
+
+                <div className="space-y-2 mb-8">
+                  {archetypes[activeTab].specs.map((spec, sIdx) => (
+                    <div key={sIdx} className="flex items-center gap-3 text-xs text-[#0D140F]/80">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#C29B5D]" />
+                      <span>{spec}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <Link
+                    href={archetypes[activeTab].link}
+                    className="px-6 py-3.5 bg-[#0D140F] text-white text-xs uppercase tracking-[0.2em] font-medium rounded-[2px] hover:bg-[#3E634A] transition-colors"
+                  >
+                    View This Category
+                  </Link>
+                  <Link
+                    href="/user/bulk-order"
+                    className="px-6 py-3.5 border border-[#EAE3D6] text-[#0D140F] text-xs uppercase tracking-[0.2em] font-medium rounded-[2px] hover:bg-[#F4EFE6] transition-colors"
+                  >
+                    Request Custom Batch
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </section>
+
+      {/* 5. INSTITUTIONAL MILESTONES & JOURNEY */}
+      <section className="py-24 bg-[#0D140F] text-[#FAF8F5] px-6 lg:px-16 border-t border-white/10">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <div className="inline-flex items-center gap-3 mb-4">
+              <span className="h-[1px] w-8 bg-[#C29B5D]" />
+              <span className="text-[11px] tracking-[0.25em] uppercase text-[#C29B5D] font-mono">
+                CHRONICLE OF GROWTH
+              </span>
+              <span className="h-[1px] w-8 bg-[#C29B5D]" />
+            </div>
+            <h2
+              className="text-3xl sm:text-5xl font-light text-white mb-6 leading-tight"
+              style={{ fontFamily: serif }}
+            >
+              Building Bihar&apos;s First <br />
+              <span className="text-[#C29B5D] italic">Global Sustainable Luxury House</span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {milestones.map((m, idx) => (
+              <div
+                key={idx}
+                className="bg-white/5 border border-white/10 p-6 rounded-[2px] flex flex-col justify-between hover:border-[#C29B5D]/50 transition-colors"
+              >
+                <div>
+                  <div className="text-2xl font-serif text-[#C29B5D] font-light mb-4">{m.year}</div>
+                  <h4 className="text-base font-medium text-white mb-3" style={{ fontFamily: serif }}>
+                    {m.title}
+                  </h4>
+                  <p className="text-xs text-white/65 font-light leading-relaxed">
+                    {m.desc}
+                  </p>
+                </div>
+                <div className="mt-6 pt-4 border-t border-white/10 text-[10px] font-mono uppercase tracking-widest text-white/40">
+                  Phase 0{idx + 1}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 6. LEADERSHIP & TEAM SECTION */}
       <TeamSection />
 
-      {/* 5. Vision for the future */}
-      <section className="vision-container relative py-48 px-6 md:px-16 bg-[#1C1C1A] text-white text-center overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)", backgroundSize: "64px 64px" }} />
-        <div className="relative z-10 max-w-5xl mx-auto vision-text">
-          <Eyebrow dark>Our Vision For The Future</Eyebrow>
-          <h2 className="text-3xl md:text-5xl lg:text-7xl font-light leading-[1.1] mb-12" style={{ fontFamily: serif }}>
-            We are not just building a business; <br />
-            <span className="text-[#C8A97A] italic">we are building for Bihar.</span>
+      {/* 7. EDITORIAL CALL TO ACTION */}
+      <section className="py-24 lg:py-32 px-6 lg:px-16 bg-[#FAF8F5] border-t border-[#EAE3D6] text-center">
+        <div className="max-w-4xl mx-auto">
+          <div className="inline-flex items-center gap-3 mb-6">
+            <span className="h-[1px] w-8 bg-[#C29B5D]" />
+            <span className="text-[11px] tracking-[0.25em] uppercase text-[#C29B5D] font-mono">
+              COLLABORATE WITH US
+            </span>
+            <span className="h-[1px] w-8 bg-[#C29B5D]" />
+          </div>
+
+          <h2
+            className="text-3xl sm:text-5xl font-light leading-tight text-[#0D140F] mb-6"
+            style={{ fontFamily: serif }}
+          >
+            Join the Movement Toward <br />
+            <span className="text-[#C29B5D] italic">Regenerative Design</span>.
           </h2>
-          <p className="text-white/70 text-xl md:text-2xl font-light leading-relaxed max-w-3xl mx-auto">
-            As we expand our export pipelines to the <span className="text-white font-medium">UK, Germany, and Japan</span>, our goal is to scale our network to empower over <span className="text-white font-medium">10,000 artisans</span> while establishing Bihar's first globally recognized Eco-Luxury brand.
+
+          <p className="text-base sm:text-lg text-[#0D140F]/70 font-light leading-relaxed max-w-2xl mx-auto mb-10">
+            Whether furnishing a luxury boutique hotel, provisioning an eco-conscious retail network, or curating ESG corporate gifts, let us craft your vision sustainably.
           </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <Link
+              href="/user/bulk-order"
+              className="px-8 py-4 bg-[#0D140F] text-white text-xs uppercase tracking-[0.2em] font-semibold rounded-[2px] hover:bg-[#3E634A] transition-colors"
+            >
+              Inquire Bulk &amp; Corporate
+            </Link>
+            <Link
+              href="/user/custom-design"
+              className="px-8 py-4 bg-white border border-[#EAE3D6] text-[#0D140F] text-xs uppercase tracking-[0.2em] font-medium rounded-[2px] hover:bg-[#F4EFE6] transition-colors"
+            >
+              Custom Bespoke Prototyping
+            </Link>
+          </div>
         </div>
       </section>
+
     </main>
   );
 }

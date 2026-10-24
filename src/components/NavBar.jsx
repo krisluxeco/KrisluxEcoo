@@ -59,15 +59,15 @@ const initialNavLinks = [
 ];
 
 const utilityMessages = [
-  "Free shipping on orders over ₹2,000",
-  "Handcrafted in India · Shipped worldwide",
-  "B2B bulk orders — request a custom quote",
+  "Global B2B Wholesale & Hospitality Supply · Custom MOQ Available",
+  "Export-Grade Certified · 100% Sustainable Natural Fibers",
+  "Direct From Bihar Artisan Cooperatives · Verified ESG Impact",
 ];
 
-/* Signature mark — using the provided logo image. */
+/* Signature mark — using the provided logo image with refined editorial frame. */
 function LeafMark() {
   return (
-    <div className="relative w-12 h-12 flex items-center justify-center bg-white rounded-full overflow-hidden shadow-sm">
+    <div className="relative w-11 h-11 flex items-center justify-center bg-[#FAF8F5] rounded-full overflow-hidden border border-[#C29B5D]/40 shadow-sm transition-transform duration-300 group-hover:scale-105">
       <Image width={800} height={800} src="/logos.jpg" alt="KrisluxECO Logo" className="w-full h-full object-contain scale-[0.85]" />
     </div>
   );
@@ -91,7 +91,7 @@ function UtilityStrip({ visible, onDismiss }) {
           animate={{ height: "auto", opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="bg-[#1C1C1A] overflow-hidden"
+          className="bg-[#0D140F] border-b border-[#EAE3D6]/10 overflow-hidden"
         >
           <div className="max-w-7xl mx-auto px-6 py-2 flex items-center justify-center relative">
             <AnimatePresence mode="wait">
@@ -101,7 +101,7 @@ function UtilityStrip({ visible, onDismiss }) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.35 }}
-                className="text-[10px] tracking-normal text-[#C8A97A]"
+                className="text-[10px] tracking-[0.18em] uppercase text-[#C29B5D] font-mono font-medium"
                 style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
               >
                 {utilityMessages[index]}
@@ -110,7 +110,7 @@ function UtilityStrip({ visible, onDismiss }) {
             <button
               onClick={onDismiss}
               aria-label="Dismiss announcement"
-              className="absolute right-6 text-white/40 hover:text-white/80 transition-colors"
+              className="absolute right-6 text-[#FAF8F5]/40 hover:text-[#FAF8F5] transition-colors p-1"
             >
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M18 6L6 18M6 6l12 12" />
@@ -205,23 +205,20 @@ export default function NavBar() {
   const navBg = useTransform(
     scrollY,
     [0, 80],
-    ["rgba(28,28,26,0.85)", "rgba(20,20,18,0.98)"]
+    ["rgba(13,20,15,0.88)", "rgba(13,20,15,0.98)"]
   );
   const navBorder = useTransform(
     scrollY,
     [0, 80],
-    ["rgba(200,169,122,0.1)", "rgba(200,169,122,0.25)"]
+    ["rgba(194,155,93,0.18)", "rgba(194,155,93,0.35)"]
   );
   const navShadow = useTransform(
     scrollY,
     [0, 80],
-    ["0px 1px 0px rgba(0,0,0,0)", "0px 1px 32px rgba(28,28,26,0.08)"]
+    ["0px 1px 0px rgba(0,0,0,0)", "0px 10px 32px rgba(0,0,0,0.35)"]
   );
   const navPaddingY = useTransform(scrollY, [0, 80], ["1.25rem", "0.75rem"]);
   const progressWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-
-
-
 
   useEffect(() => {
     const unsub = scrollY.on("change", (v) => setScrolled(v > 40));
@@ -257,17 +254,15 @@ export default function NavBar() {
 
   const isActive = (href) => pathname === href || pathname?.startsWith(href + "/");
 
-  // Always light text on dark background for premium look
-  const textTone = "text-white";
-  const textToneMuted = "text-[#E8DDD0]";
-  const logoSub = "text-[#C8A97A]";
+  // Editorial luxury tones matching the homepage palette
+  const textTone = "text-[#FAF8F5]";
+  const textToneMuted = "text-[#FAF8F5]/75";
+  const logoSub = "text-[#C29B5D]";
 
   return (
     <>
       <motion.header
         style={{ backgroundColor: navBg, boxShadow: navShadow, borderBottom: "1px solid" }}
-        // borderColor can't be animated via style shorthand reliably across browsers,
-        // so it's applied via motion below in a wrapping span-free approach:
         className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md"
       >
         <motion.div style={{ borderColor: navBorder }} className="border-b-0">
@@ -285,18 +280,18 @@ export default function NavBar() {
                   className={`font-bold tracking-normal transition-colors duration-300 ${textTone}`}
                   style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1.6rem" }}
                 >
-                  Krislux<span className="text-[#7FA06B]">ECO</span>
+                  Krislux<span className="text-[#C29B5D]">ECO</span>
                 </span>
                 <span
-                  className={`text-[0.5rem] tracking-widest uppercase mt-0.5 transition-colors duration-300 ${logoSub}`}
+                  className={`text-[8px] tracking-[0.24em] uppercase mt-0.5 transition-colors duration-300 ${logoSub} font-mono`}
                   style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
                 >
-                  Handcrafted · Sustainable
+                  Handcrafted · Sustainable Luxury
                 </span>
               </div>
             </Link>
 
-            {/* Desktop Links — refined underline indicator, no pill-fill */}
+            {/* Desktop Links — refined gold underline indicator */}
             <ul className="hidden lg:flex items-center gap-8">
               {navLinks.map((link) => {
                 const hasChildren = !!link.children;
@@ -313,9 +308,9 @@ export default function NavBar() {
                   >
                     <Link
                       href={link.href}
-                      className={`relative inline-flex items-center gap-1 text-[11px] tracking-normal uppercase outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-[#C8A97A]/50 rounded-sm ${active ? textTone : textToneMuted
-                        } hover:text-[#C8A97A]`}
-                      style={{ fontFamily: "var(--font-montserrat), sans-serif", fontWeight: 400 }}
+                      className={`relative inline-flex items-center gap-1.5 text-[11px] tracking-[0.16em] uppercase outline-none transition-colors duration-300 focus-visible:ring-1 focus-visible:ring-[#C29B5D]/50 rounded-[2px] ${active ? "text-[#C29B5D] font-semibold" : textToneMuted
+                        } hover:text-[#C29B5D]`}
+                      style={{ fontFamily: "var(--font-montserrat), sans-serif", fontWeight: active ? 600 : 500 }}
                       aria-haspopup={hasChildren ? "true" : undefined}
                       aria-expanded={hasChildren ? isOpen : undefined}
                     >
@@ -330,13 +325,13 @@ export default function NavBar() {
                           strokeWidth="2.5"
                           animate={{ rotate: isOpen ? 180 : 0 }}
                           transition={{ duration: 0.2 }}
-                          className="mt-[1px]"
+                          className="mt-[1px] opacity-70 group-hover:opacity-100"
                         >
                           <path d="M6 9l6 6 6-6" />
                         </motion.svg>
                       )}
                       <span
-                        className="absolute left-0 -bottom-1 h-[1.5px] bg-[#C8A97A] transition-all duration-300"
+                        className="absolute left-0 -bottom-1 h-[1.5px] bg-[#C29B5D] transition-all duration-300"
                         style={{ width: active ? "100%" : "0%" }}
                       />
                     </Link>
@@ -345,43 +340,46 @@ export default function NavBar() {
                       <AnimatePresence>
                         {isOpen && (
                           <motion.div
-                            initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                            initial={{ opacity: 0, y: 12, scale: 0.98 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                            transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                            exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                            transition={{ duration: 0.2 }}
                             onMouseEnter={() => openDropdownNow(link.label)}
                             onMouseLeave={() => closeDropdownSoon()}
-                            className="absolute left-1/2 -translate-x-1/2 top-full mt-4 w-72 rounded-none border border-[#E8DDD0] bg-white shadow-[0_24px_48px_-12px_rgba(28,28,26,0.2)] p-2 z-50 overflow-hidden"
+                            className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-80 rounded-[2px] border border-[#C29B5D]/25 bg-[#0D140F]/95 backdrop-blur-xl shadow-[0_24px_50px_rgba(0,0,0,0.5)] p-2 z-50 overflow-hidden"
                           >
+                            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#3E634A] via-[#C29B5D] to-[#7FA06B]" />
                             {link.children.map((child, i) => {
                               const childActive = isActive(child.href);
                               return (
                                 <motion.div
                                   key={child.label}
-                                  initial={{ opacity: 0, x: -10 }}
+                                  initial={{ opacity: 0, x: -6 }}
                                   animate={{ opacity: 1, x: 0 }}
-                                  transition={{ delay: i * 0.04 + 0.05 }}
+                                  transition={{ delay: i * 0.03 + 0.02 }}
                                 >
                                   <Link
                                     href={child.href}
                                     onClick={() => setOpenDropdown(null)}
-                                    className="group flex items-start gap-3.5 rounded-none px-4 py-3 hover:bg-black/5 transition-all duration-300 relative overflow-hidden"
+                                    className="group flex items-start gap-3 rounded-[2px] px-3.5 py-2.5 hover:bg-[#16231A] transition-all duration-200 relative overflow-hidden border border-transparent hover:border-[#C29B5D]/20"
                                   >
                                     <span
-                                      className={`mt-2 h-1.5 w-1.5 flex-shrink-0 transition-colors duration-300 ${childActive ? "bg-[#4A6741]" : "bg-[#C8A97A]/40 group-hover:bg-[#4A6741]"
+                                      className={`mt-1.5 h-1.5 w-1.5 rounded-full flex-shrink-0 transition-colors duration-200 ${childActive ? "bg-[#C29B5D]" : "bg-[#7FA06B]/50 group-hover:bg-[#C29B5D]"
                                         }`}
                                     />
-                                    <span className="relative z-10">
+                                    <span className="relative z-10 flex-1">
                                       <span
-                                        className={`block text-[11px] tracking-normal font-medium transition-colors duration-300 ${childActive ? "text-[#4A6741]" : "text-[#1C1C1A] group-hover:text-[#4A6741]"
+                                        className={`block text-[11px] tracking-[0.08em] font-semibold transition-colors duration-200 uppercase ${childActive ? "text-[#C29B5D]" : "text-[#FAF8F5] group-hover:text-[#C29B5D]"
                                           }`}
                                         style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
                                       >
                                         {child.label}
                                       </span>
-                                      <span className="block text-[11px] text-[#9E9088] mt-1 leading-snug group-hover:text-[#6B6560] transition-colors duration-300">
-                                        {child.desc}
-                                      </span>
+                                      {child.desc && (
+                                        <span className="block text-[11px] text-[#FAF8F5]/60 mt-0.5 leading-snug group-hover:text-[#FAF8F5]/85 transition-colors duration-200">
+                                          {child.desc}
+                                        </span>
+                                      )}
                                     </span>
                                   </Link>
                                 </motion.div>
@@ -396,51 +394,51 @@ export default function NavBar() {
               })}
             </ul>
 
-            {/* CTA + Mobile Toggle */}
-            <div className="flex items-center gap-4">
+            {/* CTA + Actions + Mobile Toggle */}
+            <div className="flex items-center gap-3.5">
               {/* Profile Avatar (Desktop) */}
               {status === "authenticated" ? (
-                <div className="hidden lg:block mr-2">
+                <div className="hidden lg:block mr-1">
                   <Link
                     href={session.user.role === "admin" ? "/admin" : "/user/profile"}
-                    className="flex items-center gap-2 outline-none focus:ring-2 focus:ring-[#C8A97A]/40 rounded-full cursor-pointer transition-transform hover:scale-105"
+                    className="flex items-center gap-2 outline-none focus:ring-1 focus:ring-[#C29B5D]/60 rounded-full cursor-pointer transition-transform hover:scale-105"
                     aria-label="User Profile Dashboard"
                   >
                     {session.user.image ? (
                       <Image width={800} height={800}
                         src={session.user.image}
                         alt={session.user.name || "User"}
-                        className="w-8 h-8 rounded-full object-cover border border-[#C8A97A]/30 hover:border-[#C8A97A] transition-colors"
+                        className="w-8 h-8 rounded-full object-cover border border-[#C29B5D]/50 hover:border-[#C29B5D] transition-colors"
                       />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-[#4A6741] text-white flex items-center justify-center text-sm font-semibold tracking-wide border border-[#C8A97A]/30 hover:border-[#C8A97A] transition-colors">
+                      <div className="w-8 h-8 rounded-full bg-[#141E17] text-[#C29B5D] flex items-center justify-center text-xs font-bold tracking-wide border border-[#C29B5D]/50 hover:border-[#C29B5D] transition-colors">
                         {session.user.name ? session.user.name.charAt(0).toUpperCase() : "U"}
                       </div>
                     )}
                   </Link>
                 </div>
               ) : status === "unauthenticated" ? (
-                <div className="hidden lg:block mr-2">
+                <div className="hidden lg:block mr-1">
                   <Link
                     href="/login"
-                    className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${textTone} hover:text-[#C8A97A] hover:bg-white/5 outline-none focus-visible:ring-2 focus-visible:ring-[#C8A97A]/50`}
+                    className={`relative flex items-center justify-center w-9 h-9 rounded-[2px] transition-all duration-200 ${textTone} hover:text-[#C29B5D] hover:bg-white/5 border border-transparent hover:border-[#C29B5D]/30 outline-none focus-visible:ring-1 focus-visible:ring-[#C29B5D]/50`}
                     aria-label="Sign In"
                   >
-                    <User size={20} strokeWidth={1.5} />
+                    <User size={18} strokeWidth={1.5} />
                   </Link>
                 </div>
               ) : (
-                <div className="hidden lg:block w-8 h-8 rounded-full bg-white/10 animate-pulse mr-2" />
+                <div className="hidden lg:block w-8 h-8 rounded-full bg-white/10 animate-pulse mr-1" />
               )}
 
               {/* Saved Products Icon (Desktop) */}
               {status === "authenticated" && (
                 <Link
                   href="/user/saved"
-                  className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${textTone} hover:text-[#C8A97A] hover:bg-white/5`}
+                  className={`relative flex items-center justify-center w-9 h-9 rounded-[2px] transition-all duration-200 ${textTone} hover:text-[#C29B5D] hover:bg-white/5 border border-transparent hover:border-[#C29B5D]/30`}
                   aria-label="Saved Products"
                 >
-                  <Heart size={20} strokeWidth={1.5} />
+                  <Heart size={18} strokeWidth={1.5} />
                 </Link>
               )}
 
@@ -448,26 +446,27 @@ export default function NavBar() {
               {isLoaded && (
                 <Link
                   href="/user/quote-cart"
-                  className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${textTone} hover:text-[#C8A97A] hover:bg-white/5`}
+                  className={`relative flex items-center justify-center w-9 h-9 rounded-[2px] transition-all duration-200 ${textTone} hover:text-[#C29B5D] hover:bg-white/5 border border-transparent hover:border-[#C29B5D]/30`}
                   aria-label="Quote Cart"
                 >
-                  <ShoppingCart size={20} strokeWidth={1.5} />
+                  <ShoppingCart size={18} strokeWidth={1.5} />
                   {cartCount > 0 && (
-                    <span className="absolute top-1 right-1 flex items-center justify-center w-4 h-4 bg-[#4A6741] text-white text-[10px] font-bold rounded-full">
+                    <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 bg-[#C29B5D] text-[#0D140F] text-[9px] font-bold rounded-full shadow-sm">
                       {cartCount}
                     </span>
                   )}
                 </Link>
               )}
 
-              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} className="hidden lg:block">
+              {/* Editorial Luxury CTA Button */}
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="hidden lg:block">
                 <Link
                   href="/user/bulk-order"
-                  className="inline-flex items-center gap-2 bg-[#4A6741] text-white text-sm px-5 py-2.5 rounded-full tracking-wide hover:bg-[#3a5233] transition-colors shadow-[0_4px_20px_rgba(74,103,65,0.15)] hover:shadow-[0_4px_20px_rgba(74,103,65,0.4)]"
+                  className="inline-flex items-center gap-2 bg-[#C29B5D] hover:bg-[#D4AD6F] text-[#0D140F] text-[11px] font-bold px-4.5 py-2.5 rounded-[2px] tracking-[0.16em] uppercase transition-all duration-300 shadow-[0_4px_16px_rgba(194,155,93,0.25)] hover:shadow-[0_4px_24px_rgba(194,155,93,0.45)]"
                   style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
                 >
                   Bulk Order
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <path d="M5 12h14M12 5l7 7-7 7" />
                   </svg>
                 </Link>
@@ -476,23 +475,23 @@ export default function NavBar() {
               {/* Mobile Hamburger */}
               <button
                 onClick={() => setMobileOpen((v) => !v)}
-                className="lg:hidden flex flex-col gap-1.5 p-2 -mr-2 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[#C8A97A]/50"
+                className="lg:hidden flex flex-col gap-1.5 p-2 -mr-2 rounded-[2px] outline-none focus-visible:ring-1 focus-visible:ring-[#C29B5D]/60"
                 aria-label={mobileOpen ? "Close menu" : "Open menu"}
                 aria-expanded={mobileOpen}
                 aria-controls="mobile-drawer"
               >
                 <motion.span
-                  className="block w-6 h-0.5 rounded bg-white transition-colors duration-300"
+                  className="block w-6 h-0.5 rounded bg-[#FAF8F5] transition-colors duration-300"
                   animate={{ rotate: mobileOpen ? 45 : 0, y: mobileOpen ? 6 : 0 }}
                   transition={{ duration: 0.25 }}
                 />
                 <motion.span
-                  className="block w-6 h-0.5 rounded bg-white transition-colors duration-300"
+                  className="block w-6 h-0.5 rounded bg-[#FAF8F5] transition-colors duration-300"
                   animate={{ opacity: mobileOpen ? 0 : 1 }}
                   transition={{ duration: 0.15 }}
                 />
                 <motion.span
-                  className="block w-6 h-0.5 rounded bg-white transition-colors duration-300"
+                  className="block w-6 h-0.5 rounded bg-[#FAF8F5] transition-colors duration-300"
                   animate={{ rotate: mobileOpen ? -45 : 0, y: mobileOpen ? -6 : 0 }}
                   transition={{ duration: 0.25 }}
                 />
@@ -501,10 +500,10 @@ export default function NavBar() {
           </motion.div>
         </motion.div>
 
-        {/* Scroll-progress hairline — the one signature flourish */}
+        {/* Scroll-progress hairline matching the brand tri-color gradient */}
         <motion.div
           style={{ width: progressWidth }}
-          className="h-[2px] bg-gradient-to-r from-[#4A6741] to-[#C8A97A]"
+          className="h-[1.5px] bg-gradient-to-r from-[#3E634A] via-[#C29B5D] to-[#7FA06B]"
         />
       </motion.header>
 
@@ -517,7 +516,7 @@ export default function NavBar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-[#1C1C1A]/40 backdrop-blur-sm lg:hidden"
+              className="fixed inset-0 z-40 bg-[#0D140F]/60 backdrop-blur-sm lg:hidden"
               onClick={() => setMobileOpen(false)}
               aria-hidden="true"
             />
@@ -532,22 +531,22 @@ export default function NavBar() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: "100%" }}
               transition={{ type: "spring", stiffness: 320, damping: 32 }}
-              className="fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-[#FAF7F2] flex flex-col px-8 pt-8 pb-10 shadow-[-8px_0_40px_rgba(0,0,0,0.18)] lg:hidden overflow-y-auto"
+              className="fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-[#FAF8F5] border-l border-[#EAE3D6] flex flex-col px-8 pt-8 pb-10 shadow-[-12px_0_48px_rgba(0,0,0,0.25)] lg:hidden overflow-y-auto"
             >
-              <div className="flex items-center justify-between mb-10">
+              <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#EAE3D6]">
                 <div className="flex items-center gap-2.5">
                   <LeafMark />
                   <span
-                    className="font-bold text-[#1C1C1A]"
-                    style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1.2rem" }}
+                    className="font-bold text-[#0D140F]"
+                    style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1.3rem" }}
                   >
-                    Krislux<span className="text-[#4A6741]">ECO</span>
+                    Krislux<span className="text-[#C29B5D]">ECO</span>
                   </span>
                 </div>
                 <button
                   onClick={() => setMobileOpen(false)}
                   aria-label="Close menu"
-                  className="p-2 -mr-2 rounded-md text-[#1C1C1A] outline-none focus-visible:ring-2 focus-visible:ring-[#4A6741]/40"
+                  className="p-2 -mr-2 rounded-[2px] text-[#0D140F] outline-none focus-visible:ring-1 focus-visible:ring-[#C29B5D]"
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M18 6L6 18M6 6l12 12" />
@@ -569,7 +568,7 @@ export default function NavBar() {
                       initial={{ opacity: 0, x: 24 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.08 + i * 0.05 }}
-                      className="border-b border-[#ECE6DF] last:border-none pb-2"
+                      className="border-b border-[#EAE3D6] last:border-none pb-2.5"
                     >
                       {hasChildren ? (
                         <>
@@ -578,7 +577,7 @@ export default function NavBar() {
                               setMobileExpanded(isExpanded ? null : link.label)
                             }
                             aria-expanded={isExpanded}
-                            className={`w-full flex items-center justify-between text-3xl font-light transition-colors outline-none focus-visible:text-[#4A6741] ${active ? "text-[#4A6741]" : "text-[#1C1C1A]"
+                            className={`w-full flex items-center justify-between text-2xl font-light transition-colors outline-none focus-visible:text-[#C29B5D] ${active ? "text-[#C29B5D] font-medium" : "text-[#0D140F]"
                               }`}
                             style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
                           >
@@ -592,7 +591,7 @@ export default function NavBar() {
                               strokeWidth="2.5"
                               animate={{ rotate: isExpanded ? 180 : 0 }}
                               transition={{ duration: 0.2 }}
-                              className="ml-2 flex-shrink-0"
+                              className="ml-2 flex-shrink-0 text-[#C29B5D]"
                             >
                               <path d="M6 9l6 6 6-6" />
                             </motion.svg>
@@ -607,18 +606,17 @@ export default function NavBar() {
                                 transition={{ duration: 0.25 }}
                                 className="overflow-hidden"
                               >
-                                <div className="flex flex-col gap-3 pt-3 pb-1 pl-1">
-                                  {/* Optional: still let "About" itself be a direct link */}
+                                <div className="flex flex-col gap-2.5 pt-3 pb-1 pl-3 border-l-2 border-[#C29B5D]/30 ml-1 mt-2">
                                   <Link
                                     href={link.href}
                                     onClick={() => setMobileOpen(false)}
-                                    className={`text-base font-medium transition-colors ${isActive(link.href)
-                                      ? "text-[#4A6741]"
-                                      : "text-[#1C1C1A]/70 hover:text-[#4A6741]"
+                                    className={`text-xs uppercase tracking-wider font-semibold transition-colors ${isActive(link.href)
+                                      ? "text-[#C29B5D]"
+                                      : "text-[#0D140F]/70 hover:text-[#C29B5D]"
                                       }`}
                                     style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
                                   >
-                                    {link.label} overview
+                                    {link.label} Overview
                                   </Link>
 
                                   {link.children.map((child) => {
@@ -628,23 +626,25 @@ export default function NavBar() {
                                         key={child.label}
                                         href={child.href}
                                         onClick={() => setMobileOpen(false)}
-                                        className="flex items-start gap-3"
+                                        className="flex items-start gap-2.5 group py-1"
                                       >
                                         <span
-                                          className={`mt-1.5 h-1.5 w-1.5 rounded-full flex-shrink-0 ${childActive ? "bg-[#4A6741]" : "bg-[#C8A97A]"
+                                          className={`mt-1.5 h-1.5 w-1.5 rounded-full flex-shrink-0 transition-colors ${childActive ? "bg-[#C29B5D]" : "bg-[#7FA06B]/50 group-hover:bg-[#C29B5D]"
                                             }`}
                                         />
                                         <span>
                                           <span
-                                            className={`block text-base font-medium ${childActive ? "text-[#4A6741]" : "text-[#1C1C1A]"
+                                            className={`block text-sm font-medium transition-colors ${childActive ? "text-[#C29B5D]" : "text-[#0D140F] group-hover:text-[#C29B5D]"
                                               }`}
                                             style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
                                           >
                                             {child.label}
                                           </span>
-                                          <span className="block text-xs text-[#9E9088] mt-0.5 leading-snug">
-                                            {child.desc}
-                                          </span>
+                                          {child.desc && (
+                                            <span className="block text-xs text-[#7A7369] mt-0.5 leading-snug">
+                                              {child.desc}
+                                            </span>
+                                          )}
                                         </span>
                                       </Link>
                                     );
@@ -658,7 +658,7 @@ export default function NavBar() {
                         <Link
                           href={link.href}
                           onClick={() => setMobileOpen(false)}
-                          className={`block text-3xl font-light transition-colors outline-none focus-visible:text-[#4A6741] ${active ? "text-[#4A6741]" : "text-[#1C1C1A] hover:text-[#4A6741]"
+                          className={`block text-2xl font-light transition-colors outline-none focus-visible:text-[#C29B5D] ${active ? "text-[#C29B5D] font-medium" : "text-[#0D140F] hover:text-[#C29B5D]"
                             }`}
                           style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
                         >
@@ -671,7 +671,7 @@ export default function NavBar() {
               </ul>
 
               {/* Mobile Drawer Auth Actions */}
-              <div className="mt-8 border-t border-[#E8DDD0] pt-6 flex flex-col gap-4 text-left">
+              <div className="mt-8 border-t border-[#EAE3D6] pt-6 flex flex-col gap-4 text-left">
                 {status === "authenticated" ? (
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">
@@ -679,24 +679,24 @@ export default function NavBar() {
                         <Image width={800} height={800}
                           src={session.user.image}
                           alt={session.user.name || "User"}
-                          className="w-10 h-10 rounded-full object-cover border border-[#C8A97A]/30"
+                          className="w-10 h-10 rounded-full object-cover border border-[#C29B5D]/40"
                         />
                       ) : (
-                        <div className="w-10 h-10 rounded-full bg-[#4A6741] text-white flex items-center justify-center text-base font-semibold tracking-wide border border-[#C8A97A]/30">
+                        <div className="w-10 h-10 rounded-full bg-[#141E17] text-[#C29B5D] flex items-center justify-center text-base font-semibold tracking-wide border border-[#C29B5D]/40">
                           {session.user.name ? session.user.name.charAt(0).toUpperCase() : "U"}
                         </div>
                       )}
                       <div>
-                        <p className="text-sm font-semibold text-[#1C1C1A]">{session.user.name}</p>
-                        <p className="text-xs text-[#6B6560] truncate max-w-[200px]">{session.user.email}</p>
+                        <p className="text-sm font-semibold text-[#0D140F]">{session.user.name}</p>
+                        <p className="text-xs text-[#7A7369] truncate max-w-[200px]">{session.user.email}</p>
                       </div>
                     </div>
-                    <div className="flex flex-col gap-3 pt-2">
+                    <div className="flex flex-col gap-2.5 pt-2">
                       {session.user.role === "admin" && (
                         <Link
                           href="/admin"
                           onClick={() => setMobileOpen(false)}
-                          className="text-sm font-semibold text-[#4A6741]"
+                          className="text-xs uppercase tracking-wider font-bold text-[#C29B5D]"
                         >
                           Admin Panel
                         </Link>
@@ -704,14 +704,14 @@ export default function NavBar() {
                       <Link
                         href="/user/profile"
                         onClick={() => setMobileOpen(false)}
-                        className="text-sm font-medium text-[#1C1C1A]"
+                        className="text-sm font-medium text-[#0D140F] hover:text-[#C29B5D]"
                       >
                         My Profile
                       </Link>
                       <Link
                         href="/user/saved"
                         onClick={() => setMobileOpen(false)}
-                        className="text-sm font-medium text-[#1C1C1A]"
+                        className="text-sm font-medium text-[#0D140F] hover:text-[#C29B5D]"
                       >
                         Saved Products
                       </Link>
@@ -720,7 +720,7 @@ export default function NavBar() {
                           setMobileOpen(false);
                           signOut({ callbackUrl: "/" });
                         }}
-                        className="text-sm text-red-600 font-semibold text-left cursor-pointer"
+                        className="text-xs uppercase tracking-wider text-red-600 font-semibold text-left cursor-pointer"
                       >
                         Logout
                       </button>
@@ -730,47 +730,48 @@ export default function NavBar() {
                   <Link
                     href="/login"
                     onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-3 w-full py-3 px-4 bg-white border border-[#ECE6DF] rounded-xl text-[#1C1C1A] shadow-sm active:scale-95 transition-transform"
+                    className="flex items-center gap-3 w-full py-3 px-4 bg-white border border-[#EAE3D6] rounded-[2px] text-[#0D140F] shadow-sm active:scale-95 transition-all hover:border-[#C29B5D]/50"
                   >
-                    <User size={18} className="text-[#4A6741]" />
-                    <span className="text-sm font-semibold">Sign In</span>
+                    <User size={18} className="text-[#C29B5D]" />
+                    <span className="text-xs tracking-wider uppercase font-semibold">Sign In / Register</span>
                   </Link>
                 )}
               </div>
 
               {/* Cart Button (Mobile) */}
-              <div className="mt-4">
+              <div className="mt-3">
                 <Link
                   href="/user/quote-cart"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-between w-full py-3 px-4 bg-white border border-[#ECE6DF] rounded-xl text-[#1C1C1A] shadow-sm active:scale-95 transition-transform"
+                  className="flex items-center justify-between w-full py-3 px-4 bg-white border border-[#EAE3D6] rounded-[2px] text-[#0D140F] shadow-sm active:scale-95 transition-all hover:border-[#C29B5D]/50"
                 >
                   <div className="flex items-center gap-3">
-                    <ShoppingCart size={18} className="text-[#4A6741]" />
-                    <span className="text-sm font-semibold">Quote Cart</span>
+                    <ShoppingCart size={18} className="text-[#C29B5D]" />
+                    <span className="text-xs tracking-wider uppercase font-semibold">Quote Cart</span>
                   </div>
                   {isLoaded && cartCount > 0 && (
-                    <span className="bg-[#4A6741] text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                    <span className="bg-[#C29B5D] text-[#0D140F] text-xs font-bold px-2 py-0.5 rounded-full">
                       {cartCount} items
                     </span>
                   )}
                 </Link>
               </div>
 
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.42 }} className="mt-auto">
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.42 }} className="mt-auto pt-6">
                 <Link
-                  href="/products"
-                  className="block w-full text-center bg-[#4A6741] text-white text-base py-4 rounded-2xl tracking-wider hover:bg-[#3a5233] transition-colors"
+                  href="/user/bulk-order"
+                  onClick={() => setMobileOpen(false)}
+                  className="block w-full text-center bg-[#C29B5D] hover:bg-[#D4AD6F] text-[#0D140F] font-bold text-xs py-3.5 rounded-[2px] tracking-[0.18em] uppercase transition-all shadow-md"
                   style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
                 >
-                  Get a Quote
+                  Request B2B Quote
                 </Link>
-                <div className="flex items-center justify-center gap-3 mt-5 text-xs text-[#9E9088]">
-                  <a href="mailto:krisluxeco@gmail.com" className="hover:text-[#4A6741] transition-colors">krisluxeco@gmail.com</a>
-                  <span className="text-[#E8DDD0]">|</span>
-                  <a href="tel:+919798611931" className="hover:text-[#4A6741] transition-colors">+91 97986 11931</a>
+                <div className="flex items-center justify-center gap-3 mt-4 text-[11px] text-[#7A7369]">
+                  <a href="mailto:krisluxeco@gmail.com" className="hover:text-[#C29B5D] transition-colors">krisluxeco@gmail.com</a>
+                  <span className="text-[#EAE3D6]">|</span>
+                  <a href="tel:+919798611931" className="hover:text-[#C29B5D] transition-colors">+91 97986 11931</a>
                 </div>
-                <p className="text-center text-xs text-[#C8A97A] mt-4 tracking-widest uppercase">
+                <p className="text-center text-[9px] text-[#C29B5D] mt-3 tracking-[0.2em] uppercase font-mono">
                   Crafted with purpose · Grown with care
                 </p>
               </motion.div>

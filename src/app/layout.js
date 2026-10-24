@@ -18,6 +18,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata = {
+  metadataBase: new URL("https://krisluxeco.com"),
   title: "KrisluxECO | Premium Sustainable Handcrafted Products",
   description:
     "KrisluxECO combines traditional craftsmanship with environmental responsibility. We develop high-quality, eco-friendly handcrafted products using natural, recyclable, and sustainable materials.",
