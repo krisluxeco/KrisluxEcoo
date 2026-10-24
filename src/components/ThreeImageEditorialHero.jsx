@@ -105,27 +105,27 @@ export default function ThreeImageEditorialHero() {
   return (
     <section
       aria-label="Editorial Product Showcase"
-      className="relative w-full bg-[#0D140F] border-b border-[#EAE3D6] overflow-hidden pt-[96px] sm:pt-[112px] lg:pt-[124px]"
+      className="relative w-full bg-[#0D140F] border-b border-black overflow-hidden pt-[96px] sm:pt-[112px] lg:pt-[124px]"
       style={{ fontFamily: sans }}
     >
-      {/* ─── Big Faded Single Watermark Text "KRISLUXECO" Spanning Bottom Across Images ─── */}
+      {/* ─── Big Faded Single Watermark Text "KRISLUXECO" Spanning Bottom Across Images (Dark Color) ─── */}
       <div
         className="absolute bottom-2 sm:bottom-4 lg:bottom-6 inset-x-0 z-15 pointer-events-none select-none flex items-center justify-center overflow-hidden"
         aria-hidden="true"
       >
         <span
-          className="text-[clamp(3.5rem,13vw,14rem)] font-bold tracking-[0.12em] uppercase text-white/[0.12] whitespace-nowrap leading-none mix-blend-overlay drop-shadow-[0_2px_24px_rgba(0,0,0,0.25)]"
+          className="text-[clamp(3.5rem,13vw,14rem)] font-bold tracking-[0.12em] uppercase text-black/45 whitespace-nowrap leading-none drop-shadow-[0_2px_16px_rgba(0,0,0,0.3)]"
           style={{ fontFamily: serif }}
         >
           KRISLUXECO
         </span>
       </div>
 
-      {/* ─── Hero Container: Swipeable Snap Carousel on Mobile, 3-Column Grid on Desktop ─── */}
+      {/* ─── Hero Container: Swipeable Snap Carousel on Mobile, 3-Column Grid on Desktop with Black Separation Lines ─── */}
       <div
         ref={containerRef}
         onScroll={handleScroll}
-        className="w-full h-[76vh] sm:h-[82vh] md:h-[84vh] min-h-[520px] max-h-[860px] flex md:grid md:grid-cols-3 gap-0 overflow-x-auto md:overflow-visible snap-x snap-mandatory scrollbar-none divide-x divide-white/20"
+        className="w-full h-[76vh] sm:h-[82vh] md:h-[84vh] min-h-[520px] max-h-[860px] flex md:grid md:grid-cols-3 gap-0 overflow-x-auto md:overflow-visible snap-x snap-mandatory scrollbar-none divide-x divide-black border-y border-black"
         style={{ WebkitOverflowScrolling: "touch" }}
       >
         {HERO_PANELS.map((panel, idx) => (
