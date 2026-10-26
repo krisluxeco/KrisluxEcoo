@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 // ─── Shared Typography Helpers ─────────────────────────────────────────────────
@@ -557,11 +558,17 @@ export default function ShareCatalogPage() {
             initial={{ opacity: 0, y: -14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
-            className="relative z-10 flex items-center gap-2.5"
+            className="relative z-10 flex items-center gap-3"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="#8FBD84">
-              <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 4-8 4 .83-.83 3-2.67 4-5-2.5 1-5.33 2.5-7 4.5C9 8 8.5 11 9 14c-1-1.5-1.5-4-1-6-2 2-3 6-3 8a8 8 0 0 0 8 8c4-2 5-9 4-16z" />
-            </svg>
+            <div className="relative w-14 h-11 flex-shrink-0">
+              <Image
+                src="/logotrans.png"
+                alt="KrisluxECO Logo"
+                width={120}
+                height={90}
+                className="w-full h-full object-contain"
+              />
+            </div>
             <span
               className="font-semibold text-white"
               style={{ fontFamily: serif, fontSize: "1.15rem" }}

@@ -89,8 +89,14 @@ const socialLinks = [
 /* Signature mark — using the provided logo image. */
 function LeafMark() {
   return (
-    <div className="relative w-12 h-12 flex items-center justify-center flex-shrink-0 bg-white rounded-full overflow-hidden shadow-sm">
-      <Image width={800} height={800} src="/logos.jpg" alt="KrisluxECO Logo" className="w-full h-full object-contain scale-[0.85]" />
+    <div className="relative w-16 h-14 sm:w-20 sm:h-16 flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-105">
+      <Image
+        width={554}
+        height={416}
+        src="/logotrans.png"
+        alt="KrisluxECO Logo"
+        className="w-full h-full object-contain"
+      />
     </div>
   );
 }

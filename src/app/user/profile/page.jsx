@@ -270,9 +270,15 @@ export default function UserProfilePage() {
       {/* Brand & Mobile Close */}
       <div className="flex items-center justify-between px-6 py-8 border-b border-white/10">
         <div className="flex items-center gap-3">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="#8FBD84" className="flex-shrink-0">
-            <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 4-8 4 .83-.83 3-2.67 4-5-2.5 1-5.33 2.5-7 4.5C9 8 8.5 11 9 14c-1-1.5-1.5-4-1-6-2 2-3 6-3 8a8 8 0 0 0 8 8c4-2 5-9 4-16z" />
-          </svg>
+          <div className="relative w-12 h-10 flex-shrink-0">
+            <Image
+              src="/logotrans.png"
+              alt="KrisluxECO Logo"
+              width={100}
+              height={80}
+              className="w-full h-full object-contain"
+            />
+          </div>
           <span className="font-semibold text-xl tracking-wider" style={{ fontFamily: serif }}>
             Krislux<span className="text-[#8FBD84]">ECO</span>
           </span>
@@ -362,9 +368,15 @@ export default function UserProfilePage() {
         {/* Mobile Header */}
         <div className="md:hidden flex items-center justify-between bg-white border-b border-[#ECE6DF] px-6 py-4 z-10 shadow-sm">
           <div className="flex items-center gap-2">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="#8FBD84">
-              <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 4-8 4 .83-.83 3-2.67 4-5-2.5 1-5.33 2.5-7 4.5C9 8 8.5 11 9 14c-1-1.5-1.5-4-1-6-2 2-3 6-3 8a8 8 0 0 0 8 8c4-2 5-9 4-16z" />
-            </svg>
+            <div className="relative w-10 h-8 flex-shrink-0">
+              <Image
+                src="/logotrans.png"
+                alt="KrisluxECO Logo"
+                width={80}
+                height={64}
+                className="w-full h-full object-contain"
+              />
+            </div>
             <span className="font-semibold text-lg tracking-wider text-[#1C1C1A]" style={{ fontFamily: serif }}>
               Krislux<span className="text-[#8FBD84]">ECO</span>
             </span>

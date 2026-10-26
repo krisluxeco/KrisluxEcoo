@@ -123,11 +123,11 @@ export default function NotFound() {
       {/* ─── Top Bar: Brand & Status ────────────────────────────── */}
       <header className="relative z-10 flex items-center justify-between w-full max-w-6xl mx-auto flex-shrink-0">
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="relative w-8 h-8 rounded-full overflow-hidden bg-white flex items-center justify-center p-0.5">
+          <div className="relative w-12 h-10 flex items-center justify-center flex-shrink-0">
             <Image
-              width={100}
-              height={100}
-              src="/logos.jpg"
+              width={160}
+              height={120}
+              src="/logotrans.png"
               alt="KrisluxECO Logo"
               className="w-full h-full object-contain"
             />

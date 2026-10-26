@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -52,9 +53,15 @@ export default function AdminSidebar({
     <div className="flex h-full flex-col bg-[#1C1C1A] text-white">
       {/* Logo */}
       <div className="flex items-center gap-2.5 px-5 py-6 border-b border-white/10">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#8FBD84" className="flex-shrink-0">
-          <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 4-8 4 .83-.83 3-2.67 4-5-2.5 1-5.33 2.5-7 4.5C9 8 8.5 11 9 14c-1-1.5-1.5-4-1-6-2 2-3 6-3 8a8 8 0 0 0 8 8c4-2 5-9 4-16z" />
-        </svg>
+        <div className="relative w-10 h-8 flex-shrink-0">
+          <Image
+            src="/logotrans.png"
+            alt="KrisluxECO Logo"
+            width={80}
+            height={60}
+            className="w-full h-full object-contain"
+          />
+        </div>
         {!collapsed && (
           <span
             className="font-semibold text-lg whitespace-nowrap"

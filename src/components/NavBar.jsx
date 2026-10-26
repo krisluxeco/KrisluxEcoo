@@ -67,8 +67,15 @@ const utilityMessages = [
 /* Signature mark — using the provided logo image with refined editorial frame. */
 function LeafMark() {
   return (
-    <div className="relative w-11 h-11 flex items-center justify-center bg-[#FAF8F5] rounded-full overflow-hidden border border-[#C29B5D]/40 shadow-sm transition-transform duration-300 group-hover:scale-105">
-      <Image width={800} height={800} src="/logos.jpg" alt="KrisluxECO Logo" className="w-full h-full object-contain scale-[0.85]" />
+    <div className="relative w-14 h-12 sm:w-16 sm:h-14 flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-105">
+      <Image
+        width={554}
+        height={416}
+        src="/logotrans.png"
+        alt="KrisluxECO Logo"
+        className="w-full h-full object-contain"
+        priority
+      />
     </div>
   );
 }

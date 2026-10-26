@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 export default function GlobalLoading() {
   return (
@@ -9,9 +10,14 @@ export default function GlobalLoading() {
 
       <div className="relative z-10 flex flex-col items-center max-w-sm w-full text-center">
         {/* Shimmering Logo Mark */}
-        <div className="w-16 h-16 rounded-2xl bg-white border border-[#EAE3D6] shadow-sm flex items-center justify-center p-3 mb-6 relative overflow-hidden">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1E3125]/20 to-[#C29B5D]/20 animate-pulse" />
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
+        <div className="w-24 h-20 flex items-center justify-center mb-6 relative">
+          <Image
+            width={200}
+            height={150}
+            src="/logotrans.png"
+            alt="KrisluxECO Logo"
+            className="w-full h-full object-contain animate-pulse drop-shadow-md"
+          />
         </div>
 
         {/* Brand Text Skeleton */}
