@@ -352,7 +352,7 @@ export default function ForgotPasswordPage() {
                   alt="KrisluxECO Logo"
                   width={120}
                   height={90}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain drop-shadow-[0_2px_10px_rgba(218,165,32,0.35)]"
                 />
               </div>
               <span
@@ -548,7 +548,7 @@ export default function ForgotPasswordPage() {
                 alt="KrisluxECO Logo"
                 width={120}
                 height={90}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain drop-shadow-[0_2px_10px_rgba(218,165,32,0.35)]"
               />
             </div>
             <span

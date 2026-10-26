@@ -276,7 +276,7 @@ export default function UserProfilePage() {
               alt="KrisluxECO Logo"
               width={100}
               height={80}
-              className="w-full h-full object-contain"
+              className="w-full h-full object-contain drop-shadow-[0_2px_10px_rgba(218,165,32,0.35)]"
             />
           </div>
           <span className="font-semibold text-xl tracking-wider" style={{ fontFamily: serif }}>
@@ -374,7 +374,7 @@ export default function UserProfilePage() {
                 alt="KrisluxECO Logo"
                 width={80}
                 height={64}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(218,165,32,0.35)]"
               />
             </div>
             <span className="font-semibold text-lg tracking-wider text-[#1C1C1A]" style={{ fontFamily: serif }}>

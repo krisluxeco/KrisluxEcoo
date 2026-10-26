@@ -59,7 +59,7 @@ export default function AdminSidebar({
             alt="KrisluxECO Logo"
             width={80}
             height={60}
-            className="w-full h-full object-contain"
+            className="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(218,165,32,0.35)]"
           />
         </div>
         {!collapsed && (
@@ -67,7 +67,7 @@ export default function AdminSidebar({
             className="font-semibold text-lg whitespace-nowrap"
             style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
           >
-            Krislux<span className="text-[#8FBD84]">ECO</span>
+            Krislux<span className="bg-gradient-to-r from-[#D4AF37] via-[#FFF6C2] via-[#E5C07B] to-[#AA7A1E] bg-clip-text text-transparent font-extrabold drop-shadow-[0_1px_3px_rgba(218,165,32,0.4)]">ECO</span>
           </span>
         )}
         <button

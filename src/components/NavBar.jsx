@@ -73,7 +73,7 @@ function LeafMark() {
         height={416}
         src="/logotrans.png"
         alt="KrisluxECO Logo"
-        className="w-full h-full object-contain"
+        className="w-full h-full object-contain drop-shadow-[0_2px_10px_rgba(218,165,32,0.35)] transition-all duration-300 group-hover:drop-shadow-[0_0_16px_rgba(235,195,110,0.65)]"
         priority
       />
     </div>
@@ -280,17 +280,17 @@ export default function NavBar() {
             className="max-w-7xl mx-auto px-6 flex items-center justify-between"
           >
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group" aria-label="KrisluxECO home">
+            <Link href="/" className="flex items-center gap-3 group flex-shrink-0" aria-label="KrisluxECO home">
               <LeafMark />
-              <div className="flex flex-col leading-none">
+              <div className="flex flex-col leading-tight whitespace-nowrap">
                 <span
-                  className={`font-bold tracking-normal transition-colors duration-300 ${textTone}`}
+                  className={`font-bold tracking-normal transition-colors duration-300 ${textTone} whitespace-nowrap`}
                   style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1.6rem" }}
                 >
-                  Krislux<span className="text-[#C29B5D]">ECO</span>
+                  Krislux<span className="bg-gradient-to-r from-[#D4AF37] via-[#FFF6C2] via-[#E5C07B] to-[#AA7A1E] bg-clip-text text-transparent font-extrabold drop-shadow-[0_1px_4px_rgba(218,165,32,0.4)]">ECO</span>
                 </span>
                 <span
-                  className={`text-[8px] tracking-[0.24em] uppercase mt-0.5 transition-colors duration-300 ${logoSub} font-mono`}
+                  className={`text-[8.5px] tracking-[0.22em] uppercase transition-colors duration-300 ${logoSub} font-mono whitespace-nowrap`}
                   style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
                 >
                   Handcrafted · Sustainable Luxury
@@ -299,7 +299,7 @@ export default function NavBar() {
             </Link>
 
             {/* Desktop Links — refined gold underline indicator */}
-            <ul className="hidden lg:flex items-center gap-8">
+            <ul className="hidden lg:flex items-center gap-4 xl:gap-7 2xl:gap-8 flex-shrink-0">
               {navLinks.map((link) => {
                 const hasChildren = !!link.children;
                 const active =
@@ -315,7 +315,7 @@ export default function NavBar() {
                   >
                     <Link
                       href={link.href}
-                      className={`relative inline-flex items-center gap-1.5 text-[11px] tracking-[0.16em] uppercase outline-none transition-colors duration-300 focus-visible:ring-1 focus-visible:ring-[#C29B5D]/50 rounded-[2px] ${active ? "text-[#C29B5D] font-semibold" : textToneMuted
+                      className={`relative inline-flex items-center gap-1.5 text-[11px] tracking-[0.14em] uppercase outline-none transition-colors duration-300 focus-visible:ring-1 focus-visible:ring-[#C29B5D]/50 rounded-[2px] whitespace-nowrap ${active ? "text-[#C29B5D] font-semibold" : textToneMuted
                         } hover:text-[#C29B5D]`}
                       style={{ fontFamily: "var(--font-montserrat), sans-serif", fontWeight: active ? 600 : 500 }}
                       aria-haspopup={hasChildren ? "true" : undefined}
@@ -402,7 +402,7 @@ export default function NavBar() {
             </ul>
 
             {/* CTA + Actions + Mobile Toggle */}
-            <div className="flex items-center gap-3.5">
+            <div className="flex items-center gap-3 flex-shrink-0">
               {/* Profile Avatar (Desktop) */}
               {status === "authenticated" ? (
                 <div className="hidden lg:block mr-1">
@@ -466,10 +466,10 @@ export default function NavBar() {
               )}
 
               {/* Editorial Luxury CTA Button */}
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="hidden lg:block">
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="hidden lg:block flex-shrink-0">
                 <Link
                   href="/user/bulk-order"
-                  className="inline-flex items-center gap-2 bg-[#C29B5D] hover:bg-[#D4AD6F] text-[#0D140F] text-[11px] font-bold px-4.5 py-2.5 rounded-[2px] tracking-[0.16em] uppercase transition-all duration-300 shadow-[0_4px_16px_rgba(194,155,93,0.25)] hover:shadow-[0_4px_24px_rgba(194,155,93,0.45)]"
+                  className="inline-flex items-center gap-2 bg-[#C29B5D] hover:bg-[#D4AD6F] text-[#0D140F] text-[11px] font-bold px-4 py-2.5 rounded-[2px] tracking-[0.14em] uppercase transition-all duration-300 shadow-[0_4px_16px_rgba(194,155,93,0.25)] hover:shadow-[0_4px_24px_rgba(194,155,93,0.45)] whitespace-nowrap flex-shrink-0"
                   style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
                 >
                   Bulk Order
@@ -547,7 +547,7 @@ export default function NavBar() {
                     className="font-bold text-[#0D140F]"
                     style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1.3rem" }}
                   >
-                    Krislux<span className="text-[#C29B5D]">ECO</span>
+                    Krislux<span className="bg-gradient-to-r from-[#D4AF37] via-[#FFF6C2] via-[#E5C07B] to-[#AA7A1E] bg-clip-text text-transparent font-extrabold drop-shadow-[0_1px_3px_rgba(218,165,32,0.4)]">ECO</span>
                   </span>
                 </div>
                 <button

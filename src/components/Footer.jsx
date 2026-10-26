@@ -95,7 +95,7 @@ function LeafMark() {
         height={416}
         src="/logotrans.png"
         alt="KrisluxECO Logo"
-        className="w-full h-full object-contain"
+        className="w-full h-full object-contain drop-shadow-[0_4px_14px_rgba(218,165,32,0.35)] transition-all duration-300 group-hover:drop-shadow-[0_0_20px_rgba(235,195,110,0.65)]"
       />
     </div>
   );
@@ -124,15 +124,15 @@ export default function Footer() {
           <div className="lg:col-span-4">
             <Link href="/" className="flex items-center gap-3 mb-4 w-fit">
               <LeafMark />
-              <div className="flex flex-col leading-none">
+              <div className="flex flex-col leading-tight whitespace-nowrap">
                 <span
-                  className="font-bold tracking-wide text-white"
+                  className="font-bold tracking-wide text-white whitespace-nowrap"
                   style={{ fontFamily: serif, fontSize: "1.4rem", letterSpacing: "0.04em" }}
                 >
-                  Krislux<span className="text-[#7FA06B]">ECO</span>
+                  Krislux<span className="bg-gradient-to-r from-[#D4AF37] via-[#FFF6C2] via-[#E5C07B] to-[#AA7A1E] bg-clip-text text-transparent font-extrabold drop-shadow-[0_1px_4px_rgba(218,165,32,0.4)]">ECO</span>
                 </span>
                 <span
-                  className="text-[0.58rem] tracking-[0.2em] uppercase mt-0.5 text-[#E9D9B8]"
+                  className="text-[0.62rem] tracking-[0.2em] uppercase mt-0.5 text-[#E9D9B8] whitespace-nowrap"
                 >
                   Handcrafted · Sustainable
                 </span>
