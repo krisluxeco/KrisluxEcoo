@@ -27,6 +27,7 @@ import ThreeImageEditorialHero from "./ThreeImageEditorialHero";
 import ArtisanReelCard from "./ArtisanReelCard";
 import TrustedMarketplaces from "./TrustedMarketplaces";
 import AsFeaturedIn from "./AsFeaturedIn";
+import AchievementsGallery from "./AchievementsGallery";
 
 const LiveCarbonFootprint = dynamic(() => import("./LiveCarbonFootprint"), {
   ssr: true,
@@ -204,12 +205,6 @@ export default function Home({
   recentItems = [],
 }) {
   const [activeStage, setActiveStage] = useState(0);
-
-  // Form states for the interactive concierge card
-  const [rfqSector, setRfqSector] = useState("Hotels & Wellness Spas");
-  const [rfqVolume, setRfqVolume] = useState("Tier 2: 151 – 500 units");
-  const [sampleKitRequested, setSampleKitRequested] = useState(true);
-  const [submittedRfq, setSubmittedRfq] = useState(false);
 
   // Calculated ESG figures with resilient fallback
   const biomassTons = detailedStats?.hyacinthRemovedTons ? Number(detailedStats.hyacinthRemovedTons).toFixed(1) : "18.4";
@@ -469,214 +464,8 @@ export default function Home({
         />
       </div>
 
-      {/* ─── 7. INTERACTIVE B2B CONCIERGE & SPECIFICATION RFQ CARD ────────── */}
-      <section className="max-w-[1520px] mx-auto px-6 sm:px-10 lg:px-16 py-20 lg:py-28" id="concierge">
-        <div className="bg-[#0E1611] text-[#FAF8F5] p-8 sm:p-12 lg:p-16 border border-[#27382B] rounded-[2px] shadow-[0_24px_70px_rgba(10,18,12,0.18)] relative overflow-hidden">
-          {/* Subtle Ambient Glow */}
-          <div
-            className="absolute top-0 right-0 w-[500px] h-[500px] pointer-events-none opacity-20"
-            style={{
-              background: "radial-gradient(circle, rgba(194, 155, 93, 0.25) 0%, transparent 70%)",
-            }}
-          />
-
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-            {/* Left Column: Direct Consultation Dialogue (5 cols) */}
-            <div className="lg:col-span-5">
-              <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-[2px] bg-[#1A2A20] border border-[#2B4434] text-[10px] uppercase font-mono font-bold tracking-[0.22em] text-[#C29B5D] mb-5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#34D399] animate-pulse" />
-                <span>B2B Procurement Concierge</span>
-              </div>
-
-              <h2 className="text-3xl sm:text-4xl lg:text-[40px] text-white font-normal leading-[1.14] tracking-tight mb-4" style={{ fontFamily: serif }}>
-                Initiate Bespoke Hospitality Specifications &amp; Material Lab Sampling.
-              </h2>
-
-              <p className="text-xs sm:text-sm text-[#A8B4AB] font-light leading-relaxed mb-8">
-                Our commercial desk coordinates directly with FF&amp;E procurement directors, interior architects, and corporate ESG desks. Receive physical swatch boxes, certified technical documentation, and volume estimates within 48 business hours.
-              </p>
-
-              {/* Service & Provenance Tiles */}
-              <div className="space-y-3.5 border-t border-white/10 pt-6">
-                <div className="p-4 rounded-[2px] bg-white/[0.03] border border-white/10 flex items-start gap-3.5 hover:border-[#C29B5D]/40 transition-colors">
-                  <div className="w-8 h-8 rounded-[2px] bg-[#C29B5D]/15 text-[#C29B5D] flex items-center justify-center shrink-0 mt-0.5">
-                    <MapPin className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-white font-medium">Mithila &amp; Darbhanga Production Hub • Bihar</p>
-                    <p className="text-xs text-[#8A968E] mt-0.5 font-light">Mithila Wetland Restoration Zone 03 • Direct living wages for 1,420+ accredited craftswomen</p>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-[2px] bg-white/[0.03] border border-white/10 flex items-start gap-3.5 hover:border-[#C29B5D]/40 transition-colors">
-                  <div className="w-8 h-8 rounded-[2px] bg-[#C29B5D]/15 text-[#C29B5D] flex items-center justify-center shrink-0 mt-0.5">
-                    <Truck className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-white font-medium">Express Global Sampling</p>
-                    <p className="text-xs text-[#8A968E] mt-0.5 font-light">Biological fiber swatch folders dispatched via DHL Express worldwide within 3 business days</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Trust Reassurance Badges */}
-              <div className="pt-6 mt-6 border-t border-white/10 flex flex-wrap items-center gap-4 text-[11px] font-mono text-[#8C9890]">
-                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-[#34D399]" /> 48h Spec Turnaround</span>
-                <span className="text-white/20">•</span>
-                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-[#34D399]" /> ASTM Humidity Tested</span>
-                <span className="text-white/20">•</span>
-                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-[#34D399]" /> 100% Plastic-Free</span>
-              </div>
-            </div>
-
-            {/* Right Column: Tailored Architectural RFQ Specification Form (7 cols) */}
-            <div className="lg:col-span-7 bg-white text-[#141E17] p-7 sm:p-10 rounded-[2px] border border-[#EAE3D6] shadow-[0_16px_45px_rgba(0,0,0,0.12)]">
-              {submittedRfq ? (
-                <div className="py-12 px-6 text-center">
-                  <div className="w-14 h-14 rounded-full bg-[#EBF5EE] text-[#2E6B44] flex items-center justify-center mx-auto mb-4 border border-[#2E6B44]/20 shadow-sm">
-                    <CheckCircle2 className="w-7 h-7" />
-                  </div>
-                  <h4 className="text-2xl font-normal text-[#141E17] mb-2" style={{ fontFamily: serif }}>
-                    Specification Request Received
-                  </h4>
-                  <p className="text-xs text-[#525E55] max-w-md mx-auto mb-6 leading-relaxed">
-                    Thank you. Your commercial project specifications have been routed to our Darbhanga and Patna procurement desks. A bespoke contract proposal and fiber courier tracking number will be delivered within 48 business hours.
-                  </p>
-                  <button
-                    onClick={() => setSubmittedRfq(false)}
-                    className="text-xs font-mono uppercase tracking-widest text-[#141E17] hover:text-[#C29B5D] underline underline-offset-4 cursor-pointer"
-                  >
-                    ← Submit Another Project Inquiry
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <div className="flex items-start justify-between gap-4 mb-6">
-                    <div>
-                      <h3 className="text-2xl text-[#141E17] font-medium tracking-tight" style={{ fontFamily: serif }}>
-                        Request Quotation &amp; Fiber Swatch Portfolio
-                      </h3>
-                      <p className="text-xs text-[#68736B] mt-1 font-light leading-relaxed">
-                        Specify your commercial project details to receive a customized contract PDF and courier tracking.
-                      </p>
-                    </div>
-                    <span className="hidden sm:inline-flex text-[9px] uppercase font-mono tracking-widest px-2.5 py-1 rounded-[2px] bg-[#FAF3E8] text-[#8C6422] font-bold border border-[#8C6422]/15 whitespace-nowrap">
-                      Priority Desk
-                    </span>
-                  </div>
-
-                  <form
-                    className="space-y-4 sm:space-y-5"
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      setSubmittedRfq(true);
-                    }}
-                  >
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-[10px] uppercase font-mono tracking-wider font-bold text-[#556057] mb-1.5">
-                          Company / Architectural Firm *
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="e.g. Studio KO / Aman Hospitality"
-                          className="w-full bg-[#FAF8F5] border border-[#EAE3D6] focus:border-[#141E17] focus:bg-white rounded-[2px] py-2.5 px-3.5 text-xs text-[#141E17] outline-none transition-all placeholder:text-[#9AA39D]"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[10px] uppercase font-mono tracking-wider font-bold text-[#556057] mb-1.5">
-                          Procurement Contact Email *
-                        </label>
-                        <input
-                          type="email"
-                          required
-                          placeholder="procurement@luxuryhotel.com"
-                          className="w-full bg-[#FAF8F5] border border-[#EAE3D6] focus:border-[#141E17] focus:bg-white rounded-[2px] py-2.5 px-3.5 text-xs text-[#141E17] outline-none transition-all placeholder:text-[#9AA39D]"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-[10px] uppercase font-mono tracking-wider font-bold text-[#556057] mb-1.5">
-                          Primary Sector Archetype
-                        </label>
-                        <select
-                          value={rfqSector}
-                          onChange={(e) => setRfqSector(e.target.value)}
-                          className="w-full bg-[#FAF8F5] border border-[#EAE3D6] focus:border-[#141E17] focus:bg-white rounded-[2px] py-2.5 px-3.5 text-xs text-[#141E17] outline-none transition-all cursor-pointer"
-                        >
-                          <option value="Hotels & Wellness Spas">Hotels &amp; Wellness Spas</option>
-                          <option value="Artisanal Living & Retail">Artisanal Living &amp; Retail</option>
-                          <option value="Corporate Gifting & ESG">Corporate Gifting &amp; ESG</option>
-                          <option value="Millwork & Acoustic Panels">Millwork &amp; Acoustic Panels</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-[10px] uppercase font-mono tracking-wider font-bold text-[#556057] mb-1.5">
-                          Estimated Volume Tier
-                        </label>
-                        <select
-                          value={rfqVolume}
-                          onChange={(e) => setRfqVolume(e.target.value)}
-                          className="w-full bg-[#FAF8F5] border border-[#EAE3D6] focus:border-[#141E17] focus:bg-white rounded-[2px] py-2.5 px-3.5 text-xs text-[#141E17] outline-none transition-all cursor-pointer"
-                        >
-                          <option value="Sample Kit Only (1-5 units)">Sample Swatch Kit Only (1–5 units)</option>
-                          <option value="Tier 1: 50 – 150 units">Tier 1: 50 – 150 units (Boutique)</option>
-                          <option value="Tier 2: 151 – 500 units">Tier 2: 151 – 500 units (Commercial)</option>
-                          <option value="Tier 3: 500+ units">Tier 3: 500+ units (Master Millwork)</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-[10px] uppercase font-mono tracking-wider font-bold text-[#556057] mb-1.5">
-                        Target Delivery Date &amp; Custom Requirements
-                      </label>
-                      <textarea
-                        rows={3}
-                        placeholder="Provide desired installation date, bespoke dimensions, brass plaque debossing details, or flammability requirements..."
-                        className="w-full bg-[#FAF8F5] border border-[#EAE3D6] focus:border-[#141E17] focus:bg-white rounded-[2px] py-2.5 px-3.5 text-xs text-[#141E17] outline-none transition-all resize-none placeholder:text-[#9AA39D]"
-                      />
-                    </div>
-
-                    {/* Interactive Swatch Kit Toggle */}
-                    <label className={`flex items-start gap-3 p-3.5 rounded-[2px] border cursor-pointer transition-all ${sampleKitRequested ? 'bg-[#F2F7F4] border-[#3E634A]/40' : 'bg-[#FAF8F5] border-[#EAE3D6]'}`}>
-                      <input
-                        type="checkbox"
-                        checked={sampleKitRequested}
-                        onChange={(e) => setSampleKitRequested(e.target.checked)}
-                        className="mt-0.5 w-4 h-4 rounded-none accent-[#141E17] cursor-pointer"
-                      />
-                      <div className="text-xs">
-                        <span className="font-semibold text-[#141E17] block">Include Physical Bihar Biological Fiber Swatch Kit</span>
-                        <span className="text-[11px] text-[#68736B] font-light">Contains 4 authentic cured stems (Natural, Madder Root, Indigo, Golden Sun) + tensile lab spec.</span>
-                      </div>
-                    </label>
-
-                    <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <span className="text-[11px] font-mono text-[#8A968E]">
-                        Dispatched via DHL Express Worldwide
-                      </span>
-
-                      <button
-                        type="submit"
-                        className="w-full sm:w-auto bg-[#141E17] hover:bg-[#203225] text-[#FAF8F5] px-8 py-3.5 text-xs uppercase tracking-[0.18em] font-semibold transition-all duration-200 inline-flex items-center justify-center gap-2.5 shadow-sm group/btn cursor-pointer"
-                      >
-                        <span>Submit Specification</span>
-                        <ArrowRight className="w-3.5 h-3.5 text-[#C29B5D] transition-transform duration-300 group-hover/btn:translate-x-1" />
-                      </button>
-                    </div>
-                  </form>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ─── 7. ACHIEVEMENTS & MILESTONES GALLERY ───────────────────────── */}
+      <AchievementsGallery />
 
       {/* ─── 7. TRUSTED MARKETPLACES (AVAILABLE ACROSS INDIA) ──────────────── */}
       <TrustedMarketplaces />

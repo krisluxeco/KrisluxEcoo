@@ -77,7 +77,7 @@ const CHAPTERS = [
     eyebrow: "Chapter Four — The Craft",
     title: "Heritage meets modern design",
     line: "Collaborating with master artisans and IIT Patna engineers, we combined traditional weaving heritage with modern ergonomics to craft export-ready, Eco-Luxury products.",
-    img: "/images/BrandStory4.png",
+    img: "/images/artisan_craft_workshop.jpg",
     align: "right",
   },
   {
