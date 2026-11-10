@@ -164,7 +164,6 @@ export default function PrivacyPolicyPage() {
             <div className="bg-gray-50 border border-gray-200 p-5 rounded text-sm text-gray-800 space-y-1">
               <p><strong>KrisluxECO</strong></p>
               <p>Registered Office: Teghra, Begusarai, Bihar, India - 851112</p>
-              <p>Incubation Partner: Incubation Centre, IIT Patna, Bihta, Bihar</p>
               <p>Email: <a href="mailto:krisluxeco@gmail.com" className="text-gray-900 underline">krisluxeco@gmail.com</a></p>
               <p>Phone / WhatsApp: <a href="tel:+919798611931" className="text-gray-900 underline">+91 97986 11931</a></p>
             </div>

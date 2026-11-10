@@ -395,13 +395,13 @@ export default function Home({
               <div className="p-5 bg-[#F5F3EE] border spec-hairline">
                 <div className="flex items-center gap-2 text-[#141E17] font-medium text-sm mb-1.5">
                   <ShieldCheck className="w-4 h-4 text-[#C29B5D]" />
-                  <span>Institutional Provenance Guarantee</span>
+                  <span>Authentic Craft &amp; Ecology Promise</span>
                 </div>
                 <p className="text-xs text-[#68736B] leading-relaxed mb-3">
-                  Audited annually across Darbhanga and Madhubani clusters according to WFTO ethical craft standards and ISO 14021 recycled biomass declarations.
+                  Handcrafted across Begusarai and Darbhanga clusters using 100% natural sun-cured stems, food-safe botanical dyes, and dignified living wages paid directly to rural craftswomen.
                 </p>
                 <div className="text-[10px] text-[#C29B5D] uppercase tracking-widest font-bold">
-                  CERTIFICATE ID: IN-BHR-2026-884
+                  100% HANDCRAFTED • ZERO PLASTIC
                 </div>
               </div>
             </div>

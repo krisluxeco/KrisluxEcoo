@@ -11,7 +11,7 @@ const teamMembers = [
     name: "Krishna Singh",
     role: "Founder & CEO",
     university: "IIT Patna",
-    badge: "Bihar State Government Recognised Entrepreneur",
+    badge: "IIT Patna Innovator & Founder",
     image: "/our_team/Krishna.jpeg",
     socials: {
       linkedin: "https://www.linkedin.com/in/krishna-kumar-singh-682010361?utm_source=share_via&utm_content=profile&utm_medium=member_android",
@@ -31,10 +31,11 @@ const teamMembers = [
     }
   },
   {
-    name: "Vickey Kumar",
-    role: "Admin & PR Head",
-    university: "IIT Patna",
-    image: "/our_team/AdminPrHead.jpg",
+    name: "Rita Al-Badaur",
+    role: "Project Manager",
+    university: "The Hashemite University - Amman, Jordan",
+    image: "/our_team/rita.jpeg",
+    objectPosition: "object-top",
     socials: {
       linkedin: "#",
       instagram: "#",
@@ -84,7 +85,9 @@ function TeamCard({ member, index }) {
         <motion.img
           src={member.image}
           alt={member.name}
-          className="w-full h-full object-cover grayscale opacity-90 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
+          className={`w-full h-full object-cover grayscale opacity-90 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${
+            member.objectPosition || "object-center"
+          }`}
         />
 
         {/* Social Links on Hover */}
@@ -185,7 +188,7 @@ export default function TeamSection() {
             className="text-[#0D140F]/65 text-base md:text-lg max-w-2xl mx-auto mt-4 font-light leading-relaxed"
             style={{ fontFamily: sans }}
           >
-            A multidisciplinary leadership team bringing together strategic insight, environmental engineering, and institutional rigor from India's premier centers of learning.
+            A multidisciplinary leadership team bringing together strategic insight, environmental engineering, and institutional rigor from India&apos;s premier centers of learning.
           </p>
         </motion.div>
 
@@ -195,7 +198,7 @@ export default function TeamSection() {
             <TeamCard member={teamMembers[0]} index={0} />
           </div>
 
-          {/* Bottom Row - Patil (Index 3), Vickey Kumar (Index 2) and CTO (Alok Ranjan - Index 1) */}
+          {/* Bottom Row - Patil (Index 3), Rita Al-Badaur (Index 2) and CTO (Alok Ranjan - Index 1) */}
           <div className="flex flex-col md:flex-row justify-center gap-6 lg:gap-8 w-full">
             <TeamCard member={teamMembers[3]} index={1} />
             <TeamCard member={teamMembers[2]} index={2} />

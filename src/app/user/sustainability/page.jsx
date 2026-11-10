@@ -155,7 +155,7 @@ const SDGS_DATA = [
   {
     num: "SDG 17",
     title: "Global Partnerships",
-    desc: "Collaborating with IIT Patna Incubation, Bihar Khadi, UMSAS, and international ethical hospitality brands.",
+    desc: "Connecting rural Bihar artisan cooperatives with eco-conscious consumers, architects, and sustainable hospitality spaces.",
   },
 ];
 
@@ -398,7 +398,7 @@ export default function SustainabilityPage() {
         <div className="max-w-4xl mx-auto text-center relative z-10 space-y-6">
           <FadeUp>
             <span className="text-[10px] font-mono tracking-[0.24em] uppercase text-[#C29B5D] font-bold block mb-2">
-              Transform Your Organization's Procurement
+              Transform Your Organization&apos;s Procurement
             </span>
             <h2 className="text-[clamp(1.8rem,4vw,2.8rem)] font-light leading-tight text-white" style={{ fontFamily: serif }}>
               Every Object You Source Restores a Wetland.

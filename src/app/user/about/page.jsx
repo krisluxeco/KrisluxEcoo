@@ -60,18 +60,18 @@ const milestones = [
   },
   {
     year: "2024",
-    title: "Artisan Cooperative Incubation",
-    desc: "Partnered with UMSAS and the Ministry of Textiles to establish our first cluster of 50 trained female artisans in rural Bihar.",
+    title: "Grassroots Artisan Collaboration",
+    desc: "Partnered directly with local women weavers in rural Bihar to develop our first handcrafted, zero-plastic homeware prototypes.",
   },
   {
     year: "2025",
-    title: "State Startup Recognition",
-    desc: "Awarded recognition and funding under the Bihar Startup Policy, scaling production to supply 40+ premier hospitality groups and boutiques.",
+    title: "Official Product Launch",
+    desc: "Commercial debut of KrisluxECO's flagship handcrafted collection, officially launched last year to bring sustainable circular design directly to consumers.",
   },
   {
     year: "2026",
-    title: "Global Export Horizon",
-    desc: "Expanding ethical trade corridors to the UK, Germany, and the UAE, while onboarding 200+ certified master craftswomen.",
+    title: "Growth & Expanding Horizons",
+    desc: "Bootstrapped early-stage growth—scaling artisan clusters, refining zero-chemical curing, and building verified ethical supply corridors.",
   },
 ];
 
@@ -218,7 +218,7 @@ export default function AboutPage() {
                 During his engineering tenure at <strong className="text-[#0D140F] font-semibold">IIT Patna</strong>, founder <strong className="text-[#0D140F] font-semibold">Krishna Singh</strong>, born and raised in Begusarai, recognized that the fibrous stalk of this plant possessed extraordinary tensile strength, natural moisture resilience, and an organic tactile warmth akin to natural wicker.
               </p>
               <p>
-                What was missing was institutional design, rigorous quality control, and direct market pipelines. By uniting technical incubation from IIT Patna with the indigenous weaving traditions of local artisans, KrisluxECO was born—an enterprise where every artifact produced clears freshwater and generates dignity.
+                What was missing was institutional design, rigorous quality control, and direct market pipelines. By uniting engineering innovation from IIT Patna with the indigenous weaving traditions of local artisans, KrisluxECO was born—an enterprise where every artifact produced clears freshwater and generates dignity.
               </p>
             </div>
 
@@ -264,10 +264,10 @@ export default function AboutPage() {
               </div>
               <div>
                 <h4 className="text-sm font-semibold text-[#0D140F] uppercase tracking-wider">
-                  Accredited &amp; Incubation Backed
+                  Student Innovation &amp; Artisan Craft
                 </h4>
                 <p className="text-xs text-[#0D140F]/65 mt-1 leading-relaxed">
-                  Recognized by the Bihar Startup Policy, UMSAS, and mentored through the Incubation Centre, IIT Patna.
+                  Founded by innovators from IIT Patna, working directly with local women weavers across Bihar to craft circular, zero-plastic homeware.
                 </p>
               </div>
             </div>
