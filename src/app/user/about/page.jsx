@@ -16,7 +16,8 @@ const archetypes = [
     category: "Interior Architecture",
     description:
       "Sculptural laundry hampers, bread trays, vanity organizers, and nesting baskets woven with tight herringbone braids. Naturally moisture-resistant and breathable.",
-    image: "/images/home_storage.png",
+    image: "/walloffame/fame-08.jpeg",
+    objectPosition: "object-[center_60%]",
     specs: ["Water hyacinth stalk fiber", "Zero synthetics or plastics", "Natural sun-cured finish"],
     link: "/user/products?category=Storage",
   },
@@ -26,7 +27,8 @@ const archetypes = [
     category: "Sustainable Apparel",
     description:
       "Ergonomic everyday shoulder totes, clutches, and structured weekenders pairing biological hyacinth canvas with vegetable-tanned accents and brass hardware.",
-    image: "/images/fashion_bags.png",
+    image: "/achivements/ach-07.jpeg",
+    objectPosition: "object-[20%_center]",
     specs: ["Reinforced botanical weave", "Up to 12kg tensile capacity", "Naturally lightweight"],
     link: "/user/products?category=Fashion",
   },
@@ -36,7 +38,8 @@ const archetypes = [
     category: "Lounge & Hospitality",
     description:
       "Solid reclaimed teak and powder-coated steel frames hand-wrapped in dense biological hyacinth cordage. Ideal for five-star eco-resorts and luxury residences.",
-    image: "/premium_furniture.png",
+    image: "/walloffame/fame-13.jpeg",
+    objectPosition: "object-[center_65%]",
     specs: ["Custom architectural dimensions", "Commercial durability rating", "ASTM non-toxic finish"],
     link: "/user/custom-design",
   },
@@ -46,7 +49,8 @@ const archetypes = [
     category: "Institutional & ESG",
     description:
       "Sustainable desk organizers, journal covers, executive coasters, and festive hampers customized with discreet debossed logos for global ESG alignment.",
-    image: "/images/corporate_gifting.png",
+    image: "/walloffame/fame-01.jpeg",
+    objectPosition: "object-center",
     specs: ["Custom corporate branding", "Verified ESG impact certificate", "Zero single-use packaging"],
     link: "/user/bulk-order",
   },
@@ -212,7 +216,7 @@ export default function AboutPage() {
 
             <div className="space-y-6 text-[#0D140F]/75 text-base sm:text-lg font-light leading-relaxed">
               <p>
-                In the floodplains of Bihar, water hyacinth (*Eichhornia crassipes*) has long been regarded as an environmental scourge. Over 2.5 lakh hectares of wetlands choked under dense green canopies, blocking sunlight, decimating freshwater fisheries, and releasing methane as rotting vegetation sank to lakebeds.
+                In the floodplains of Bihar, water hyacinth (<em>Eichhornia crassipes</em>) has long been regarded as an environmental scourge. Over 2.5 lakh hectares of wetlands choked under dense green canopies, blocking sunlight, decimating freshwater fisheries, and releasing methane as rotting vegetation sank to lakebeds.
               </p>
               <p>
                 During his engineering tenure at <strong className="text-[#0D140F] font-semibold">IIT Patna</strong>, founder <strong className="text-[#0D140F] font-semibold">Krishna Singh</strong>, born and raised in Begusarai, recognized that the fibrous stalk of this plant possessed extraordinary tensile strength, natural moisture resilience, and an organic tactile warmth akin to natural wicker.
@@ -238,10 +242,10 @@ export default function AboutPage() {
             <div className="relative aspect-[4/5] bg-white border border-[#EAE3D6] p-3 rounded-[2px] shadow-[0_12px_40px_rgba(13,20,15,0.06)]">
               <div className="relative w-full h-full overflow-hidden rounded-[2px]">
                 <Image
-                  src="/artisan_craft.png"
-                  alt="Rural female artisan hand-weaving water hyacinth product"
+                  src="/walloffame/fame-15.jpeg"
+                  alt="Rural female master weavers hand-weaving water hyacinth baskets"
                   fill
-                  className="object-cover"
+                  className="object-cover object-[center_62%]"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0D140F]/80 via-transparent to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4 text-white">
@@ -383,7 +387,7 @@ export default function AboutPage() {
                   src={archetypes[activeTab].image}
                   alt={archetypes[activeTab].title}
                   fill
-                  className="object-cover"
+                  className={`object-cover ${archetypes[activeTab].objectPosition || "object-center"}`}
                 />
               </div>
 
