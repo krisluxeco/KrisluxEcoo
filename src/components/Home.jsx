@@ -86,7 +86,8 @@ const sectorArchetypes = [
     sectorNum: "01",
     title: "Hotels & Wellness Spas",
     subtitle: "Turn-down trays, acoustic water hyacinth wall panels, bespoke spa hampers, and sanitizable tissue vessels.",
-    image: "/images/hero_hotel.png",
+    image: "/walloffame/fame-18.jpeg",
+    objectPosition: "object-[center_78%]",
     moq: "50 units",
     leadTime: "3–4 wks",
     specName: "Hospitality Spec Sheet",
@@ -96,7 +97,8 @@ const sectorArchetypes = [
     sectorNum: "02",
     title: "Artisanal Living & Retail",
     subtitle: "Sculptural floor baskets, bell pendant luminaires, twill woven dining placemats, and modular storage vessels.",
-    image: "/images/HomeCategory1.png",
+    image: "/achivements/ach-07.jpeg",
+    objectPosition: "object-center",
     moq: "30 units",
     leadTime: "4–5 wks",
     specName: "Retail Catalog Spec",
@@ -106,7 +108,8 @@ const sectorArchetypes = [
     sectorNum: "03",
     title: "Corporate Gifting & ESG",
     subtitle: "Executive botanical keepsakes, custom laser-etched brass plaques, desk caddies, and verifiable impact tokens.",
-    image: "/images/corporate_gifting.png",
+    image: "/walloffame/fame-09.jpeg",
+    objectPosition: "object-[center_65%]",
     moq: "100 units",
     leadTime: "3 wks",
     specName: "ESG Executive Deck",
@@ -116,7 +119,8 @@ const sectorArchetypes = [
     sectorNum: "04",
     title: "Millwork & Acoustic Panels",
     subtitle: "Custom woven spatial dividers, NRC 0.65 acoustic wall inserts, and integrated architectural millwork panels.",
-    image: "/images/BrandStory4.png",
+    image: "/walloffame/fame-11.jpeg",
+    objectPosition: "object-[center_75%]",
     moq: "Custom Sqm",
     leadTime: "5–6 wks",
     specName: "Architectural CAD / BIM",
@@ -342,7 +346,7 @@ export default function Home({
                     alt={sector.title}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    className={`object-cover group-hover:scale-105 transition-transform duration-500 ${sector.objectPosition || "object-center"}`}
                   />
                   <span className="absolute top-3 left-3 bg-[#141E17] text-[#FAF8F5] text-[10px] px-2.5 py-0.5 uppercase tracking-widest font-bold">
                     SECTOR {sector.sectorNum}

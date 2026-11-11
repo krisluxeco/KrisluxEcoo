@@ -87,7 +87,8 @@ const PILLARS_DATA = [
     tag: "AQUATIC ECOSYSTEM RESTORATION",
     title: "Invasive Water Hyacinth Eradication",
     desc: "Water hyacinth is known as the 'Terror of Bengal' — an aggressive invasive weed that doubles in volume every 12 days, choking waterways, blocking sunlight, and depleting dissolved oxygen for fish. By manually harvesting mature hyacinth stems, we physically restore sunlight to Bihar's wetlands while preventing thousands of tons of rotting methane from polluting our atmosphere.",
-    img: "/raw_materials.png",
+    img: "/walloffame/fame-04.jpeg",
+    objectPosition: "object-center",
     stat: "12.2+ Tons Diverted",
     statLabel: "Invasive Biomass Harvested",
   },
@@ -96,7 +97,8 @@ const PILLARS_DATA = [
     tag: "CHEMICAL-FREE SOLAR CURING",
     title: "Bio-Enzyme Fermentation & Sunlight",
     desc: "Conventional straw and commercial wicker often rely on toxic sulfur fumigation or formaldehyde dips to prevent mold during export. KrisluxECO pioneered a 100% organic bio-enzyme bath derived from local botanical extracts, followed by 72 hours of open-air solar curing to maintain moisture below 10% — ensuring complete mold resistance with zero chemical run-off.",
-    img: "/images/HeroSection1.png",
+    img: "/walloffame/fame-02.jpeg",
+    objectPosition: "object-center",
     stat: "<10% Moisture",
     statLabel: "ASTM D4236 Certified Non-Toxic",
   },
@@ -105,7 +107,8 @@ const PILLARS_DATA = [
     tag: "GENDER-LENS ECONOMIC INCLUSION",
     title: "Empowering Rural Women Artisans",
     desc: "Over 80% of our artisanal workforce consists of rural mothers and daughters across Begusarai, Madhubani, and Gaya. Through Ministry of Textiles partnerships and official Pehchan identification cards, we ensure transparent, bank-disbursed piece-rate earnings that triple traditional household incomes and foster generational financial independence.",
-    img: "/artisan_craft.png",
+    img: "/walloffame/fame-14.jpeg",
+    objectPosition: "object-center",
     stat: "3x Higher Incomes",
     statLabel: "Direct Bank Disbursals",
   },
@@ -114,7 +117,8 @@ const PILLARS_DATA = [
     tag: "CIRCULAR PACKAGING PHILOSOPHY",
     title: "100% Zero-Single-Use Plastics",
     desc: "Our environmental responsibility doesn't stop at product manufacture. From our artisan cooperative workshops to global freight loading docks, we completely prohibit single-use bubble wraps and petrochemical plastics. Every order is secured using natural unbleached kraft cartons, cornstarch liners, and organic cotton dust bags.",
-    img: "/premium_furniture.png",
+    img: "/achivements/ach-06.jpeg",
+    objectPosition: "object-[center_20%]",
     stat: "0% Plastic Waste",
     statLabel: "Biodegradable Crating",
   },
@@ -294,7 +298,7 @@ export default function SustainabilityPage() {
                     alt={pillar.title}
                     fill
                     sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="object-cover transition-transform duration-700 hover:scale-105"
+                    className={`object-cover transition-transform duration-700 hover:scale-105 ${pillar.objectPosition || "object-center"}`}
                   />
                   <div className="absolute top-3 left-3 bg-[#0D140F]/90 backdrop-blur-sm border border-[#C29B5D]/30 px-3 py-1 rounded-[2px]">
                     <span className="text-[10px] font-mono tracking-widest text-[#C29B5D] font-bold">

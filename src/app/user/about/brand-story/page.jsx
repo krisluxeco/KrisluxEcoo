@@ -53,7 +53,7 @@ const CHAPTERS = [
     eyebrow: "Chapter One — The Crisis",
     title: "A silent ecological emergency",
     line: "In Bihar, our waterways faced a disaster. Over 2.5 lakh hectares of vital wetlands became choked by invasive water hyacinth—killing local fish populations, destroying the livelihoods of traditional fishermen, and releasing harmful methane as it decayed.",
-    img: "/images/BrandStory1.png",
+    img: "/walloffame/fame-12.jpeg",
     align: "left",
   },
   {
@@ -61,7 +61,7 @@ const CHAPTERS = [
     eyebrow: "Chapter Two — The Human Cost",
     title: "Exploited and marginalized",
     line: "Simultaneously, traditional craft was dying due to a lack of market access. Rural artisans—80% of whom are economically vulnerable women—earned below subsistence levels while middlemen captured over 80% of the value they created.",
-    img: "/images/BrandStory2.png",
+    img: "/walloffame/fame-03.jpeg",
     align: "right",
   },
   {
@@ -69,7 +69,7 @@ const CHAPTERS = [
     eyebrow: "Chapter Three — The Innovation",
     title: "Turning pollution into premium",
     line: "We saw a bridge between these two crises. By harvesting the free, abundant water hyacinth directly from dying wetlands, we eliminated raw material costs and turned a climate threat into a sustainable design solution.",
-    img: "/raw_materials.png",
+    img: "/walloffame/fame-05.jpeg",
     align: "left",
   },
   {
@@ -85,7 +85,7 @@ const CHAPTERS = [
     eyebrow: "Chapter Five — Restoring Nature",
     title: "Healing our wetlands",
     line: "Today, we actively remove methane-emitting hyacinth, helping restore wetland biodiversity and clean up Bihar's aquatic ecosystems.",
-    img: "/images/HeroSection1.png",
+    img: "/walloffame/fame-10.jpeg",
     align: "left",
   },
   {
@@ -93,7 +93,7 @@ const CHAPTERS = [
     eyebrow: "Chapter Six — Empowering Creators",
     title: "Independence and prosperity",
     line: "By eliminating middlemen, we ensure artisans earn over three times more income, transforming rural weavers into independent entrepreneurs.",
-    img: "/images/artisan_empowerment.png",
+    img: "/walloffame/fame-17.jpeg",
     align: "right",
   },
   {
@@ -101,7 +101,7 @@ const CHAPTERS = [
     eyebrow: "Chapter Seven — Global Heritage",
     title: "Bihar’s greatest export story",
     line: "We are taking authentic Bihar handicraft—backed by sustainable artisan cooperatives—from local wetlands to world shelves.",
-    img: "/premium_furniture.png",
+    img: "/achivements/ach-01.jpeg",
     align: "left",
   },
 ];

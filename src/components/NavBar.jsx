@@ -67,7 +67,7 @@ const utilityMessages = [
 /* Signature mark — using the provided logo image with refined editorial frame. */
 function LeafMark() {
   return (
-    <div className="relative w-14 h-12 sm:w-16 sm:h-14 flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-105">
+    <div className="relative w-10 h-9 sm:w-14 sm:h-12 lg:w-16 lg:h-14 flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-105">
       <Image
         width={554}
         height={416}
@@ -100,7 +100,7 @@ function UtilityStrip({ visible, onDismiss }) {
           transition={{ duration: 0.3 }}
           className="bg-[#0D140F] border-b border-[#EAE3D6]/10 overflow-hidden"
         >
-          <div className="max-w-7xl mx-auto px-6 py-2 flex items-center justify-center relative">
+          <div className="max-w-[1560px] mx-auto px-3 sm:px-6 lg:px-8 pr-8 sm:pr-12 py-1.5 sm:py-2 flex items-center justify-center relative">
             <AnimatePresence mode="wait">
               <motion.p
                 key={index}
@@ -108,7 +108,7 @@ function UtilityStrip({ visible, onDismiss }) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.35 }}
-                className="text-[10px] tracking-[0.18em] uppercase text-[#C29B5D] font-mono font-medium"
+                className="text-[9px] sm:text-[10px] tracking-[0.1em] sm:tracking-[0.18em] text-center leading-snug uppercase text-[#C29B5D] font-mono font-medium"
                 style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
               >
                 {utilityMessages[index]}
@@ -117,7 +117,7 @@ function UtilityStrip({ visible, onDismiss }) {
             <button
               onClick={onDismiss}
               aria-label="Dismiss announcement"
-              className="absolute right-6 text-[#FAF8F5]/40 hover:text-[#FAF8F5] transition-colors p-1"
+              className="absolute right-2 sm:right-6 text-[#FAF8F5]/40 hover:text-[#FAF8F5] transition-colors p-1"
             >
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M18 6L6 18M6 6l12 12" />
@@ -277,132 +277,135 @@ export default function NavBar() {
 
           <motion.div
             style={{ paddingTop: navPaddingY, paddingBottom: navPaddingY }}
-            className="max-w-7xl mx-auto px-6 flex items-center justify-between"
+            className="max-w-[1560px] mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-2 sm:gap-4 lg:gap-6"
           >
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group flex-shrink-0" aria-label="KrisluxECO home">
-              <LeafMark />
-              <div className="flex flex-col leading-tight whitespace-nowrap">
-                <span
-                  className={`font-bold tracking-normal transition-colors duration-300 ${textTone} whitespace-nowrap`}
-                  style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1.6rem" }}
-                >
-                  Krislux<span className="bg-gradient-to-r from-[#D4AF37] via-[#FFF6C2] via-[#E5C07B] to-[#AA7A1E] bg-clip-text text-transparent font-extrabold drop-shadow-[0_1px_4px_rgba(218,165,32,0.4)]">ECO</span>
-                </span>
-                <span
-                  className={`text-[8.5px] tracking-[0.22em] uppercase transition-colors duration-300 ${logoSub} font-mono whitespace-nowrap`}
-                  style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
-                >
-                  Handcrafted · Sustainable Luxury
-                </span>
-              </div>
-            </Link>
-
-            {/* Desktop Links — refined gold underline indicator */}
-            <ul className="hidden lg:flex items-center gap-4 xl:gap-7 2xl:gap-8 flex-shrink-0">
-              {navLinks.map((link) => {
-                const hasChildren = !!link.children;
-                const active =
-                  isActive(link.href) ||
-                  (hasChildren && link.children.some((c) => isActive(c.href)));
-                const isOpen = openDropdown === link.label;
-                return (
-                  <li
-                    key={link.label}
-                    className="relative py-2"
-                    onMouseEnter={() => hasChildren && openDropdownNow(link.label)}
-                    onMouseLeave={() => hasChildren && closeDropdownSoon()}
+            {/* Left Group: Logo + Nav Links shifted cleanly left */}
+            <div className="flex items-center gap-6 xl:gap-10 2xl:gap-14 min-w-0">
+              {/* Logo */}
+              <Link href="/" className="flex items-center gap-2 sm:gap-3 group flex-shrink-0" aria-label="KrisluxECO home">
+                <LeafMark />
+                <div className="flex flex-col leading-tight whitespace-nowrap">
+                  <span
+                    className={`font-bold tracking-normal transition-colors duration-300 ${textTone} whitespace-nowrap text-[1.15rem] sm:text-2xl lg:text-[1.6rem]`}
+                    style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
                   >
-                    <Link
-                      href={link.href}
-                      className={`relative inline-flex items-center gap-1.5 text-[11px] tracking-[0.14em] uppercase outline-none transition-colors duration-300 focus-visible:ring-1 focus-visible:ring-[#C29B5D]/50 rounded-[2px] whitespace-nowrap ${active ? "text-[#C29B5D] font-semibold" : textToneMuted
-                        } hover:text-[#C29B5D]`}
-                      style={{ fontFamily: "var(--font-montserrat), sans-serif", fontWeight: active ? 600 : 500 }}
-                      aria-haspopup={hasChildren ? "true" : undefined}
-                      aria-expanded={hasChildren ? isOpen : undefined}
-                    >
-                      {link.label}
-                      {hasChildren && (
-                        <motion.svg
-                          width="10"
-                          height="10"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                          animate={{ rotate: isOpen ? 180 : 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="mt-[1px] opacity-70 group-hover:opacity-100"
-                        >
-                          <path d="M6 9l6 6 6-6" />
-                        </motion.svg>
-                      )}
-                      <span
-                        className="absolute left-0 -bottom-1 h-[1.5px] bg-[#C29B5D] transition-all duration-300"
-                        style={{ width: active ? "100%" : "0%" }}
-                      />
-                    </Link>
+                    Krislux<span className="bg-gradient-to-r from-[#D4AF37] via-[#FFF6C2] via-[#E5C07B] to-[#AA7A1E] bg-clip-text text-transparent font-extrabold drop-shadow-[0_1px_4px_rgba(218,165,32,0.4)]">ECO</span>
+                  </span>
+                  <span
+                    className={`text-[7px] sm:text-[8.5px] tracking-[0.12em] sm:tracking-[0.22em] uppercase transition-colors duration-300 ${logoSub} font-mono whitespace-nowrap`}
+                    style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
+                  >
+                    Handcrafted · Sustainable Luxury
+                  </span>
+                </div>
+              </Link>
 
-                    {hasChildren && (
-                      <AnimatePresence>
-                        {isOpen && (
-                          <motion.div
-                            initial={{ opacity: 0, y: 12, scale: 0.98 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 8, scale: 0.98 }}
+              {/* Desktop Links — refined gold underline indicator */}
+              <ul className="hidden lg:flex items-center gap-3.5 xl:gap-6 2xl:gap-7 flex-shrink-0">
+                {navLinks.map((link) => {
+                  const hasChildren = !!link.children;
+                  const active =
+                    isActive(link.href) ||
+                    (hasChildren && link.children.some((c) => isActive(c.href)));
+                  const isOpen = openDropdown === link.label;
+                  return (
+                    <li
+                      key={link.label}
+                      className="relative py-2"
+                      onMouseEnter={() => hasChildren && openDropdownNow(link.label)}
+                      onMouseLeave={() => hasChildren && closeDropdownSoon()}
+                    >
+                      <Link
+                        href={link.href}
+                        className={`relative inline-flex items-center gap-1.5 text-[11px] xl:text-[12.5px] 2xl:text-[13px] tracking-[0.12em] uppercase outline-none transition-colors duration-300 focus-visible:ring-1 focus-visible:ring-[#C29B5D]/50 rounded-[2px] whitespace-nowrap ${active ? "text-[#C29B5D] font-semibold" : textToneMuted
+                          } hover:text-[#C29B5D]`}
+                        style={{ fontFamily: "var(--font-montserrat), sans-serif", fontWeight: active ? 600 : 500 }}
+                        aria-haspopup={hasChildren ? "true" : undefined}
+                        aria-expanded={hasChildren ? isOpen : undefined}
+                      >
+                        {link.label}
+                        {hasChildren && (
+                          <motion.svg
+                            width="10"
+                            height="10"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            animate={{ rotate: isOpen ? 180 : 0 }}
                             transition={{ duration: 0.2 }}
-                            onMouseEnter={() => openDropdownNow(link.label)}
-                            onMouseLeave={() => closeDropdownSoon()}
-                            className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-80 rounded-[2px] border border-[#C29B5D]/25 bg-[#0D140F]/95 backdrop-blur-xl shadow-[0_24px_50px_rgba(0,0,0,0.5)] p-2 z-50 overflow-hidden"
+                            className="mt-[1px] opacity-70 group-hover:opacity-100"
                           >
-                            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#3E634A] via-[#C29B5D] to-[#7FA06B]" />
-                            {link.children.map((child, i) => {
-                              const childActive = isActive(child.href);
-                              return (
-                                <motion.div
-                                  key={child.label}
-                                  initial={{ opacity: 0, x: -6 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ delay: i * 0.03 + 0.02 }}
-                                >
-                                  <Link
-                                    href={child.href}
-                                    onClick={() => setOpenDropdown(null)}
-                                    className="group flex items-start gap-3 rounded-[2px] px-3.5 py-2.5 hover:bg-[#16231A] transition-all duration-200 relative overflow-hidden border border-transparent hover:border-[#C29B5D]/20"
-                                  >
-                                    <span
-                                      className={`mt-1.5 h-1.5 w-1.5 rounded-full flex-shrink-0 transition-colors duration-200 ${childActive ? "bg-[#C29B5D]" : "bg-[#7FA06B]/50 group-hover:bg-[#C29B5D]"
-                                        }`}
-                                    />
-                                    <span className="relative z-10 flex-1">
-                                      <span
-                                        className={`block text-[11px] tracking-[0.08em] font-semibold transition-colors duration-200 uppercase ${childActive ? "text-[#C29B5D]" : "text-[#FAF8F5] group-hover:text-[#C29B5D]"
-                                          }`}
-                                        style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
-                                      >
-                                        {child.label}
-                                      </span>
-                                      {child.desc && (
-                                        <span className="block text-[11px] text-[#FAF8F5]/60 mt-0.5 leading-snug group-hover:text-[#FAF8F5]/85 transition-colors duration-200">
-                                          {child.desc}
-                                        </span>
-                                      )}
-                                    </span>
-                                  </Link>
-                                </motion.div>
-                              );
-                            })}
-                          </motion.div>
+                            <path d="M6 9l6 6 6-6" />
+                          </motion.svg>
                         )}
-                      </AnimatePresence>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
+                        <span
+                          className="absolute left-0 -bottom-1 h-[1.5px] bg-[#C29B5D] transition-all duration-300"
+                          style={{ width: active ? "100%" : "0%" }}
+                        />
+                      </Link>
+
+                      {hasChildren && (
+                        <AnimatePresence>
+                          {isOpen && (
+                            <motion.div
+                              initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                              transition={{ duration: 0.2 }}
+                              onMouseEnter={() => openDropdownNow(link.label)}
+                              onMouseLeave={() => closeDropdownSoon()}
+                              className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-80 rounded-[2px] border border-[#C29B5D]/25 bg-[#0D140F]/95 backdrop-blur-xl shadow-[0_24px_50px_rgba(0,0,0,0.5)] p-2 z-50 overflow-hidden"
+                            >
+                              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#3E634A] via-[#C29B5D] to-[#7FA06B]" />
+                              {link.children.map((child, i) => {
+                                const childActive = isActive(child.href);
+                                return (
+                                  <motion.div
+                                    key={child.label}
+                                    initial={{ opacity: 0, x: -6 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: i * 0.03 + 0.02 }}
+                                  >
+                                    <Link
+                                      href={child.href}
+                                      onClick={() => setOpenDropdown(null)}
+                                      className="group flex items-start gap-3 rounded-[2px] px-3.5 py-2.5 hover:bg-[#16231A] transition-all duration-200 relative overflow-hidden border border-transparent hover:border-[#C29B5D]/20"
+                                    >
+                                      <span
+                                        className={`mt-1.5 h-1.5 w-1.5 rounded-full flex-shrink-0 transition-colors duration-200 ${childActive ? "bg-[#C29B5D]" : "bg-[#7FA06B]/50 group-hover:bg-[#C29B5D]"
+                                          }`}
+                                      />
+                                      <span className="relative z-10 flex-1">
+                                        <span
+                                          className={`block text-[11.5px] tracking-[0.08em] font-semibold transition-colors duration-200 uppercase ${childActive ? "text-[#C29B5D]" : "text-[#FAF8F5] group-hover:text-[#C29B5D]"
+                                            }`}
+                                          style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
+                                        >
+                                          {child.label}
+                                        </span>
+                                        {child.desc && (
+                                          <span className="block text-[11px] text-[#FAF8F5]/60 mt-0.5 leading-snug group-hover:text-[#FAF8F5]/85 transition-colors duration-200">
+                                            {child.desc}
+                                          </span>
+                                        )}
+                                      </span>
+                                    </Link>
+                                  </motion.div>
+                                );
+                              })}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
 
             {/* CTA + Actions + Mobile Toggle */}
-            <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="flex items-center gap-1 sm:gap-2.5 lg:gap-3 flex-shrink-0">
               {/* Profile Avatar (Desktop) */}
               {status === "authenticated" ? (
                 <div className="hidden lg:block mr-1">
@@ -438,27 +441,27 @@ export default function NavBar() {
                 <div className="hidden lg:block w-8 h-8 rounded-full bg-white/10 animate-pulse mr-1" />
               )}
 
-              {/* Saved Products Icon (Desktop) */}
+              {/* Saved Products Icon */}
               {status === "authenticated" && (
                 <Link
                   href="/user/saved"
-                  className={`relative flex items-center justify-center w-9 h-9 rounded-[2px] transition-all duration-200 ${textTone} hover:text-[#C29B5D] hover:bg-white/5 border border-transparent hover:border-[#C29B5D]/30`}
+                  className={`relative flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-[2px] transition-all duration-200 ${textTone} hover:text-[#C29B5D] hover:bg-white/5 border border-transparent hover:border-[#C29B5D]/30`}
                   aria-label="Saved Products"
                 >
-                  <Heart size={18} strokeWidth={1.5} />
+                  <Heart className="w-4 h-4 sm:w-[18px] sm:h-[18px]" strokeWidth={1.5} />
                 </Link>
               )}
 
-              {/* Cart Icon (Desktop) */}
+              {/* Cart Icon */}
               {isLoaded && (
                 <Link
                   href="/user/quote-cart"
-                  className={`relative flex items-center justify-center w-9 h-9 rounded-[2px] transition-all duration-200 ${textTone} hover:text-[#C29B5D] hover:bg-white/5 border border-transparent hover:border-[#C29B5D]/30`}
+                  className={`relative flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-[2px] transition-all duration-200 ${textTone} hover:text-[#C29B5D] hover:bg-white/5 border border-transparent hover:border-[#C29B5D]/30`}
                   aria-label="Quote Cart"
                 >
-                  <ShoppingCart size={18} strokeWidth={1.5} />
+                  <ShoppingCart className="w-4 h-4 sm:w-[18px] sm:h-[18px]" strokeWidth={1.5} />
                   {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 bg-[#C29B5D] text-[#0D140F] text-[9px] font-bold rounded-full shadow-sm">
+                    <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 flex items-center justify-center w-4 h-4 bg-[#C29B5D] text-[#0D140F] text-[9px] font-bold rounded-full shadow-sm">
                       {cartCount}
                     </span>
                   )}
@@ -469,7 +472,7 @@ export default function NavBar() {
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="hidden lg:block flex-shrink-0">
                 <Link
                   href="/user/bulk-order"
-                  className="inline-flex items-center gap-2 bg-[#C29B5D] hover:bg-[#D4AD6F] text-[#0D140F] text-[11px] font-bold px-4 py-2.5 rounded-[2px] tracking-[0.14em] uppercase transition-all duration-300 shadow-[0_4px_16px_rgba(194,155,93,0.25)] hover:shadow-[0_4px_24px_rgba(194,155,93,0.45)] whitespace-nowrap flex-shrink-0"
+                  className="inline-flex items-center gap-2 bg-[#C29B5D] hover:bg-[#D4AD6F] text-[#0D140F] text-[11px] xl:text-xs font-bold px-4 xl:px-5 py-2.5 rounded-[2px] tracking-[0.14em] uppercase transition-all duration-300 shadow-[0_4px_16px_rgba(194,155,93,0.25)] hover:shadow-[0_4px_24px_rgba(194,155,93,0.45)] whitespace-nowrap flex-shrink-0"
                   style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
                 >
                   Bulk Order
@@ -482,23 +485,23 @@ export default function NavBar() {
               {/* Mobile Hamburger */}
               <button
                 onClick={() => setMobileOpen((v) => !v)}
-                className="lg:hidden flex flex-col gap-1.5 p-2 -mr-2 rounded-[2px] outline-none focus-visible:ring-1 focus-visible:ring-[#C29B5D]/60"
+                className="lg:hidden flex flex-col gap-1.5 p-1.5 sm:p-2 -mr-1 sm:-mr-2 rounded-[2px] outline-none focus-visible:ring-1 focus-visible:ring-[#C29B5D]/60"
                 aria-label={mobileOpen ? "Close menu" : "Open menu"}
                 aria-expanded={mobileOpen}
                 aria-controls="mobile-drawer"
               >
                 <motion.span
-                  className="block w-6 h-0.5 rounded bg-[#FAF8F5] transition-colors duration-300"
+                  className="block w-5 sm:w-6 h-0.5 rounded bg-[#FAF8F5] transition-colors duration-300"
                   animate={{ rotate: mobileOpen ? 45 : 0, y: mobileOpen ? 6 : 0 }}
                   transition={{ duration: 0.25 }}
                 />
                 <motion.span
-                  className="block w-6 h-0.5 rounded bg-[#FAF8F5] transition-colors duration-300"
+                  className="block w-5 sm:w-6 h-0.5 rounded bg-[#FAF8F5] transition-colors duration-300"
                   animate={{ opacity: mobileOpen ? 0 : 1 }}
                   transition={{ duration: 0.15 }}
                 />
                 <motion.span
-                  className="block w-6 h-0.5 rounded bg-[#FAF8F5] transition-colors duration-300"
+                  className="block w-5 sm:w-6 h-0.5 rounded bg-[#FAF8F5] transition-colors duration-300"
                   animate={{ rotate: mobileOpen ? -45 : 0, y: mobileOpen ? -6 : 0 }}
                   transition={{ duration: 0.25 }}
                 />

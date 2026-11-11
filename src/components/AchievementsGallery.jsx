@@ -1,19 +1,82 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronLeft, ChevronRight, Maximize2, Award, ChevronDown } from "lucide-react";
+import {
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Maximize2,
+  Award,
+  ChevronDown,
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
 
 const serif = "var(--font-playfair), Georgia, serif";
 const sans = "var(--font-montserrat), sans-serif";
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
- * WALL OF FAME - REAL MUSEUM GALLERY WALL WITH 18 HONORS
+ * WALL OF FAME — FEATURED CENTERPIECE & ARCHIVE IMAGES
  * ─────────────────────────────────────────────────────────────────────────────
  */
-export const wallOfFameImages = [
+export const FEATURED_VIDEO_SRC = "/walloffame/featured-video.mp4";
+
+// 4 Achievement photos flanking the landscape centerpiece video (2 Left, 2 Right)
+export const sideAchievementsLeft = [
+  {
+    id: "ach-1",
+    src: "/achivements/ach-01.jpeg",
+    alt: "Achievement highlight 1",
+    aspect: "aspect-[16/10]",
+  },
+  {
+    id: "ach-5",
+    src: "/achivements/ach-05.jpeg",
+    alt: "Achievement highlight 2",
+    aspect: "aspect-[16/10]",
+  },
+];
+
+export const sideAchievementsRight = [
+  {
+    id: "ach-6",
+    src: "/achivements/ach-06.jpeg",
+    alt: "Achievement highlight 3",
+    aspect: "aspect-[16/10]",
+  },
+  {
+    id: "ach-7",
+    src: "/achivements/ach-07.jpeg",
+    alt: "Achievement highlight 4",
+    aspect: "aspect-[16/10]",
+  },
+];
+
+// Remaining achievement photos + all 18 wall of fame photos for the main gallery wall
+export const wallGalleryImages = [
+  {
+    id: "ach-4",
+    src: "/achivements/ach-04.jpeg",
+    alt: "Achievement showcase 5",
+    aspect: "aspect-square",
+  },
+  {
+    id: "ach-2",
+    src: "/achivements/ach-02.jpeg",
+    alt: "Achievement showcase 6",
+    aspect: "aspect-[16/8]",
+  },
+  {
+    id: "ach-3",
+    src: "/achivements/ach-03.jpeg",
+    alt: "Achievement showcase 7",
+    aspect: "aspect-[16/8]",
+  },
   {
     id: 1,
     src: "/walloffame/fame-01.jpeg",
@@ -28,7 +91,7 @@ export const wallOfFameImages = [
   },
   {
     id: 3,
-    src: "/walloffame/fame-04.jpeg",
+    src: "/walloffame/fame-02.jpeg",
     alt: "Wall of Fame Milestone 3",
     aspect: "aspect-[16/9]",
   },
@@ -40,7 +103,7 @@ export const wallOfFameImages = [
   },
   {
     id: 5,
-    src: "/walloffame/fame-02.jpeg",
+    src: "/walloffame/fame-03.jpeg",
     alt: "Wall of Fame Milestone 5",
     aspect: "aspect-[16/9]",
   },
@@ -52,7 +115,7 @@ export const wallOfFameImages = [
   },
   {
     id: 7,
-    src: "/walloffame/fame-03.jpeg",
+    src: "/walloffame/fame-04.jpeg",
     alt: "Wall of Fame Milestone 7",
     aspect: "aspect-[16/9]",
   },
@@ -124,29 +187,112 @@ export const wallOfFameImages = [
   },
 ];
 
-const INITIAL_VISIBLE_COUNT = 6;
+// Combined list of all 25 photos for seamless lightbox navigation
+const allLightboxImages = [
+  ...sideAchievementsLeft,
+  ...sideAchievementsRight,
+  ...wallGalleryImages,
+];
 
-export default function AchievementsGallery({ images = wallOfFameImages }) {
+const INITIAL_GRID_COUNT = 6;
+
+function FramedPhoto({ item, onClick, sizes }) {
+  return (
+    <div
+      onClick={onClick}
+      className="group cursor-pointer transition-all duration-300 hover:-translate-y-1.5"
+    >
+      <div className="relative p-2 bg-gradient-to-b from-[#18241B] to-[#0F1711] border border-[#C29B5D]/45 group-hover:border-[#C29B5D] rounded-[2px] shadow-[0_24px_50px_rgba(0,0,0,0.85),0_8px_18px_rgba(0,0,0,0.6),0_0_0_1px_rgba(0,0,0,0.9)] group-hover:shadow-[0_32px_65px_rgba(0,0,0,0.95),0_12px_28px_rgba(194,155,93,0.3)] transition-all duration-300">
+        <div className={`relative w-full ${item.aspect} overflow-hidden bg-black/80 ring-1 ring-black/90`}>
+          <Image
+            src={item.src}
+            alt={item.alt || "Wall of Fame piece"}
+            fill
+            sizes={sizes}
+            className="object-cover brightness-[0.93] group-hover:brightness-105 group-hover:scale-[1.03] transition-all duration-500 ease-out"
+          />
+
+          {/* Museum Glass Sheen Reflection */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-black/25 via-transparent to-white/12 opacity-60 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none" />
+
+          {/* Corner Brass Mounting Studs */}
+          <span className="absolute top-2 left-2 w-1.5 h-1.5 rounded-full bg-gradient-to-br from-[#E5C78E] to-[#8C6422] shadow-[0_1px_3px_rgba(0,0,0,0.8)] pointer-events-none" />
+          <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-gradient-to-br from-[#E5C78E] to-[#8C6422] shadow-[0_1px_3px_rgba(0,0,0,0.8)] pointer-events-none" />
+          <span className="absolute bottom-2 left-2 w-1.5 h-1.5 rounded-full bg-gradient-to-br from-[#E5C78E] to-[#8C6422] shadow-[0_1px_3px_rgba(0,0,0,0.8)] pointer-events-none" />
+          <span className="absolute bottom-2 right-2 w-1.5 h-1.5 rounded-full bg-gradient-to-br from-[#E5C78E] to-[#8C6422] shadow-[0_1px_3px_rgba(0,0,0,0.8)] pointer-events-none" />
+
+          {/* Center Zoom Icon */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+            <div className="w-11 h-11 rounded-full bg-black/85 border border-[#C29B5D] text-[#C29B5D] flex items-center justify-center shadow-[0_6px_20px_rgba(0,0,0,0.7)] transform scale-90 group-hover:scale-100 transition-transform">
+              <Maximize2 className="w-4 h-4" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function AchievementsGallery() {
   const [showAll, setShowAll] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(null);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
-  const displayedImages = showAll ? images : images.slice(0, INITIAL_VISIBLE_COUNT);
+  const videoRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
 
-  // Keyboard navigation for lightbox
+  const displayedGridImages = showAll
+    ? wallGalleryImages
+    : wallGalleryImages.slice(0, INITIAL_GRID_COUNT);
+
+  const openImageLightbox = (src) => {
+    const idx = allLightboxImages.findIndex((img) => img.src === src);
+    if (idx !== -1) {
+      setSelectedIndex(idx);
+    }
+  };
+
+  const togglePlay = (e) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    if (videoRef.current.paused) {
+      videoRef.current.play();
+      setIsPlaying(true);
+    } else {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const toggleMute = (e) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    videoRef.current.muted = !videoRef.current.muted;
+    setIsMuted(videoRef.current.muted);
+  };
+
+  // Keyboard navigation for lightbox & video modal
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (isVideoModalOpen && e.key === "Escape") {
+        setIsVideoModalOpen(false);
+        return;
+      }
       if (selectedIndex === null) return;
       if (e.key === "Escape") setSelectedIndex(null);
       if (e.key === "ArrowRight") {
-        setSelectedIndex((prev) => (prev + 1) % images.length);
+        setSelectedIndex((prev) => (prev + 1) % allLightboxImages.length);
       }
       if (e.key === "ArrowLeft") {
-        setSelectedIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+        setSelectedIndex((prev) =>
+          prev === 0 ? allLightboxImages.length - 1 : prev - 1
+        );
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedIndex, images.length]);
+  }, [selectedIndex, isVideoModalOpen]);
 
   return (
     <section
@@ -220,7 +366,7 @@ export default function AchievementsGallery({ images = wallOfFameImages }) {
       {/* ─── 4. MAIN CONTENT ─── */}
       <div className="relative z-10 max-w-[1560px] mx-auto">
         {/* ─── WALL OF FAME HEADING ─── */}
-        <div className="text-center mb-14 sm:mb-18">
+        <div className="text-center mb-14 sm:mb-16">
           <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-[2px] bg-[#142018]/90 border border-[#C29B5D]/40 text-[10px] uppercase font-mono font-bold tracking-[0.28em] text-[#C29B5D] mb-4 shadow-[0_4px_16px_rgba(0,0,0,0.4)] backdrop-blur-xs">
             <Award className="w-3.5 h-3.5 text-[#C29B5D]" />
             <span>HONORS &amp; MILESTONES</span>
@@ -240,55 +386,110 @@ export default function AchievementsGallery({ images = wallOfFameImages }) {
           </div>
         </div>
 
-        {/* ─── FRAMED PICTURES ON WALL: BIGGER IMAGES, 3D CAST SHADOWS, BRASS BEVEL ─── */}
-        <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 sm:gap-7 [column-fill:_balance]">
-          {displayedImages.map((item, index) => (
-            <div
-              key={item.id}
-              onClick={() => setSelectedIndex(index)}
-              className="mb-6 sm:mb-7 break-inside-avoid group cursor-pointer transition-all duration-300 hover:-translate-y-2"
-            >
-              {/* Outer Picture Frame Moulding (Double Hairline Bevel + Deep Ambient Occlusion Shadow) */}
-              <div className="relative p-2 sm:p-2.5 bg-gradient-to-b from-[#18241B] to-[#0F1711] border border-[#C29B5D]/45 group-hover:border-[#C29B5D] rounded-[2px] shadow-[0_24px_50px_rgba(0,0,0,0.85),0_8px_18px_rgba(0,0,0,0.6),0_0_0_1px_rgba(0,0,0,0.9)] group-hover:shadow-[0_32px_65px_rgba(0,0,0,0.95),0_12px_28px_rgba(194,155,93,0.3)] transition-all duration-300">
-                {/* Inner Museum Mat Border */}
-                <div className={`relative w-full ${item.aspect} overflow-hidden bg-black/80 ring-1 ring-black/90`}>
-                  <Image
-                    src={item.src}
-                    alt={item.alt || `Wall of fame piece ${index + 1}`}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover brightness-[0.93] group-hover:brightness-105 group-hover:scale-[1.03] transition-all duration-500 ease-out"
-                  />
+        {/* ─── CENTERPIECE TRIPTYCH: SIDE ACHIEVEMENTS + CENTRAL LANDSCAPE VIDEO ─── */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center mb-8 sm:mb-10">
+          {/* Left Wing Achievement Images (3 cols) */}
+          <div className="lg:col-span-3 grid grid-cols-2 lg:grid-cols-1 gap-5 sm:gap-6 order-2 lg:order-1">
+            {sideAchievementsLeft.map((item) => (
+              <FramedPhoto
+                key={item.id}
+                item={item}
+                onClick={() => openImageLightbox(item.src)}
+                sizes="(max-width: 1024px) 50vw, 25vw"
+              />
+            ))}
+          </div>
 
-                  {/* Museum Glass Sheen Reflection */}
-                  <div className="absolute inset-0 bg-gradient-to-tr from-black/25 via-transparent to-white/12 opacity-60 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none" />
+          {/* Centerpiece Landscape Video Frame (6 cols) */}
+          <div className="lg:col-span-6 order-1 lg:order-2">
+            <div className="relative p-2.5 sm:p-3 bg-gradient-to-b from-[#1A261D] to-[#0E1610] border border-[#C29B5D]/60 rounded-[2px] shadow-[0_28px_60px_rgba(0,0,0,0.9),0_10px_25px_rgba(194,155,93,0.18),0_0_0_1px_rgba(0,0,0,0.95)] group">
+              <div className="relative w-full aspect-video overflow-hidden bg-black ring-1 ring-black/90">
+                <video
+                  ref={videoRef}
+                  src={FEATURED_VIDEO_SRC}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  onClick={togglePlay}
+                  className="w-full h-full object-cover cursor-pointer"
+                />
 
-                  {/* Corner Brass Mounting Studs / Nails */}
-                  <span className="absolute top-2 left-2 w-1.5 h-1.5 rounded-full bg-gradient-to-br from-[#E5C78E] to-[#8C6422] shadow-[0_1px_3px_rgba(0,0,0,0.8)] pointer-events-none" />
-                  <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-gradient-to-br from-[#E5C78E] to-[#8C6422] shadow-[0_1px_3px_rgba(0,0,0,0.8)] pointer-events-none" />
-                  <span className="absolute bottom-2 left-2 w-1.5 h-1.5 rounded-full bg-gradient-to-br from-[#E5C78E] to-[#8C6422] shadow-[0_1px_3px_rgba(0,0,0,0.8)] pointer-events-none" />
-                  <span className="absolute bottom-2 right-2 w-1.5 h-1.5 rounded-full bg-gradient-to-br from-[#E5C78E] to-[#8C6422] shadow-[0_1px_3px_rgba(0,0,0,0.8)] pointer-events-none" />
+                {/* Corner Brass Mounting Studs */}
+                <span className="absolute top-2.5 left-2.5 w-2 h-2 rounded-full bg-gradient-to-br from-[#E5C78E] to-[#8C6422] shadow-[0_1px_4px_rgba(0,0,0,0.9)] pointer-events-none z-10" />
+                <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-gradient-to-br from-[#E5C78E] to-[#8C6422] shadow-[0_1px_4px_rgba(0,0,0,0.9)] pointer-events-none z-10" />
+                <span className="absolute bottom-2.5 left-2.5 w-2 h-2 rounded-full bg-gradient-to-br from-[#E5C78E] to-[#8C6422] shadow-[0_1px_4px_rgba(0,0,0,0.9)] pointer-events-none z-10" />
+                <span className="absolute bottom-2.5 right-2.5 w-2 h-2 rounded-full bg-gradient-to-br from-[#E5C78E] to-[#8C6422] shadow-[0_1px_4px_rgba(0,0,0,0.9)] pointer-events-none z-10" />
 
-                  {/* Center Zoom View Icon */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                    <div className="w-12 h-12 rounded-full bg-black/85 border border-[#C29B5D] text-[#C29B5D] flex items-center justify-center shadow-[0_6px_20px_rgba(0,0,0,0.7)] transform scale-90 group-hover:scale-100 transition-transform">
-                      <Maximize2 className="w-5 h-5" />
-                    </div>
-                  </div>
+                {/* Sleek Floating Controls */}
+                <div className="absolute bottom-3.5 right-3.5 flex items-center gap-2 z-20">
+                  <button
+                    onClick={togglePlay}
+                    aria-label={isPlaying ? "Pause video" : "Play video"}
+                    className="w-9 h-9 rounded-full bg-black/75 hover:bg-[#C29B5D] text-white hover:text-[#070B08] border border-[#C29B5D]/50 flex items-center justify-center transition-all cursor-pointer backdrop-blur-xs"
+                  >
+                    {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
+                  </button>
+                  <button
+                    onClick={toggleMute}
+                    aria-label={isMuted ? "Unmute video" : "Mute video"}
+                    className="w-9 h-9 rounded-full bg-black/75 hover:bg-[#C29B5D] text-white hover:text-[#070B08] border border-[#C29B5D]/50 flex items-center justify-center transition-all cursor-pointer backdrop-blur-xs"
+                  >
+                    {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsVideoModalOpen(true);
+                    }}
+                    aria-label="Expand video"
+                    className="w-9 h-9 rounded-full bg-black/75 hover:bg-[#C29B5D] text-white hover:text-[#070B08] border border-[#C29B5D]/50 flex items-center justify-center transition-all cursor-pointer backdrop-blur-xs"
+                  >
+                    <Maximize2 className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Right Wing Achievement Images (3 cols) */}
+          <div className="lg:col-span-3 grid grid-cols-2 lg:grid-cols-1 gap-5 sm:gap-6 order-3">
+            {sideAchievementsRight.map((item) => (
+              <FramedPhoto
+                key={item.id}
+                item={item}
+                onClick={() => openImageLightbox(item.src)}
+                sizes="(max-width: 1024px) 50vw, 25vw"
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* ─── REMAINING GALLERY WALL IMAGES ─── */}
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 sm:gap-7 [column-fill:_balance]">
+          {displayedGridImages.map((item) => (
+            <div key={item.id} className="mb-6 sm:mb-7 break-inside-avoid">
+              <FramedPhoto
+                item={item}
+                onClick={() => openImageLightbox(item.src)}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              />
             </div>
           ))}
         </div>
 
         {/* ─── "VIEW ALL" BUTTON ─── */}
-        {images.length > INITIAL_VISIBLE_COUNT && (
-          <div className="mt-14 sm:mt-18 flex flex-col items-center justify-center gap-3">
+        {wallGalleryImages.length > INITIAL_GRID_COUNT && (
+          <div className="mt-12 sm:mt-16 flex flex-col items-center justify-center gap-3">
             <button
               onClick={() => setShowAll(!showAll)}
               className="inline-flex items-center gap-3 px-10 py-4 rounded-[2px] bg-[#142018] hover:bg-[#C29B5D] text-[#C29B5D] hover:text-[#070B08] border border-[#C29B5D]/60 hover:border-[#C29B5D] font-mono text-xs uppercase tracking-[0.24em] font-bold transition-all duration-300 shadow-[0_10px_30px_rgba(0,0,0,0.7)] cursor-pointer group"
             >
-              <span>{showAll ? "Show Less" : `View All Moments (${images.length})`}</span>
+              <span>
+                {showAll
+                  ? "Show Less"
+                  : `View All Moments (${allLightboxImages.length})`}
+              </span>
               <ChevronDown
                 className={`w-4 h-4 transition-transform duration-300 ${
                   showAll ? "rotate-180" : "group-hover:translate-y-0.5"
@@ -297,16 +498,16 @@ export default function AchievementsGallery({ images = wallOfFameImages }) {
             </button>
             <span className="text-[11px] font-mono text-[#8C9890] tracking-wider">
               {showAll
-                ? `Displaying all ${images.length} archived moments`
-                : `Showing ${displayedImages.length} of ${images.length} field moments`}
+                ? `Displaying all ${allLightboxImages.length} archived moments & featured film`
+                : `Showing ${4 + displayedGridImages.length} of ${allLightboxImages.length} moments & featured film`}
             </span>
           </div>
         )}
       </div>
 
-      {/* ─── FULLSCREEN EXHIBITION LIGHTBOX ─── */}
+      {/* ─── FULLSCREEN IMAGE EXHIBITION LIGHTBOX ─── */}
       <AnimatePresence>
-        {selectedIndex !== null && images[selectedIndex] && (
+        {selectedIndex !== null && allLightboxImages[selectedIndex] && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -324,34 +525,30 @@ export default function AchievementsGallery({ images = wallOfFameImages }) {
             </button>
 
             {/* Previous Button */}
-            {images.length > 1 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedIndex((prev) =>
-                    prev === 0 ? images.length - 1 : prev - 1
-                  );
-                }}
-                aria-label="Previous image"
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-black/80 hover:bg-[#C29B5D] text-white hover:text-[#070B08] flex items-center justify-center transition-all cursor-pointer border border-[#C29B5D]/40"
-              >
-                <ChevronLeft className="w-6 h-6" />
-              </button>
-            )}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedIndex((prev) =>
+                  prev === 0 ? allLightboxImages.length - 1 : prev - 1
+                );
+              }}
+              aria-label="Previous image"
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-black/80 hover:bg-[#C29B5D] text-white hover:text-[#070B08] flex items-center justify-center transition-all cursor-pointer border border-[#C29B5D]/40"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
 
             {/* Next Button */}
-            {images.length > 1 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedIndex((prev) => (prev + 1) % images.length);
-                }}
-                aria-label="Next image"
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-black/80 hover:bg-[#C29B5D] text-white hover:text-[#070B08] flex items-center justify-center transition-all cursor-pointer border border-[#C29B5D]/40"
-              >
-                <ChevronRight className="w-6 h-6" />
-              </button>
-            )}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedIndex((prev) => (prev + 1) % allLightboxImages.length);
+              }}
+              aria-label="Next image"
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-black/80 hover:bg-[#C29B5D] text-white hover:text-[#070B08] flex items-center justify-center transition-all cursor-pointer border border-[#C29B5D]/40"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
 
             {/* Lightbox Frame */}
             <motion.div
@@ -365,8 +562,8 @@ export default function AchievementsGallery({ images = wallOfFameImages }) {
               <div className="relative w-full h-full max-h-[82vh] p-2.5 sm:p-3.5 bg-[#121B14] border border-[#C29B5D]/70 shadow-[0_25px_80px_rgba(0,0,0,0.95)]">
                 <div className="relative w-full h-full">
                   <Image
-                    src={images[selectedIndex].src}
-                    alt={images[selectedIndex].alt || "Wall of fame picture"}
+                    src={allLightboxImages[selectedIndex].src}
+                    alt={allLightboxImages[selectedIndex].alt || "Wall of fame picture"}
                     fill
                     sizes="100vw"
                     className="object-contain"
@@ -377,8 +574,44 @@ export default function AchievementsGallery({ images = wallOfFameImages }) {
 
               {/* Minimal Counter */}
               <div className="mt-3 bg-black/80 border border-[#C29B5D]/30 px-3.5 py-1 rounded-[2px] text-xs font-mono text-[#C29B5D]">
-                {selectedIndex + 1} / {images.length}
+                {selectedIndex + 1} / {allLightboxImages.length}
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── FULLSCREEN LANDSCAPE VIDEO MODAL ─── */}
+      <AnimatePresence>
+        {isVideoModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] bg-black/96 backdrop-blur-md flex items-center justify-center p-4 sm:p-8"
+            onClick={() => setIsVideoModalOpen(false)}
+          >
+            <button
+              onClick={() => setIsVideoModalOpen(false)}
+              aria-label="Close video"
+              className="absolute top-5 right-5 z-20 w-11 h-11 rounded-full bg-black/80 hover:bg-[#C29B5D] text-white hover:text-[#070B08] flex items-center justify-center transition-all cursor-pointer border border-[#C29B5D]/40"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-5xl p-2 sm:p-3 bg-[#121B14] border border-[#C29B5D]/70 shadow-[0_25px_80px_rgba(0,0,0,0.95)]"
+            >
+              <video
+                src={FEATURED_VIDEO_SRC}
+                controls
+                autoPlay
+                className="w-full aspect-video bg-black"
+              />
             </motion.div>
           </motion.div>
         )}
