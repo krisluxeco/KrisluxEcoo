@@ -10,22 +10,27 @@ export default function BlogList() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
-  const fetchBlogs = async () => {
-    try {
-      const res = await fetch(`/api/admin/blog?search=${search}`);
-      const data = await res.json();
-      if (res.ok) {
-        setBlogs(data.blogs);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchBlogs();
+    let ignore = false;
+    const timer = setTimeout(async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/admin/blog?search=${encodeURIComponent(search)}`);
+        const data = await res.json();
+        if (!ignore && res.ok && data?.blogs) {
+          setBlogs(data.blogs);
+        }
+      } catch (error) {
+        if (!ignore) console.error("Error fetching blogs:", error);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    }, 250);
+
+    return () => {
+      ignore = true;
+      clearTimeout(timer);
+    };
   }, [search]);
 
   const handleDelete = async (id) => {

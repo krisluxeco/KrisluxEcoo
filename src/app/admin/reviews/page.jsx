@@ -23,7 +23,24 @@ export default function AdminReviewsPage() {
   };
 
   useEffect(() => {
-    fetchReviews();
+    let ignore = false;
+    const load = async () => {
+      try {
+        const res = await fetch("/api/admin/reviews");
+        if (res.ok) {
+          const data = await res.json();
+          if (!ignore) setReviews(data);
+        }
+      } catch (err) {
+        if (!ignore) console.error(err);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    };
+    load();
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   const handleDelete = async (id) => {
@@ -102,7 +119,7 @@ export default function AdminReviewsPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 max-w-xs truncate" title={review.comment}>
-                      <span className="italic">"{review.comment}"</span>
+                      <span className="italic">&ldquo;{review.comment}&rdquo;</span>
                     </td>
                     <td className="px-6 py-4 text-xs whitespace-nowrap">
                       {new Date(review.createdAt).toLocaleDateString()}

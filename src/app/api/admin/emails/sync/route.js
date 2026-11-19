@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/adminAuth";
 import { NextResponse } from "next/server";
 import imaps from "imap-simple";
 import { simpleParser } from "mailparser";
@@ -5,6 +6,9 @@ import connectDb from "@/lib/db";
 import Email from "@/models/Email.model";
 
 export async function POST(req) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   try {
     await connectDb();
     

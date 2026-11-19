@@ -194,7 +194,7 @@ const allLightboxImages = [
   ...wallGalleryImages,
 ];
 
-const INITIAL_GRID_COUNT = 6;
+const INITIAL_GRID_COUNT = 9;
 
 function FramedPhoto({ item, onClick, sizes }) {
   return (
@@ -234,7 +234,7 @@ function FramedPhoto({ item, onClick, sizes }) {
 }
 
 export default function AchievementsGallery() {
-  const [showAll, setShowAll] = useState(false);
+  const [showAll, setShowAll] = useState(true);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
@@ -245,6 +245,11 @@ export default function AchievementsGallery() {
   const displayedGridImages = showAll
     ? wallGalleryImages
     : wallGalleryImages.slice(0, INITIAL_GRID_COUNT);
+
+  // 3 balanced columns for desktop so the right side is always filled with images
+  const col1 = displayedGridImages.filter((_, idx) => idx % 3 === 0);
+  const col2 = displayedGridImages.filter((_, idx) => idx % 3 === 1);
+  const col3 = displayedGridImages.filter((_, idx) => idx % 3 === 2);
 
   const openImageLightbox = (src) => {
     const idx = allLightboxImages.findIndex((img) => img.src === src);
@@ -465,17 +470,66 @@ export default function AchievementsGallery() {
           </div>
         </div>
 
-        {/* ─── REMAINING GALLERY WALL IMAGES ─── */}
-        <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 sm:gap-7 [column-fill:_balance]">
-          {displayedGridImages.map((item) => (
-            <div key={item.id} className="mb-6 sm:mb-7 break-inside-avoid">
+        {/* ─── GALLERY WALL IMAGES: 3 BALANCED COLUMNS (FILLS ALL AREAS) ─── */}
+        <div className="hidden lg:grid lg:grid-cols-3 gap-6 sm:gap-7 items-start">
+          <div className="flex flex-col gap-6 sm:gap-7">
+            {col1.map((item) => (
               <FramedPhoto
+                key={item.id}
                 item={item}
                 onClick={() => openImageLightbox(item.src)}
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                sizes="33vw"
               />
-            </div>
-          ))}
+            ))}
+          </div>
+          <div className="flex flex-col gap-6 sm:gap-7">
+            {col2.map((item) => (
+              <FramedPhoto
+                key={item.id}
+                item={item}
+                onClick={() => openImageLightbox(item.src)}
+                sizes="33vw"
+              />
+            ))}
+          </div>
+          <div className="flex flex-col gap-6 sm:gap-7">
+            {col3.map((item) => (
+              <FramedPhoto
+                key={item.id}
+                item={item}
+                onClick={() => openImageLightbox(item.src)}
+                sizes="33vw"
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Medium & Mobile 2-column / 1-column layout */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:hidden gap-6 sm:gap-7 items-start">
+          <div className="flex flex-col gap-6 sm:gap-7">
+            {displayedGridImages
+              .filter((_, idx) => idx % 2 === 0)
+              .map((item) => (
+                <FramedPhoto
+                  key={item.id}
+                  item={item}
+                  onClick={() => openImageLightbox(item.src)}
+                  sizes="(max-width: 640px) 100vw, 50vw"
+                />
+              ))}
+          </div>
+          <div className="flex flex-col gap-6 sm:gap-7">
+            {displayedGridImages
+              .filter((_, idx) => idx % 2 === 1)
+              .map((item) => (
+                <FramedPhoto
+                  key={item.id}
+                  item={item}
+                  onClick={() => openImageLightbox(item.src)}
+                  sizes="50vw"
+                />
+              ))}
+          </div>
         </div>
 
         {/* ─── "VIEW ALL" BUTTON ─── */}

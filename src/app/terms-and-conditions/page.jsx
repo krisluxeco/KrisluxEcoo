@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Terms and Conditions | KrisluxECO",
+  title: "Terms and Conditions",
   description: "Terms and conditions governing the purchase, supply, and use of KrisluxECO handcrafted sustainable products.",
 };
 

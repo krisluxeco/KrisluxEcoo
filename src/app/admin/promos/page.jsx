@@ -25,7 +25,24 @@ export default function AdminPromosPage() {
   };
 
   useEffect(() => {
-    fetchPromos();
+    let ignore = false;
+    const load = async () => {
+      try {
+        const res = await fetch("/api/admin/promos");
+        if (res.ok) {
+          const data = await res.json();
+          if (!ignore) setPromos(data);
+        }
+      } catch (err) {
+        if (!ignore) console.error(err);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    };
+    load();
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   const handleCreate = async (e) => {
@@ -119,7 +136,7 @@ export default function AdminPromosPage() {
               ) : promos.length === 0 ? (
                 <tr>
                   <td colSpan="4" className="px-6 py-12 text-center text-[#9E9088]">
-                    No promo codes found. Click "New Promo Code" to create one.
+                    No promo codes found. Click &ldquo;New Promo Code&rdquo; to create one.
                   </td>
                 </tr>
               ) : (

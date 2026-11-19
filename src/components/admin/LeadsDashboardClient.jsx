@@ -31,30 +31,35 @@ export default function LeadsDashboardClient() {
   
   const [selectedLead, setSelectedLead] = useState(null);
 
-  const fetchLeads = async (currentStatus = filter, currentPage = page) => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/admin/leads?status=${currentStatus}&page=${currentPage}&limit=20`);
-      const json = await res.json();
-      if (json.success) {
-        setLeads(json.data);
-        setPagination(json.pagination);
-      }
-    } catch (error) {
-      console.error("Failed to fetch leads:", error);
-    }
-    setLoading(false);
+  const handleFilterChange = (newFilter) => {
+    setFilter(newFilter);
+    setPage(1);
+    setSelectedLead(null);
   };
 
   useEffect(() => {
-    setPage(1);
-    fetchLeads(filter, 1);
-    setSelectedLead(null);
-  }, [filter]);
+    let ignore = false;
+    const loadLeads = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/admin/leads?status=${filter}&page=${page}&limit=20`);
+        const json = await res.json();
+        if (!ignore && json.success) {
+          setLeads(json.data);
+          setPagination(json.pagination);
+        }
+      } catch (error) {
+        if (!ignore) console.error("Failed to fetch leads:", error);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    };
 
-  useEffect(() => {
-    if (page > 1) fetchLeads(filter, page);
-  }, [page]);
+    loadLeads();
+    return () => {
+      ignore = true;
+    };
+  }, [filter, page]);
 
   const handleSync = async () => {
     setIsSyncing(true);
@@ -129,28 +134,28 @@ export default function LeadsDashboardClient() {
 
         <nav className="flex-1 px-4 space-y-1">
           <button
-            onClick={() => setFilter("all")}
+            onClick={() => handleFilterChange("all")}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${filter === "all" ? "bg-[#F4EFE6] text-[#8B2935] font-semibold" : "text-[#6B6560] hover:bg-black/5"}`}
           >
             <Briefcase size={18} /> <span className="font-medium">All Leads</span>
           </button>
           
           <button
-            onClick={() => setFilter("new")}
+            onClick={() => handleFilterChange("new")}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${filter === "new" ? "bg-[#F4EFE6] text-[#8B2935] font-semibold" : "text-[#6B6560] hover:bg-black/5"}`}
           >
             <Clock size={18} /> <span className="font-medium">New</span>
           </button>
           
           <button
-            onClick={() => setFilter("contacted")}
+            onClick={() => handleFilterChange("contacted")}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${filter === "contacted" ? "bg-[#F4EFE6] text-[#8B2935] font-semibold" : "text-[#6B6560] hover:bg-black/5"}`}
           >
             <MessageSquare size={18} /> <span className="font-medium">Contacted</span>
           </button>
 
           <button
-            onClick={() => setFilter("converted")}
+            onClick={() => handleFilterChange("converted")}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${filter === "converted" ? "bg-[#F4EFE6] text-[#8B2935] font-semibold" : "text-[#6B6560] hover:bg-black/5"}`}
           >
             <CheckCircle size={18} /> <span className="font-medium">Converted</span>

@@ -2,22 +2,38 @@ import connectDb from "@/lib/db";
 import Product from "@/models/product.model";
 import User from "@/models/user.model";
 import ProductDetailClient from "@/components/ProductDetailClient";
-import Link from "next/link";
-import { Package, ChevronLeft } from "lucide-react";
 import { auth } from "@/auth";
+import mongoose from "mongoose";
+import { notFound } from "next/navigation";
+import Review from "@/models/review.model";
+import JsonLd from "@/components/JsonLd";
+import { pageMetadata, breadcrumbJsonLd, absoluteUrl, SITE_URL } from "@/lib/seo";
+
+const loadProduct = async (id) => {
+  if (!mongoose.isValidObjectId(id)) return null;
+  await connectDb();
+  const p = await Product.findById(id).lean();
+  return p && p.status !== "draft" ? p : null; // drafts are never public
+};
 
 export async function generateMetadata({ params }) {
-  await connectDb();
   try {
     const { id } = await params;
-    const product = await Product.findById(id).lean();
-    if (!product) return { title: "Product Not Found | KrisluxEco" };
-    return {
-      title: `${product.name} | KrisluxEco`,
-      description: product.description.substring(0, 160),
-    };
+    const product = await loadProduct(id);
+    if (!product) return { title: "Product not found", robots: { index: false } };
+    const desc = (product.description || "").replace(/\s+/g, " ").trim();
+    return pageMetadata({
+      title: `${product.name} — Handmade ${product.category}`,
+      description:
+        desc.length > 40
+          ? desc.slice(0, 155)
+          : `${product.name}: handmade water hyacinth ${product.category?.toLowerCase()} by women artisans in Bihar. Bulk orders and delivery across India.`,
+      path: `/user/products/${id}`,
+      keywords: [product.name, product.category, ...(product.tags || [])],
+      image: product.images?.[0]?.url,
+    });
   } catch {
-    return { title: "Product | KrisluxEco" };
+    return { title: "Product" };
   }
 }
 
@@ -33,7 +49,7 @@ export default async function ProductDetailPage({ params }) {
 
   try {
     const { id } = await params;
-    product = await Product.findById(id).lean();
+    product = await loadProduct(id);
 
     if (product) {
       // Find similar products in the same category, excluding current product
@@ -57,40 +73,75 @@ export default async function ProductDetailPage({ params }) {
     console.error("Error fetching product details:", error);
   }
 
-  // Gracefully handle if product not found
-  if (!product) {
-    return (
-      <div className="min-h-[70vh] bg-[#FAF7F2] flex flex-col items-center justify-center text-center px-6">
-        <Package size={48} className="text-[#9E9088] mb-4" />
-        <h2
-          className="text-3xl font-semibold text-[#1C1C1A]"
-          style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
-        >
-          Product Not Found
-        </h2>
-        <p className="text-[#9E9088] text-sm mt-1 max-w-sm font-light">
-          The product collection you are looking for does not exist or has been removed from our active catalog.
-        </p>
-        <Link
-          href="/user/products"
-          className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#4A6741] text-white px-6 py-2.5 text-sm font-medium hover:bg-[#3a5233] transition shadow-sm"
-        >
-          <ChevronLeft size={16} /> Back to Catalog
-        </Link>
-      </div>
-    );
-  }
+  // Real 404 status (not a "soft 404") so search engines drop removed products
+  if (!product) notFound();
 
   // Serialize Mongoose docs for server-to-client boundary
   const serializedProduct = JSON.parse(JSON.stringify(product));
   const serializedSimilar = JSON.parse(JSON.stringify(similarProducts));
 
+  // Structured data — must match what is visible on the page
+  let rating = null;
+  try {
+    const agg = await Review.aggregate([
+      { $match: { productId: product._id, status: "approved" } },
+      { $group: { _id: null, avg: { $avg: "$rating" }, n: { $sum: 1 } } },
+    ]);
+    if (agg[0]?.n) rating = { avg: Math.round(agg[0].avg * 10) / 10, n: agg[0].n };
+  } catch {
+    /* rating is optional */
+  }
+  const url = absoluteUrl(`/user/products/${product._id}`);
+  const price = product.discountPrice ?? product.price;
+  const productLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "@id": `${url}#product`,
+    name: product.name,
+    description: product.description,
+    image: (product.images || []).map((im) => (im.url?.startsWith("http") ? im.url : absoluteUrl(im.url))),
+    sku: product.sku || String(product._id),
+    category: product.category,
+    material: "Water hyacinth",
+    brand: { "@type": "Brand", name: product.brand || "KrisluxECO" },
+    manufacturer: { "@id": `${SITE_URL}/#organization` },
+    countryOfOrigin: "IN",
+    ...(product.tags?.length ? { keywords: product.tags.join(", ") } : {}),
+    offers: {
+      "@type": "Offer",
+      url,
+      priceCurrency: "INR",
+      price: Number(price).toFixed(2),
+      availability:
+        product.status === "out_of_stock" || product.stock === 0 ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+      itemCondition: "https://schema.org/NewCondition",
+      seller: { "@id": `${SITE_URL}/#organization` },
+      eligibleQuantity: { "@type": "QuantitativeValue", minValue: product.minOrderQty || 1 },
+      areaServed: { "@type": "Country", name: "India" },
+    },
+    ...(rating
+      ? { aggregateRating: { "@type": "AggregateRating", ratingValue: rating.avg, reviewCount: rating.n, bestRating: 5, worstRating: 1 } }
+      : {}),
+  };
+
   return (
+    <>
+    <JsonLd
+      data={[
+        productLd,
+        breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Products", path: "/user/products" },
+          { name: product.name, path: `/user/products/${product._id}` },
+        ]),
+      ]}
+    />
     <ProductDetailClient
       product={serializedProduct}
       similarProducts={serializedSimilar}
       isLiked={isLiked}
       savedProductIds={savedProductIds}
     />
+    </>
   );
 }

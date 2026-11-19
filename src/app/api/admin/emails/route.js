@@ -1,9 +1,13 @@
+import { requireAdmin } from "@/lib/adminAuth";
 import { NextResponse } from "next/server";
 import connectDb from "@/lib/db";
 import Email from "@/models/Email.model";
 import nodemailer from "nodemailer";
 
 export async function GET(req) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   try {
     await connectDb();
 
@@ -48,6 +52,9 @@ export async function GET(req) {
 }
 
 export async function POST(req) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   try {
     await connectDb();
     const { to, subject, body } = await req.json();

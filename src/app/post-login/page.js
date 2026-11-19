@@ -10,7 +10,8 @@ export default function PostLogin() {
 
   useEffect(() => {
     if (status === "authenticated") {
-      router.replace(session?.user?.role === "admin" ? "/admin" : "/");
+      const role = session?.user?.role;
+      router.replace(role === "admin" ? "/admin" : role === "manufacturer" ? "/manufacturer" : "/");
     } else if (status === "unauthenticated") {
       router.replace("/login");
     }

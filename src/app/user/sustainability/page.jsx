@@ -129,36 +129,50 @@ const SDGS_DATA = [
   {
     num: "SDG 1",
     title: "No Poverty",
+    logo: "/images/sdg/sdg-1.svg",
+    color: "#E5243B",
     desc: "Tripling artisan household earnings above local agricultural day-labor rates with consistent year-round production orders.",
   },
   {
     num: "SDG 5",
     title: "Gender Equality",
+    logo: "/images/sdg/sdg-5.svg",
+    color: "#FF3A21",
     desc: "80% female artisan guild workforce, providing women with personal bank accounts and leadership within rural co-op clusters.",
   },
   {
     num: "SDG 8",
     title: "Decent Work & Growth",
+    logo: "/images/sdg/sdg-8.svg",
+    color: "#A21942",
     desc: "Safe, well-ventilated co-op workshops equipped with ergonomic weaving tables, clean drinking water, and fair wage transparency.",
   },
   {
     num: "SDG 12",
     title: "Responsible Production",
+    logo: "/images/sdg/sdg-12.svg",
+    color: "#BF8B2E",
     desc: "Closed-loop, zero-waste manufacturing that consumes zero synthetic petrochemical binders or toxic solvent dyes.",
   },
   {
     num: "SDG 13",
     title: "Climate Action",
+    logo: "/images/sdg/sdg-13.svg",
+    color: "#3F7E44",
     desc: "Mitigating massive decomposing wetland methane emissions by converting decaying aquatic biomass into durable lifestyle objects.",
   },
   {
     num: "SDG 14",
     title: "Life Below Water",
+    logo: "/images/sdg/sdg-14.svg",
+    color: "#0A97D9",
     desc: "Restoring dissolved oxygen levels, native aquatic biodiversity, and freshwater sunlight for indigenous fish in Bihar river basins.",
   },
   {
     num: "SDG 17",
     title: "Global Partnerships",
+    logo: "/images/sdg/sdg-17.svg",
+    color: "#19486A",
     desc: "Connecting rural Bihar artisan cooperatives with eco-conscious consumers, architects, and sustainable hospitality spaces.",
   },
 ];
@@ -363,9 +377,14 @@ export default function SustainabilityPage() {
             <span className="text-[10px] font-mono tracking-[0.24em] uppercase text-[#C29B5D] font-bold block mb-2">
               Global Standards Alignment
             </span>
-            <h2 className="text-[clamp(2rem,4vw,3.2rem)] font-light leading-tight text-[#141E17]" style={{ fontFamily: serif }}>
-              Direct Contributions to the
-              <span className="italic font-normal text-[#3E634A]"> UN Sustainability Goals</span>
+            <h2
+              className="text-[clamp(1.75rem,3.8vw,2.9rem)] font-light leading-tight text-[#141E17] tracking-tight uppercase"
+              style={{ fontFamily: serif }}
+            >
+              Direct Contributions to{" "}
+              <span className="italic font-normal text-[#3E634A] block sm:inline">
+                UN Sustainable Development Goals
+              </span>
             </h2>
             <p className="text-xs sm:text-sm text-[#6B6560] max-w-xl mx-auto mt-3 font-light">
               Our rural operations are audited to actively satisfy seven United Nations Sustainable Development Goals, providing institutional procurement teams with verified ESG credentials.
@@ -375,18 +394,52 @@ export default function SustainabilityPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {SDGS_DATA.map((sdg, i) => (
               <FadeUp key={sdg.num} delay={i * 0.06}>
-                <div className="h-full bg-white border border-[#EAE3D6] p-6 rounded-[2px] shadow-sm hover:border-[#C29B5D]/60 hover:shadow-md transition-all flex flex-col justify-between">
+                <div className="h-full bg-white border border-[#EAE3D6] p-6 rounded-[2px] shadow-sm hover:border-[#C29B5D]/60 hover:shadow-md transition-all flex flex-col justify-between group">
                   <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs font-mono font-bold text-[#C29B5D] bg-[#0D140F] px-2.5 py-1 rounded-[2px]">
-                        {sdg.num}
-                      </span>
-                      <CheckCircle2 size={14} className="text-[#3E634A]" />
+                    {/* Top Header: UN Verified Logo Badge + Goal Tag */}
+                    <div className="flex items-start justify-between gap-3 mb-4">
+                      <div
+                        className="relative w-16 h-16 sm:w-18 sm:h-18 rounded-lg overflow-hidden shadow-sm shrink-0 group-hover:scale-105 transition-transform duration-300 border border-black/5 flex items-center justify-center"
+                        style={{ backgroundColor: sdg.color }}
+                      >
+                        {/* Direct img tag guarantees instant vector SVG display */}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={sdg.logo}
+                          alt={`${sdg.num} - ${sdg.title}`}
+                          width={72}
+                          height={72}
+                          className="w-full h-full object-contain p-1 rounded-lg"
+                          loading="lazy"
+                        />
+                      </div>
+
+                      <div className="flex flex-col items-end gap-1.5">
+                        <span
+                          className="text-xs font-mono font-bold text-white px-2.5 py-1 rounded-[2px] shadow-2xs"
+                          style={{ backgroundColor: sdg.color }}
+                        >
+                          {sdg.num}
+                        </span>
+                        <span className="text-[10px] font-mono text-[#3E634A] flex items-center gap-1 font-semibold">
+                          <CheckCircle2 size={13} className="text-[#3E634A]" />
+                          Verified
+                        </span>
+                      </div>
                     </div>
-                    <h3 className="text-base font-semibold text-[#141E17] mb-2" style={{ fontFamily: serif }}>
+
+                    {/* Title */}
+                    <h3
+                      className="text-base sm:text-lg font-semibold text-[#141E17] mb-2"
+                      style={{ fontFamily: serif }}
+                    >
                       {sdg.title}
                     </h3>
-                    <p className="text-xs text-[#6B6560] leading-relaxed font-light">{sdg.desc}</p>
+
+                    {/* Description */}
+                    <p className="text-xs text-[#6B6560] leading-relaxed font-light">
+                      {sdg.desc}
+                    </p>
                   </div>
                 </div>
               </FadeUp>

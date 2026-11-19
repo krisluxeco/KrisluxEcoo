@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Privacy Policy | KrisluxECO",
+  title: "Privacy Policy",
   description: "Learn how KrisluxECO collects, uses, and safeguards your personal and commercial data.",
 };
 

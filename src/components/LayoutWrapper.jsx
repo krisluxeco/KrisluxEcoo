@@ -15,6 +15,8 @@ export default function LayoutWrapper({ children }) {
 
   const hideNavbar =
     pathname.startsWith("/admin") ||
+    pathname.startsWith("/manufacturer") ||
+    pathname.startsWith("/invite") ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/register") ||
     pathname.startsWith("/user/profile");

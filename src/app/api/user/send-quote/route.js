@@ -5,6 +5,7 @@ import connectDb from "@/lib/db";
 import Quote from "@/models/quote.model";
 import User from "@/models/user.model";
 import Email from "@/models/Email.model";
+import { sendMail, getSiteUrl } from "@/lib/mailer";
 
 export async function POST(req) {
   try {
@@ -185,8 +186,10 @@ export async function POST(req) {
     };
 
     // Only attempt to send if SMTP_USER is configured, otherwise just log
+    // The quote is already saved — a mail failure must not make the customer
+    // think the request failed (they would resubmit and create duplicates).
     if (process.env.SMTP_USER) {
-      await transporter.sendMail(mailOptions);
+      await transporter.sendMail(mailOptions).catch((err) => console.error("Admin quote email failed:", err));
     } else {
       console.log("Email tracking (simulated - SMTP not configured):", mailOptions.subject);
     }
@@ -200,9 +203,26 @@ export async function POST(req) {
       body: htmlContent,
       folder: "inbox",
       isRead: false,
-    });
+    }).catch((err) => console.error("Failed to log quote email to inbox:", err));
 
-    return NextResponse.json({ success: true }, { status: 200 });
+    // Confirmation to the customer with their tracking code
+    if (email) {
+      const trackUrl = `${getSiteUrl(req)}/track?code=${encodeURIComponent(newQuote.trackingCode)}`;
+      await sendMail({
+        to: email,
+        subject: `We received your request — Tracking ID ${newQuote.trackingCode}`,
+        html: `
+          <div style="font-family: Georgia, serif; max-width: 560px; margin: 0 auto; background:#FAF7F2; padding: 36px 32px; border-radius: 10px; color:#1C1C1A;">
+            <p style="font-size:22px; font-weight:bold; margin:0 0 24px;">Krislux<span style="color:#C29B5D;">ECO</span></p>
+            <p style="font-size:15px;">Thank you! Our concierge team has received your quote request and will get back to you shortly.</p>
+            <p style="font-size:15px;">Your tracking ID is <strong style="font-family: monospace; letter-spacing:1px;">${newQuote.trackingCode}</strong>. You can follow every step of your order — from quote to production to delivery — from your profile or the tracking page.</p>
+            <p style="margin:24px 0;"><a href="${trackUrl}" style="display:inline-block; background:#1C1C1A; color:#fff; text-decoration:none; padding:14px 28px; border-radius:6px; font-family: Arial, sans-serif; font-size:13px; font-weight:bold; letter-spacing:1px;">TRACK MY ORDER</a></p>
+            <p style="margin-top:32px; font-size:13px; color:#7A7369;">Warm regards,<br/>The KrisluxECO Team</p>
+          </div>`,
+      });
+    }
+
+    return NextResponse.json({ success: true, trackingCode: newQuote.trackingCode }, { status: 200 });
   } catch (error) {
     console.error("Failed to send quote email:", error);
     return NextResponse.json({ message: "Failed to send email" }, { status: 500 });

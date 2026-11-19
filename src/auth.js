@@ -37,6 +37,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           throw new Error("Your account has been suspended.");
         }
 
+        if (!user.password) {
+          throw new Error(
+            user.role === "manufacturer"
+              ? "Please activate your account using the invite link sent to your email."
+              : "This account uses Google sign-in. Please continue with Google or reset your password."
+          );
+        }
+
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
@@ -111,7 +119,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       else if (new URL(url).origin === baseUrl) return url;
       return baseUrl;
     },
-    jwt({ token, user, trigger, session }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.name = user.name;
@@ -120,10 +128,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.image = user.image;
       }
 
-      if (trigger === "update" && session) {
-        if (session.name) token.name = session.name;
-        if (session.role) token.role = session.role;
-        if (session.image) token.image = session.image;
+      if (trigger === "update") {
+        // SECURITY: `session` here comes from the browser (useSession().update()).
+        // Only cosmetic fields may be taken from it — the role is always re-read
+        // from the database, never from client input.
+        if (typeof session?.name === "string") token.name = session.name.slice(0, 120);
+        if (typeof session?.image === "string") token.image = session.image.slice(0, 500);
+        try {
+          await connectDb();
+          const dbUser = await User.findOne({ email: token.email }).select("role isBlocked").lean();
+          if (dbUser) {
+            token.role = token.email === ADMIN_EMAIL ? "admin" : dbUser.role;
+          }
+        } catch (err) {
+          console.error("Session role refresh failed:", err);
+        }
       }
 
       return token;

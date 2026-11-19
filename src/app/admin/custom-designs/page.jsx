@@ -10,10 +10,6 @@ export default function AdminCustomDesigns() {
   const [error, setError] = useState("");
   const [selectedRequest, setSelectedRequest] = useState(null);
 
-  useEffect(() => {
-    fetchRequests();
-  }, []);
-
   const fetchRequests = async () => {
     try {
       setIsLoading(true);
@@ -27,6 +23,27 @@ export default function AdminCustomDesigns() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    let ignore = false;
+    const load = async () => {
+      try {
+        const res = await fetch("/api/admin/custom-designs", { cache: "no-store" });
+        const data = await res.json();
+        if (!ignore && res.ok && data?.requests) {
+          setRequests(data.requests);
+        }
+      } catch (err) {
+        if (!ignore) setError(err.message);
+      } finally {
+        if (!ignore) setIsLoading(false);
+      }
+    };
+    load();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const updateStatus = async (id, newStatus) => {
     try {
