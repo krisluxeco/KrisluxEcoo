@@ -358,7 +358,7 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
 
   const [products] = useState(initialProducts);
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(() => searchParams.get("search") || "");
   const [selectedCategories, setSelectedCategories] = useState(
     initialCategory ? [initialCategory] : []
   );
@@ -479,7 +479,7 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
   }, []);
 
   /* ------------------------------- Drawer Content -------------------------- */
-  const DrawerContent = () => (
+  const renderDrawerContent = () => (
     <>
       <div className="flex items-center justify-between mb-8">
         <h3
@@ -667,7 +667,7 @@ export default function ProductsListClient({ initialProducts = [], savedProductI
 
                 {/* Scrollable Filters */}
                 <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-[#C8A97A] scrollbar-track-transparent">
-                  <DrawerContent />
+                  {renderDrawerContent()}
                 </div>
 
                 {/* Footer Actions */}

@@ -8,6 +8,11 @@ import React from 'react';
 
 export const dynamic = "force-dynamic";
 
+export const metadata = {
+  title: { absolute: "KrisluxECO | Handmade Water Hyacinth Products from Bihar, India" },
+  alternates: { canonical: "/" },
+};
+
 const page = async () => {
   await connectDb();
 

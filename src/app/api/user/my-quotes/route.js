@@ -18,9 +18,16 @@ export async function GET(req) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
+    // Workshop identity is never shown to customers (double-blind)
     const quotes = await Quote.find({ userId: user._id })
+      .select("-assignedManufacturer -customizationFilePublicId")
       .populate("items.productId")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
+    await Quote.ensureTrackingCodes(quotes);
+    for (const q of quotes) {
+      q.stageHistory = (q.stageHistory || []).map(({ actor, ...h }) => h);
+    }
     
     return NextResponse.json({ quotes }, { status: 200 });
   } catch (error) {

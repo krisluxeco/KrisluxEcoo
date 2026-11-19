@@ -15,23 +15,28 @@ export default function CustomersList() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
-  const fetchUsers = async () => {
-    try {
-      const res = await fetch(`/api/admin/customers?search=${search}`);
-      const data = await res.json();
-      if (res.ok) {
-        setUsers(data.users);
-        if (data.stats) setStats(data.stats);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchUsers();
+    let ignore = false;
+    const timer = setTimeout(async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/admin/customers?search=${encodeURIComponent(search)}`);
+        const data = await res.json();
+        if (!ignore && res.ok) {
+          if (data?.users) setUsers(data.users);
+          if (data?.stats) setStats(data.stats);
+        }
+      } catch (error) {
+        if (!ignore) console.error("Error fetching customers:", error);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    }, 250);
+
+    return () => {
+      ignore = true;
+      clearTimeout(timer);
+    };
   }, [search]);
 
   const toggleBlockStatus = async (id, currentStatus) => {

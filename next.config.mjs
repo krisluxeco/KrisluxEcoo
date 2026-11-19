@@ -2,6 +2,9 @@
 const nextConfig = {
   allowedDevOrigins: ["192.168.31.138"],
   images: {
+    dangerouslyAllowSVG: true,
+    contentDispositionType: "inline",
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
       {
         protocol: "https",

@@ -410,7 +410,7 @@ export default function NavBar() {
               {status === "authenticated" ? (
                 <div className="hidden lg:block mr-1">
                   <Link
-                    href={session.user.role === "admin" ? "/admin" : "/user/profile"}
+                    href={session.user.role === "admin" ? "/admin" : session.user.role === "manufacturer" ? "/manufacturer" : "/user/profile"}
                     className="flex items-center gap-2 outline-none focus:ring-1 focus:ring-[#C29B5D]/60 rounded-full cursor-pointer transition-transform hover:scale-105"
                     aria-label="User Profile Dashboard"
                   >

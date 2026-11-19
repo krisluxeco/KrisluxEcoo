@@ -115,3 +115,22 @@ body {
   }
 }
 
+
+/* ── Long-form article content (blog / journal) ───────────────────────── */
+.article-content { color: #2B2824; font-size: 1.0625rem; line-height: 1.85; }
+.article-content > * + * { margin-top: 1.15em; }
+.article-content h2 { font-family: var(--font-playfair), Georgia, serif; font-size: 1.75rem; line-height: 1.3; color: #1C1C1A; margin-top: 2.2em; }
+.article-content h3 { font-family: var(--font-playfair), Georgia, serif; font-size: 1.35rem; color: #1C1C1A; margin-top: 1.8em; }
+.article-content a { color: #4A6741; text-decoration: underline; text-underline-offset: 3px; }
+.article-content a:hover { color: #C8A97A; }
+.article-content strong { color: #1C1C1A; font-weight: 600; }
+.article-content ul, .article-content ol { padding-left: 1.4em; }
+.article-content ul { list-style: disc; }
+.article-content ol { list-style: decimal; }
+.article-content li + li { margin-top: 0.45em; }
+.article-content li::marker { color: #C8A97A; }
+.article-content blockquote { border-left: 3px solid #C8A97A; padding-left: 1em; font-style: italic; color: #4A4540; }
+.article-content img { max-width: 100%; height: auto; }
+.article-content table { width: 100%; border-collapse: collapse; font-size: 0.92rem; display: block; overflow-x: auto; }
+.article-content th, .article-content td { border: 1px solid #E8DDD0; padding: 0.6em 0.8em; text-align: left; vertical-align: top; }
+.article-content thead th { background: #F4EFE6; color: #1C1C1A; font-weight: 600; }

@@ -1,26 +1,54 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Search, FileText, Download, Briefcase, Mail, Phone, Trash2 } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { Search, FileText, Download, Briefcase, Mail, Phone, Trash2, RefreshCw } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function AdminCatalogs() {
   const [catalogs, setCatalogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [search, setSearch] = useState("");
 
-  const fetchCatalogs = async () => {
+  const fetchCatalogs = useCallback(async () => {
     try {
       const res = await fetch("/api/catalogs");
       const data = await res.json();
-      if (res.ok) {
+      if (res.ok && data?.catalogs) {
         setCatalogs(data.catalogs);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Failed to load catalogs:", error);
     } finally {
       setLoading(false);
+      setIsRefreshing(false);
     }
+  }, []);
+
+  useEffect(() => {
+    let ignore = false;
+    const load = async () => {
+      try {
+        const res = await fetch("/api/catalogs");
+        const data = await res.json();
+        if (!ignore && res.ok && data?.catalogs) {
+          setCatalogs(data.catalogs);
+        }
+      } catch (err) {
+        if (!ignore) console.error("Catalog fetch error:", err);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    };
+    load();
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    fetchCatalogs();
   };
 
   const updateStatus = async (id, newStatus) => {
@@ -31,58 +59,73 @@ export default function AdminCatalogs() {
         body: JSON.stringify({ status: newStatus }),
       });
       if (res.ok) {
-        setCatalogs(catalogs.map(c => c._id === id ? { ...c, status: newStatus } : c));
-      } else {
-        console.error("Failed to update status");
+        setCatalogs((prev) =>
+          prev.map((c) => (c._id === id ? { ...c, status: newStatus } : c))
+        );
       }
     } catch (error) {
-      console.error(error);
+      console.error("Status update error:", error);
     }
   };
 
   const deleteCatalog = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this catalog?")) return;
+    if (!window.confirm("Are you sure you want to delete this catalog submission?")) return;
     try {
       const res = await fetch(`/api/catalogs/${id}`, { method: "DELETE" });
       if (res.ok) {
-        setCatalogs(catalogs.filter(c => c._id !== id));
-      } else {
-        console.error("Failed to delete catalog");
+        setCatalogs((prev) => prev.filter((c) => c._id !== id));
       }
     } catch (error) {
-      console.error(error);
+      console.error("Catalog delete error:", error);
     }
   };
 
-  useEffect(() => {
-    fetchCatalogs();
-  }, []);
-
-  const filteredCatalogs = catalogs.filter(c => 
-    (c.organisationName && c.organisationName.toLowerCase().includes(search.toLowerCase())) || 
-    (c.email && c.email.toLowerCase().includes(search.toLowerCase()))
-  );
+  const filteredCatalogs = catalogs.filter((c) => {
+    const q = search.toLowerCase();
+    return (
+      (c.organisationName && c.organisationName.toLowerCase().includes(q)) ||
+      (c.email && c.email.toLowerCase().includes(q)) ||
+      (c.ownerName && c.ownerName.toLowerCase().includes(q))
+    );
+  });
 
   return (
     <div className="space-y-6 pb-12">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-2xl font-bold text-[#1C1C1A]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
-          Partner Catalogs
-        </h1>
+        <div>
+          <h1 className="text-2xl font-bold text-[#1C1C1A]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+            Partner Catalogs
+          </h1>
+          <p className="text-xs text-[#9E9088] mt-0.5">
+            Manage submissions from artisans and partner suppliers
+          </p>
+        </div>
+
+        <button
+          onClick={handleRefresh}
+          disabled={isRefreshing || loading}
+          className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white border border-[#E8DDD0] text-[#1C1C1A] hover:bg-[#FAF7F2] hover:border-[#4A6741]/40 transition-colors cursor-pointer shadow-xs disabled:opacity-50"
+        >
+          <RefreshCw size={13} className={isRefreshing ? "animate-spin text-[#4A6741]" : ""} />
+          <span>{isRefreshing ? "Refreshing..." : "Refresh"}</span>
+        </button>
       </div>
 
       {/* Data Table */}
       <div className="bg-white rounded-xl shadow-sm border border-[#E8DDD0] overflow-hidden">
-        <div className="p-4 border-b border-[#E8DDD0] flex gap-4 bg-[#FAF7F2]">
+        <div className="p-4 border-b border-[#E8DDD0] flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#FAF7F2]">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
             <input
               type="text"
-              placeholder="Search by shop name or email..."
+              placeholder="Search by shop name, email, or owner..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-[#E8DDD0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C8A97A] text-sm"
+              className="w-full pl-10 pr-4 py-2 border border-[#E8DDD0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C8A97A] text-sm bg-white"
             />
+          </div>
+          <div className="text-xs text-[#9E9088] font-medium">
+            Showing <span className="font-semibold text-[#1C1C1A]">{filteredCatalogs.length}</span> submissions
           </div>
         </div>
 

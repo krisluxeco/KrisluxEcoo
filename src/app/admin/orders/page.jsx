@@ -4,7 +4,9 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Check, X, FileText, Search, Filter, Printer, Download } from "lucide-react";
+import { Check, X, FileText, Search, Filter, Printer, Download, Factory } from "lucide-react";
+import Link from "next/link";
+import { SALES_STATUSES, PRODUCTION_STATUSES } from "@/lib/trackingStages";
 
 export default function AdminQuotesPage() {
   const { data: session, status } = useSession();
@@ -12,26 +14,37 @@ export default function AdminQuotesPage() {
   const [quotes, setQuotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedQuote, setSelectedQuote] = useState(null);
-  const [search, setSearch] = useState("");
-  const [activeTab, setActiveTab] = useState("active"); // "active" | "deleted"
-
-  useEffect(() => {
+  const [search, setSearch] = useState(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
-      const customerParam = params.get("customer");
-      if (customerParam) {
-        setSearch(customerParam);
-      }
+      return params.get("customer") || "";
     }
-  }, []);
+    return "";
+  });
+  const [activeTab, setActiveTab] = useState("active"); // "active" | "deleted"
 
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/admin");
     } else if (status === "authenticated") {
-      fetchQuotes();
+      let ignore = false;
+      const load = async () => {
+        try {
+          const res = await fetch("/api/admin/orders");
+          const data = await res.json();
+          if (!ignore && res.ok && data?.quotes) setQuotes(data.quotes);
+        } catch (err) {
+          if (!ignore) console.error(err);
+        } finally {
+          if (!ignore) setLoading(false);
+        }
+      };
+      load();
+      return () => {
+        ignore = true;
+      };
     }
-  }, [status]);
+  }, [status, router]);
 
   const fetchQuotes = async () => {
     try {
@@ -72,8 +85,14 @@ export default function AdminQuotesPage() {
     "Sample Sent": "bg-purple-100 text-purple-800",
     Approved: "bg-emerald-100 text-emerald-800",
     Rejected: "bg-red-100 text-red-800",
-    Shipped: "bg-gray-100 text-gray-800",
+    "In Production": "bg-indigo-100 text-indigo-800",
+    Shipped: "bg-sky-100 text-sky-800",
+    Delivered: "bg-green-100 text-green-800",
   };
+  // Once production has started, status is driven by the Production board.
+  const inProduction = (q) => PRODUCTION_STATUSES.includes(q.status) && q.status !== "Approved";
+  const productionHref = (q) =>
+    `/admin/production?view=all&q=${encodeURIComponent(q.trackingCode || "")}&order=${q._id}`;
 
   return (
     <div className="p-8 bg-white min-h-screen">
@@ -151,15 +170,28 @@ export default function AdminQuotesPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <select
-                        value={quote.status}
-                        onChange={(e) => updateStatus(quote._id, e.target.value)}
-                        className={`text-xs font-semibold px-3 py-1 rounded-full border-none focus:ring-0 cursor-pointer ${statusColors[quote.status]}`}
-                      >
-                        {Object.keys(statusColors).map((s) => (
-                          <option key={s} value={s}>{s}</option>
-                        ))}
-                      </select>
+                      {inProduction(quote) ? (
+                        <span className={`inline-block text-xs font-semibold px-3 py-1 rounded-full ${statusColors[quote.status]}`}>
+                          {quote.status}
+                        </span>
+                      ) : (
+                        <select
+                          value={quote.status}
+                          onChange={(e) => {
+                            if (e.target.value === "Approved" && !window.confirm("Approve this quote? It will move to the Production board."))
+                              return;
+                            updateStatus(quote._id, e.target.value);
+                          }}
+                          className={`text-xs font-semibold px-3 py-1 rounded-full border-none focus:ring-0 cursor-pointer ${statusColors[quote.status]}`}
+                        >
+                          {SALES_STATUSES.map((s) => (
+                            <option key={s} value={s}>{s}</option>
+                          ))}
+                        </select>
+                      )}
+                      {quote.trackingCode && (
+                        <p className="text-[11px] font-mono text-gray-400 mt-1.5">{quote.trackingCode}</p>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-xs">
                       {new Date(quote.createdAt).toLocaleDateString()}
@@ -172,6 +204,15 @@ export default function AdminQuotesPage() {
                       >
                         <FileText size={14} /> View Invoice
                       </button>
+                      {PRODUCTION_STATUSES.includes(quote.status) && (
+                        <Link
+                          href={productionHref(quote)}
+                          className="text-xs bg-[#4A6741] text-white hover:bg-[#3d5636] px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1.5"
+                          title="Open in Production"
+                        >
+                          <Factory size={14} /> Production
+                        </Link>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -186,7 +227,7 @@ export default function AdminQuotesPage() {
                 }).length === 0 && (
                   <tr>
                     <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
-                      No orders found matching "{search}".
+                      No orders found matching &ldquo;{search}&rdquo;.
                     </td>
                   </tr>
                 )}
@@ -263,7 +304,7 @@ export default function AdminQuotesPage() {
                   <div>
                     <h3 className="text-[10px] font-bold text-[#9E9088] uppercase tracking-widest border-b border-[#ECE6DF] pb-2 mb-3">Order Notes</h3>
                     <p className="text-sm text-[#6B6560] italic leading-relaxed bg-[#FAF7F2] p-4 rounded-sm border-l-4 border-[#C8A97A]">
-                      "{selectedQuote.additionalInfo}"
+                      &ldquo;{selectedQuote.additionalInfo}&rdquo;
                     </p>
                   </div>
                 )}

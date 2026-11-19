@@ -1,74 +1,72 @@
+import { requireAdmin } from "@/lib/adminAuth";
 import connectDb from "@/lib/db";
 import { Catalog } from "@/models/catalog.model";
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
+import uploadOnCloudinary from "@/lib/cloudinary";
 
+const MAX_PDF_BYTES = 15 * 1024 * 1024;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const clean = (v, max = 200) => (typeof v === "string" ? v.trim().slice(0, max) : "");
+
+// POST is public on purpose: partners submit their catalog from /share-catalog.
 export async function POST(req) {
   try {
-    await connectDb();
     const formData = await req.formData();
-    
-    const organisationName = formData.get("organisationName");
-    const ownerName = formData.get("ownerName");
-    const location = formData.get("location");
-    const email = formData.get("email");
-    const phone = formData.get("phone");
-    const moq = formData.get("moq");
-    const sustainableMaterial = formData.get("sustainableMaterial");
-    const productType = formData.get("productType");
-    const collaborationModel = formData.get("collaborationModel");
-    const file = formData.get("file"); // The PDF file
 
-    if (!organisationName || !ownerName || !location || !email || !phone || !file) {
+    const fields = {
+      organisationName: clean(formData.get("organisationName")),
+      ownerName: clean(formData.get("ownerName")),
+      location: clean(formData.get("location")),
+      email: clean(formData.get("email"), 120).toLowerCase(),
+      phone: clean(formData.get("phone"), 20),
+      moq: clean(formData.get("moq"), 100),
+      sustainableMaterial: clean(formData.get("sustainableMaterial")),
+      productType: clean(formData.get("productType")),
+      collaborationModel: clean(formData.get("collaborationModel")),
+    };
+    const file = formData.get("file");
+
+    if (!fields.organisationName || !fields.ownerName || !fields.location || !fields.email || !fields.phone || !file || typeof file === "string") {
       return NextResponse.json(
         { message: "Organisation Name, Owner Name, Location, Email, Phone, and File are required." },
         { status: 400 }
       );
     }
+    if (!EMAIL_RE.test(fields.email)) {
+      return NextResponse.json({ message: "Please enter a valid email address." }, { status: 400 });
+    }
+    if (file.size > MAX_PDF_BYTES) {
+      return NextResponse.json({ message: "The PDF must be smaller than 15 MB." }, { status: 400 });
+    }
 
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    // Only real PDFs: check the file signature, not just the name
+    const head = Buffer.from(await file.slice(0, 5).arrayBuffer()).toString("latin1");
+    if (head !== "%PDF-") {
+      return NextResponse.json({ message: "Please upload your catalog as a PDF file." }, { status: 400 });
+    }
 
-    // Create unique filename
-    const originalName = file.name && file.name !== "blob" ? file.name : "catalog.pdf";
-    const ext = originalName.split('.').pop().toLowerCase();
-    const baseName = originalName.replace(`.${ext}`, '').replace(/[^a-zA-Z0-9]/g, '_') || 'upload';
-    const fileName = `${baseName}_${Date.now()}.${ext}`;
-
-    // Define the upload path (public/uploads/catalogs)
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "catalogs");
-    const filePath = path.join(uploadDir, fileName);
-
-    // Ensure directory exists and write file
-    await fs.mkdir(uploadDir, { recursive: true });
-    await fs.writeFile(filePath, buffer);
-
-    const pdfUrl = `/uploads/catalogs/${fileName}`;
-
-    const newCatalog = await Catalog.create({
-      organisationName,
-      ownerName,
-      location,
-      email,
-      phone,
-      moq,
-      sustainableMaterial,
-      productType,
-      collaborationModel,
-      pdfUrl,
-    });
-
-    return NextResponse.json(
-      { message: "Catalog uploaded successfully.", catalog: newCatalog },
-      { status: 201 }
+    // Stored on Cloudinary — files written into /public at runtime are not served by Next.js
+    const pdfUrl = await uploadOnCloudinary(
+      new File([await file.arrayBuffer()], file.name && file.name !== "blob" ? file.name : "catalog.pdf", { type: "application/pdf" })
     );
+    if (!pdfUrl) {
+      return NextResponse.json({ message: "Upload failed. Please try again in a moment." }, { status: 502 });
+    }
+
+    await connectDb();
+    await Catalog.create({ ...fields, pdfUrl });
+
+    return NextResponse.json({ message: "Catalog uploaded successfully." }, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ message: `Error: ${error.message}` }, { status: 500 });
+    console.error("Catalog upload error:", error);
+    return NextResponse.json({ message: "Something went wrong. Please try again later." }, { status: 500 });
   }
 }
 
 export async function GET(req) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   try {
     await connectDb();
 
@@ -76,6 +74,7 @@ export async function GET(req) {
 
     return NextResponse.json({ catalogs }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ message: `Error: ${error.message}` }, { status: 500 });
+    console.error("Catalogs error:", error);
+    return NextResponse.json({ message: "Failed to load catalogs" }, { status: 500 });
   }
 }

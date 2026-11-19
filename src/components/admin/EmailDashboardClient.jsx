@@ -1,51 +1,98 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Inbox, Send, Trash2, Edit3, Mail, MailOpen, Trash, Reply, X, Loader2, RefreshCw, Search, Star, MoreVertical, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Inbox,
+  Send,
+  Trash2,
+  Edit3,
+  Mail,
+  MailOpen,
+  Reply,
+  X,
+  Loader2,
+  RefreshCw,
+  Search,
+  Star,
+  ChevronLeft,
+  ChevronRight,
+  ArrowLeft,
+  CheckCircle2,
+} from "lucide-react";
 
 export default function EmailDashboardClient() {
   const [folder, setFolder] = useState("inbox");
   const [emails, setEmails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
-  
+  const [searchQuery, setSearchQuery] = useState("");
+
   // Pagination
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({ total: 0, pages: 1 });
-  
+
   const [selectedEmail, setSelectedEmail] = useState(null);
   const [isComposing, setIsComposing] = useState(false);
   const [composeData, setComposeData] = useState({ to: "", subject: "", body: "" });
   const [isSending, setIsSending] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [successToast, setSuccessToast] = useState("");
 
-  // Fetch Emails
-  const fetchEmails = async (currentFolder = folder, currentPage = page) => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/admin/emails?folder=${currentFolder}&page=${currentPage}&limit=20`);
-      const json = await res.json();
-      if (json.success) {
-        setEmails(json.data);
-        setPagination(json.pagination);
-        setUnreadCount(json.unreadCount);
+  // Centralized fetch function
+  const fetchEmails = useCallback(
+    async (targetFolder = folder, targetPage = page) => {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `/api/admin/emails?folder=${targetFolder}&page=${targetPage}&limit=20`
+        );
+        const json = await res.json();
+        if (json.success) {
+          setEmails(json.data || []);
+          setPagination(json.pagination || { total: 0, pages: 1 });
+          setUnreadCount(json.unreadCount || 0);
+        }
+      } catch (error) {
+        console.error("Failed to fetch emails:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Failed to fetch emails:", error);
-    }
-    setLoading(false);
+    },
+    [folder, page]
+  );
+
+  const handleFolderChange = (newFolder) => {
+    setFolder(newFolder);
+    setPage(1);
+    setSelectedEmail(null);
   };
 
   useEffect(() => {
-    setPage(1); // Reset page on folder change
-    fetchEmails(folder, 1);
-    setSelectedEmail(null);
-  }, [folder]);
-  
-  useEffect(() => {
-    if (page > 1) fetchEmails(folder, page);
-  }, [page]);
+    let ignore = false;
+    const load = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `/api/admin/emails?folder=${folder}&page=${page}&limit=20`
+        );
+        const json = await res.json();
+        if (!ignore && json.success) {
+          setEmails(json.data || []);
+          setPagination(json.pagination || { total: 0, pages: 1 });
+          setUnreadCount(json.unreadCount || 0);
+        }
+      } catch (error) {
+        if (!ignore) console.error("Failed to load emails:", error);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    };
+    load();
+    return () => {
+      ignore = true;
+    };
+  }, [folder, page]);
 
   // Mark as Read
   const handleReadEmail = async (email) => {
@@ -57,8 +104,9 @@ export default function EmailDashboardClient() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ isRead: true }),
         });
-        // Update local state
-        setEmails((prev) => prev.map((e) => (e._id === email._id ? { ...e, isRead: true } : e)));
+        setEmails((prev) =>
+          prev.map((e) => (e._id === email._id ? { ...e, isRead: true } : e))
+        );
         setUnreadCount((prev) => Math.max(0, prev - 1));
       } catch (error) {
         console.error("Failed to mark read:", error);
@@ -68,33 +116,38 @@ export default function EmailDashboardClient() {
 
   // Delete Email
   const handleDelete = async (e, id) => {
-    e.stopPropagation(); // Prevent opening the email
+    e.stopPropagation();
     try {
       await fetch(`/api/admin/emails/${id}`, { method: "DELETE" });
+      setEmails((prev) => prev.filter((em) => em._id !== id));
       if (selectedEmail?._id === id) setSelectedEmail(null);
-      fetchEmails();
+      setSuccessToast("Email deleted");
+      setTimeout(() => setSuccessToast(""), 3000);
     } catch (error) {
-      console.error("Failed to delete:", error);
+      console.error("Failed to delete email:", error);
     }
   };
 
   // Toggle Star
   const handleToggleStar = async (e, email) => {
     e.stopPropagation();
+    const newStatus = !email.isStarred;
     try {
-      const newStarredStatus = !email.isStarred;
       await fetch(`/api/admin/emails/${email._id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isStarred: newStarredStatus }),
+        body: JSON.stringify({ isStarred: newStatus }),
       });
-      // Update local state
-      setEmails((prev) => prev.map((e) => (e._id === email._id ? { ...e, isStarred: newStarredStatus } : e)));
+      setEmails((prev) =>
+        prev.map((item) =>
+          item._id === email._id ? { ...item, isStarred: newStatus } : item
+        )
+      );
       if (selectedEmail?._id === email._id) {
-        setSelectedEmail({ ...selectedEmail, isStarred: newStarredStatus });
+        setSelectedEmail((prev) => ({ ...prev, isStarred: newStatus }));
       }
-      if (folder === "starred" && !newStarredStatus) {
-        fetchEmails(); // Remove from view if in starred folder
+      if (folder === "starred" && !newStatus) {
+        setEmails((prev) => prev.filter((item) => item._id !== email._id));
       }
     } catch (error) {
       console.error("Failed to toggle star:", error);
@@ -115,24 +168,31 @@ export default function EmailDashboardClient() {
       if (json.success) {
         setIsComposing(false);
         setComposeData({ to: "", subject: "", body: "" });
-        if (folder === "sent") fetchEmails();
+        setSuccessToast("Email dispatched successfully");
+        setTimeout(() => setSuccessToast(""), 3500);
+        if (folder === "sent") fetchEmails("sent", 1);
       } else {
-        alert("Failed to send: " + json.error);
+        alert("Failed to send: " + (json.error || "Unknown error"));
       }
     } catch (error) {
       console.error("Failed to send email:", error);
       alert("An error occurred while sending the email.");
+    } finally {
+      setIsSending(false);
     }
-    setIsSending(false);
   };
 
   // Reply Setup
   const handleReply = () => {
     if (!selectedEmail) return;
     setComposeData({
-      to: selectedEmail.senderEmail,
-      subject: `Re: ${selectedEmail.subject}`,
-      body: `\n\n--- Original Message ---\nFrom: ${selectedEmail.senderName} <${selectedEmail.senderEmail}>\n\n${selectedEmail.body}`,
+      to: selectedEmail.senderEmail || "",
+      subject: selectedEmail.subject?.startsWith("Re:")
+        ? selectedEmail.subject
+        : `Re: ${selectedEmail.subject || ""}`,
+      body: `\n\n--- Original Message ---\nFrom: ${selectedEmail.senderName} <${selectedEmail.senderEmail}>\nDate: ${new Date(
+        selectedEmail.createdAt
+      ).toLocaleString()}\n\n${selectedEmail.body || ""}`,
     });
     setIsComposing(true);
   };
@@ -144,353 +204,509 @@ export default function EmailDashboardClient() {
       const res = await fetch("/api/admin/emails/sync", { method: "POST" });
       const json = await res.json();
       if (json.success) {
-        // Refresh the inbox to show the newly synced emails
-        if (folder === "inbox") fetchEmails("inbox");
+        setSuccessToast(json.message || "Synced new emails");
+        setTimeout(() => setSuccessToast(""), 3500);
+        fetchEmails(folder, 1);
       } else {
-        alert("Failed to sync: " + json.error);
+        alert("Sync status: " + (json.error || json.message || "Ready"));
       }
     } catch (error) {
       console.error("Sync error:", error);
+    } finally {
+      setIsSyncing(false);
     }
-    setIsSyncing(false);
   };
 
+  // Filter emails by search query in memory
+  const filteredEmails = useMemo(() => {
+    if (!searchQuery.trim()) return emails;
+    const q = searchQuery.toLowerCase();
+    return emails.filter(
+      (em) =>
+        (em.senderName && em.senderName.toLowerCase().includes(q)) ||
+        (em.senderEmail && em.senderEmail.toLowerCase().includes(q)) ||
+        (em.recipientEmail && em.recipientEmail.toLowerCase().includes(q)) ||
+        (em.subject && em.subject.toLowerCase().includes(q)) ||
+        (em.body && em.body.toLowerCase().includes(q))
+    );
+  }, [emails, searchQuery]);
+
   return (
-    <div className="h-[calc(100vh-100px)] flex bg-white rounded-2xl shadow-sm border border-[#E8DDD0] overflow-hidden m-6">
-      
-      {/* Sidebar */}
-      <div className="w-64 bg-[#FAF7F2] border-r border-[#E8DDD0] flex flex-col">
-        <div className="p-6">
-          <button
-            onClick={() => setIsComposing(true)}
-            className="w-full bg-[#1C1C1A] text-white rounded-xl py-3 px-4 flex items-center justify-center gap-2 font-medium hover:bg-[#8B2935] transition-colors shadow-sm"
+    <div className="h-[calc(100vh-125px)] w-full flex flex-col bg-white rounded-2xl shadow-xs border border-[#E8DDD0] overflow-hidden relative">
+      {/* Success Notification Pill */}
+      <AnimatePresence>
+        {successToast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="absolute top-4 right-4 z-50 flex items-center gap-2 bg-[#4A6741] text-white px-4 py-2 rounded-full shadow-lg text-xs font-semibold"
           >
-            <Edit3 size={18} /> Compose
-          </button>
+            <CheckCircle2 size={14} />
+            <span>{successToast}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="flex-1 flex overflow-hidden">
+        {/* 1. Left Folder Sidebar */}
+        <div className="w-56 sm:w-60 bg-[#FAF7F2] border-r border-[#E8DDD0] flex flex-col shrink-0">
+          <div className="p-4">
+            <button
+              onClick={() => {
+                setComposeData({ to: "", subject: "", body: "" });
+                setIsComposing(true);
+              }}
+              className="w-full bg-[#1C1C1A] text-white rounded-xl py-2.5 px-4 flex items-center justify-center gap-2 text-xs font-semibold hover:bg-[#4A6741] transition-all shadow-xs cursor-pointer group"
+            >
+              <Edit3 size={15} className="group-hover:rotate-12 transition-transform" />
+              <span>Compose</span>
+            </button>
+          </div>
+
+          <nav className="flex-1 px-3 space-y-1">
+            <button
+              onClick={() => handleFolderChange("inbox")}
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs transition-colors cursor-pointer ${
+                folder === "inbox"
+                  ? "bg-white text-[#4A6741] font-bold shadow-xs border border-[#E8DDD0]/80"
+                  : "text-[#6B6560] hover:bg-black/5 font-medium"
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <Inbox size={16} />
+                <span>Inbox</span>
+              </div>
+              {unreadCount > 0 && (
+                <span className="bg-[#4A6741] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+
+            <button
+              onClick={() => handleFolderChange("sent")}
+              className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs transition-colors cursor-pointer ${
+                folder === "sent"
+                  ? "bg-white text-[#4A6741] font-bold shadow-xs border border-[#E8DDD0]/80"
+                  : "text-[#6B6560] hover:bg-black/5 font-medium"
+              }`}
+            >
+              <Send size={16} />
+              <span>Sent</span>
+            </button>
+
+            <button
+              onClick={() => handleFolderChange("starred")}
+              className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs transition-colors cursor-pointer ${
+                folder === "starred"
+                  ? "bg-white text-[#4A6741] font-bold shadow-xs border border-[#E8DDD0]/80"
+                  : "text-[#6B6560] hover:bg-black/5 font-medium"
+              }`}
+            >
+              <Star
+                size={16}
+                className={folder === "starred" ? "fill-[#D4AF37] text-[#D4AF37]" : ""}
+              />
+              <span>Starred</span>
+            </button>
+
+            <button
+              onClick={() => handleFolderChange("trash")}
+              className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs transition-colors cursor-pointer ${
+                folder === "trash"
+                  ? "bg-white text-[#4A6741] font-bold shadow-xs border border-[#E8DDD0]/80"
+                  : "text-[#6B6560] hover:bg-black/5 font-medium"
+              }`}
+            >
+              <Trash2 size={16} />
+              <span>Trash</span>
+            </button>
+          </nav>
+
+          <div className="p-4 border-t border-[#E8DDD0] text-[11px] text-[#9E9088] flex items-center justify-between">
+            <span>Mail Channel</span>
+            <span className="font-semibold text-[#4A6741]">Connected</span>
+          </div>
         </div>
 
-        <nav className="flex-1 px-4 space-y-1">
-          <button
-            onClick={() => setFolder("inbox")}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-colors ${folder === "inbox" ? "bg-[#F4EFE6] text-[#8B2935] font-semibold" : "text-[#6B6560] hover:bg-black/5"}`}
-          >
-            <div className="flex items-center gap-3">
-              <Inbox size={18} /> <span className="font-medium">Inbox</span>
-            </div>
-            {unreadCount > 0 && (
-              <span className="bg-[#8B2935] text-white text-xs font-bold px-2 py-0.5 rounded-full">{unreadCount}</span>
-            )}
-          </button>
-          
-          <button
-            onClick={() => setFolder("sent")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${folder === "sent" ? "bg-[#F4EFE6] text-[#8B2935] font-semibold" : "text-[#6B6560] hover:bg-black/5"}`}
-          >
-            <Send size={18} /> <span className="font-medium">Sent</span>
-          </button>
-          
-          <button
-            onClick={() => setFolder("starred")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${folder === "starred" ? "bg-[#F4EFE6] text-[#8B2935] font-semibold" : "text-[#6B6560] hover:bg-black/5"}`}
-          >
-            <Star size={18} className={folder === "starred" ? "fill-[#8B2935] text-[#8B2935]" : ""} /> <span className="font-medium">Starred</span>
-          </button>
-          
-          <button
-            onClick={() => setFolder("trash")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${folder === "trash" ? "bg-[#F4EFE6] text-[#8B2935] font-semibold" : "text-[#6B6560] hover:bg-black/5"}`}
-          >
-            <Trash2 size={18} /> <span className="font-medium">Trash</span>
-          </button>
-        </nav>
-      </div>
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex overflow-hidden">
-        
-        {/* Email List */}
-        <div className={`flex flex-col border-r border-[#E8DDD0] bg-white transition-all duration-300 ${selectedEmail ? 'w-[400px]' : 'w-full'}`}>
-          <div className="p-4 border-b border-[#E8DDD0] flex flex-col gap-3">
+        {/* 2. Middle Email List Pane */}
+        <div
+          className={`flex flex-col border-r border-[#E8DDD0] bg-white transition-all duration-200 shrink-0 ${
+            selectedEmail
+              ? "hidden md:flex md:w-[360px] lg:w-[400px]"
+              : "flex w-full"
+          }`}
+        >
+          {/* Header & Controls */}
+          <div className="p-3.5 border-b border-[#E8DDD0] flex flex-col gap-2.5 bg-[#FAF7F2]/50">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-serif font-bold text-[#1C1C1A] capitalize">{folder}</h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-base font-bold text-[#1C1C1A] capitalize tracking-tight font-serif">
+                  {folder}
+                </h2>
+                <span className="text-xs text-[#9E9088]">
+                  ({filteredEmails.length})
+                </span>
+              </div>
+
               {folder === "inbox" && (
                 <button
                   onClick={handleSync}
                   disabled={isSyncing}
-                  className="flex items-center gap-2 text-sm text-[#6B6560] hover:text-[#1C1C1A] bg-[#FAF7F2] px-3 py-1.5 rounded-lg border border-[#E8DDD0] disabled:opacity-50 transition-colors"
-                  title="Pull external emails from Gmail"
+                  className="flex items-center gap-1.5 text-xs font-semibold text-[#1C1C1A] bg-white px-2.5 py-1 rounded-lg border border-[#E8DDD0] hover:bg-[#FAF7F2] transition-colors cursor-pointer disabled:opacity-50 shadow-2xs"
+                  title="Check and pull latest emails"
                 >
-                  <RefreshCw size={14} className={isSyncing ? "animate-spin" : ""} />
-                  <span className="font-medium">{isSyncing ? "Syncing..." : "Sync"}</span>
+                  <RefreshCw
+                    size={12}
+                    className={isSyncing ? "animate-spin text-[#4A6741]" : ""}
+                  />
+                  <span>{isSyncing ? "Syncing..." : "Sync"}</span>
                 </button>
               )}
             </div>
-            
-            <div className="flex items-center gap-4">
-              {/* Search Bar Placeholder */}
+
+            <div className="flex items-center gap-2">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9E9088]" size={16} />
-                <input 
-                  type="text" 
-                  placeholder="Search mail" 
-                  className="w-full bg-[#FAF7F2] border border-[#E8DDD0] rounded-xl pl-9 pr-4 py-2 text-sm text-[#1C1C1A] outline-none focus:ring-2 focus:ring-[#8B2935]/20 transition-all"
+                <Search
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9E9088]"
+                  size={14}
+                />
+                <input
+                  type="text"
+                  placeholder="Search sender, subject..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-white border border-[#E8DDD0] rounded-lg pl-8 pr-3 py-1.5 text-xs text-[#1C1C1A] outline-none focus:ring-1 focus:ring-[#C8A97A] transition-all placeholder:text-[#9E9088]"
                 />
               </div>
-              
-              {/* Pagination Controls */}
-              <div className="flex items-center gap-2 shrink-0 text-[#6B6560]">
-                <span className="text-xs font-medium mr-2">
-                  {pagination.total > 0 ? `${(page - 1) * 20 + 1}-${Math.min(page * 20, pagination.total)} of ${pagination.total}` : "0-0 of 0"}
-                </span>
-                <button 
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="p-1.5 rounded-lg hover:bg-[#FAF7F2] disabled:opacity-30 transition-colors"
-                >
-                  <ChevronLeft size={16} />
-                </button>
-                <button 
-                  onClick={() => setPage(p => Math.min(pagination.pages, p + 1))}
-                  disabled={page >= pagination.pages}
-                  className="p-1.5 rounded-lg hover:bg-[#FAF7F2] disabled:opacity-30 transition-colors"
-                >
-                  <ChevronRight size={16} />
-                </button>
-              </div>
+
+              {pagination.pages > 1 && (
+                <div className="flex items-center gap-1 text-[#6B6560] shrink-0">
+                  <button
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    className="p-1 rounded hover:bg-[#FAF7F2] disabled:opacity-30 cursor-pointer"
+                  >
+                    <ChevronLeft size={14} />
+                  </button>
+                  <span className="text-[11px] font-medium text-[#9E9088]">
+                    {page}/{pagination.pages}
+                  </span>
+                  <button
+                    onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
+                    disabled={page >= pagination.pages}
+                    className="p-1 rounded hover:bg-[#FAF7F2] disabled:opacity-30 cursor-pointer"
+                  >
+                    <ChevronRight size={14} />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
-          
-          <div className="flex-1 overflow-y-auto">
+
+          {/* List Content */}
+          <div className="flex-1 overflow-y-auto divide-y divide-[#E8DDD0]/60">
             {loading ? (
               <div className="p-4 space-y-3">
                 {[1, 2, 3, 4, 5].map((i) => (
-                  <div key={i} className="p-4 rounded-xl bg-white border border-[#ECE6DF] space-y-2 animate-pulse">
+                  <div
+                    key={i}
+                    className="p-3.5 rounded-xl bg-white border border-[#ECE6DF] space-y-2 animate-pulse"
+                  >
                     <div className="flex justify-between">
-                      <div className="h-4 w-36 bg-[#E8DDD0] rounded-md" />
-                      <div className="h-3 w-16 bg-[#E8DDD0]/60 rounded-full" />
+                      <div className="h-3.5 w-28 bg-[#E8DDD0] rounded-md" />
+                      <div className="h-3 w-12 bg-[#E8DDD0]/50 rounded-full" />
                     </div>
-                    <div className="h-4 w-4/5 bg-[#E8DDD0]/80 rounded-md" />
-                    <div className="h-3 w-full bg-[#E8DDD0]/40 rounded-full" />
+                    <div className="h-3 w-4/5 bg-[#E8DDD0]/70 rounded-md" />
                   </div>
                 ))}
               </div>
-            ) : emails.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-48 text-[#9E9088]">
-                <MailOpen size={48} className="mb-4 opacity-20" />
-                <p>No emails in {folder}</p>
+            ) : filteredEmails.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-52 text-[#9E9088] p-6 text-center">
+                <MailOpen size={36} className="mb-2 opacity-30 text-[#C8A97A]" />
+                <p className="text-xs font-semibold text-[#1C1C1A]">No messages</p>
+                <p className="text-[11px] text-[#9E9088] mt-0.5">
+                  Your {folder} folder is clear
+                </p>
               </div>
             ) : (
-              <ul className="divide-y divide-[#E8DDD0]/50">
-                {emails.map((email) => {
-                  const avatarLetter = (folder === "sent" ? email.recipientEmail[0] : email.senderName[0])?.toUpperCase() || "?";
-                  return (
-                  <li
+              filteredEmails.map((email) => {
+                const isSelected = selectedEmail?._id === email._id;
+                const letter = (
+                  folder === "sent"
+                    ? email.recipientEmail?.[0]
+                    : email.senderName?.[0] || email.senderEmail?.[0]
+                )?.toUpperCase() || "K";
+
+                return (
+                  <div
                     key={email._id}
                     onClick={() => handleReadEmail(email)}
-                    className={`p-4 cursor-pointer transition-all relative group flex gap-3 items-start ${selectedEmail?._id === email._id ? 'bg-[#F4EFE6] border-l-4 border-[#8B2935]' : !email.isRead ? 'bg-white border-l-4 border-transparent' : 'bg-[#FAF7F2]/30 border-l-4 border-transparent'} hover:bg-[#FAF7F2]`}
+                    className={`p-3.5 cursor-pointer transition-all relative group flex gap-3 items-start ${
+                      isSelected
+                        ? "bg-[#FAF7F2] border-l-3 border-[#4A6741]"
+                        : !email.isRead
+                        ? "bg-white font-semibold border-l-3 border-[#C8A97A]"
+                        : "bg-white/60 hover:bg-[#FAF7F2]/50 border-l-3 border-transparent"
+                    }`}
                   >
-                    {/* Avatar */}
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm ${!email.isRead ? 'bg-[#8B2935]' : 'bg-[#C8A97A]'}`}>
-                      {avatarLetter}
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 ${
+                        !email.isRead ? "bg-[#4A6741]" : "bg-[#C8A97A]"
+                      }`}
+                    >
+                      {letter}
                     </div>
 
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 pr-6">
                       <div className="flex justify-between items-baseline mb-0.5">
-                        <h4 className={`text-sm truncate pr-2 ${!email.isRead ? 'text-[#1C1C1A] font-bold' : 'text-[#4A4541] font-medium'}`}>
-                          {folder === "sent" ? `To: ${email.recipientEmail}` : email.senderName}
+                        <h4
+                          className={`text-xs truncate ${
+                            !email.isRead
+                              ? "font-bold text-[#1C1C1A]"
+                              : "font-medium text-[#4A4541]"
+                          }`}
+                        >
+                          {folder === "sent"
+                            ? `To: ${email.recipientEmail}`
+                            : email.senderName || email.senderEmail}
                         </h4>
-                        <span className={`text-[11px] whitespace-nowrap ${!email.isRead ? 'text-[#8B2935] font-semibold' : 'text-[#9E9088]'}`}>
-                          {new Date(email.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                        <span className="text-[10px] text-[#9E9088] shrink-0 ml-2">
+                          {new Date(email.createdAt).toLocaleDateString([], {
+                            month: "short",
+                            day: "numeric",
+                          })}
                         </span>
                       </div>
-                      
-                      <h5 className={`text-sm truncate mb-1 ${!email.isRead ? 'text-[#1C1C1A] font-semibold' : 'text-[#6B6560]'}`}>
-                        {email.subject}
+
+                      <h5
+                        className={`text-xs truncate ${
+                          !email.isRead ? "font-semibold text-[#1C1C1A]" : "text-[#6B6560]"
+                        }`}
+                      >
+                        {email.subject || "(No Subject)"}
                       </h5>
-                      <p className="text-xs text-[#9E9088] truncate pr-8">{email.body.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ')}</p>
+
+                      <p className="text-[11px] text-[#9E9088] truncate mt-0.5">
+                        {email.body
+                          ?.replace(/<[^>]+>/g, "")
+                          .replace(/&nbsp;/g, " ") || ""}
+                      </p>
                     </div>
-                    
-                    {/* Actions */}
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+
+                    {/* Quick Hover Actions */}
+                    <div className="absolute right-3 top-3 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={(e) => handleToggleStar(e, email)}
-                        className={`p-2 bg-white rounded-full shadow-sm hover:bg-yellow-50 border border-[#E8DDD0] ${email.isStarred ? 'opacity-100 text-[#F59E0B] border-[#F59E0B]/30' : 'text-[#9E9088]'}`}
+                        className={`p-1 rounded hover:bg-white border border-transparent hover:border-[#E8DDD0] ${
+                          email.isStarred ? "opacity-100 text-[#D4AF37]" : "text-[#9E9088]"
+                        }`}
                         title={email.isStarred ? "Unstar" : "Star"}
                       >
-                        <Star size={14} className={email.isStarred ? "fill-[#F59E0B]" : ""} />
+                        <Star
+                          size={13}
+                          className={email.isStarred ? "fill-[#D4AF37]" : ""}
+                        />
                       </button>
                       <button
                         onClick={(e) => handleDelete(e, email._id)}
-                        className="p-2 bg-white rounded-full shadow-sm text-red-500 hover:bg-red-50 border border-[#E8DDD0]"
-                        title={folder === 'trash' ? "Delete Permanently" : "Move to Trash"}
+                        className="p-1 rounded hover:bg-red-50 text-red-500 hover:text-red-600"
+                        title="Delete"
                       >
-                        <Trash size={14} />
+                        <Trash2 size={13} />
                       </button>
                     </div>
-                    
-                    {/* Unread indicator dot */}
-                    {!email.isRead && (
-                      <div className="absolute top-4 right-4 w-2.5 h-2.5 bg-[#8B2935] rounded-full group-hover:hidden shadow-sm" />
-                    )}
-                    {/* Star indicator dot for non-hovered state if starred */}
-                    {email.isRead && email.isStarred && (
-                      <div className="absolute top-4 right-4 text-[#F59E0B] group-hover:hidden">
-                         <Star size={12} className="fill-[#F59E0B]" />
-                      </div>
-                    )}
-                  </li>
-                )})}
-              </ul>
+                  </div>
+                );
+              })
             )}
           </div>
         </div>
 
-        {/* Email Reading Pane */}
+        {/* 3. Right Email View Pane */}
         {selectedEmail ? (
-          <div className="flex-1 flex flex-col bg-white">
-            <div className="px-8 py-6 border-b border-[#E8DDD0] flex justify-between items-start bg-[#FAF7F2]/30">
-              <h2 className="text-[22px] leading-tight font-serif font-bold text-[#1C1C1A] pr-4">{selectedEmail.subject}</h2>
-              <div className="flex gap-2 shrink-0">
+          <div className="flex-1 flex flex-col bg-white overflow-hidden">
+            {/* Action Bar */}
+            <div className="px-6 py-4 border-b border-[#E8DDD0] flex items-center justify-between bg-[#FAF7F2]/40">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setSelectedEmail(null)}
+                  className="md:hidden p-1.5 rounded-lg text-[#1C1C1A] hover:bg-black/5"
+                  title="Back to list"
+                >
+                  <ArrowLeft size={18} />
+                </button>
+                <h3 className="text-base sm:text-lg font-bold text-[#1C1C1A] truncate font-serif">
+                  {selectedEmail.subject || "(No Subject)"}
+                </h3>
+              </div>
+
+              <div className="flex items-center gap-2">
                 <button
                   onClick={handleReply}
-                  className="p-2.5 text-[#6B6560] hover:text-[#1C1C1A] hover:bg-white rounded-xl transition-all shadow-sm border border-transparent hover:border-[#E8DDD0]"
-                  title="Reply"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-[#E8DDD0] text-[#1C1C1A] hover:bg-[#FAF7F2] hover:border-[#4A6741] transition-all cursor-pointer shadow-2xs"
                 >
-                  <Reply size={18} />
+                  <Reply size={13} />
+                  <span>Reply</span>
                 </button>
                 <button
                   onClick={(e) => handleDelete(e, selectedEmail._id)}
-                  className="p-2.5 text-[#6B6560] hover:text-red-600 hover:bg-red-50 rounded-xl transition-all shadow-sm border border-transparent hover:border-red-100"
-                  title={folder === 'trash' ? "Delete Permanently" : "Move to Trash"}
+                  className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                  title="Delete email"
                 >
-                  <Trash2 size={18} />
-                </button>
-                <button
-                  className="p-2.5 text-[#6B6560] hover:text-[#1C1C1A] hover:bg-white rounded-xl transition-all shadow-sm border border-transparent hover:border-[#E8DDD0]"
-                >
-                  <MoreVertical size={18} />
+                  <Trash2 size={15} />
                 </button>
               </div>
             </div>
-            
-            <div className="px-8 py-5 flex items-center justify-between border-b border-[#E8DDD0]/50">
-              <div className="flex items-center gap-4">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-sm ${!selectedEmail.isRead ? 'bg-[#8B2935]' : 'bg-[#C8A97A]'}`}>
-                  {folder === "sent" ? selectedEmail.recipientEmail[0].toUpperCase() : selectedEmail.senderName[0].toUpperCase()}
+
+            {/* Sender Details */}
+            <div className="px-6 py-4 border-b border-[#E8DDD0]/60 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#4A6741] text-white flex items-center justify-center font-bold text-sm shadow-xs">
+                  {(
+                    selectedEmail.senderName?.[0] ||
+                    selectedEmail.senderEmail?.[0] ||
+                    "K"
+                  ).toUpperCase()}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="font-semibold text-[#1C1C1A]">
-                      {folder === "sent" ? selectedEmail.recipientEmail : selectedEmail.senderName}
+                    <p className="text-sm font-semibold text-[#1C1C1A]">
+                      {selectedEmail.senderName || selectedEmail.senderEmail}
                     </p>
-                    <button
-                        onClick={(e) => handleToggleStar(e, selectedEmail)}
-                        className={`${selectedEmail.isStarred ? 'text-[#F59E0B]' : 'text-[#E8DDD0] hover:text-[#9E9088]'} transition-colors`}
-                        title={selectedEmail.isStarred ? "Unstar" : "Star"}
-                      >
-                        <Star size={16} className={selectedEmail.isStarred ? "fill-[#F59E0B]" : ""} />
-                    </button>
+                    <span className="text-xs text-[#9E9088]">
+                      &lt;{selectedEmail.senderEmail}&gt;
+                    </span>
                   </div>
-                  <p className="text-sm text-[#6B6560]">
-                    <span className="text-[#9E9088]">to</span> {folder === "sent" ? selectedEmail.recipientEmail : 'me'}
+                  <p className="text-xs text-[#9E9088] mt-0.5">
+                    to {selectedEmail.recipientEmail || "KrisluxECO Concierge"}
                   </p>
                 </div>
               </div>
-              <p className="text-xs text-[#9E9088] font-medium">
-                {new Date(selectedEmail.createdAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
-              </p>
+
+              <span className="text-xs text-[#9E9088] font-medium">
+                {new Date(selectedEmail.createdAt).toLocaleString([], {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })}
+              </span>
             </div>
-            
-            <div className="flex-1 p-8 overflow-y-auto">
-              <div 
-                className="prose prose-sm md:prose-base max-w-none text-[#1C1C1A] font-sans leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: selectedEmail.body.replace(/\n/g, '<br/>') }}
-              />
+
+            {/* Email Body */}
+            <div className="flex-1 p-6 sm:p-8 overflow-y-auto text-[#1C1C1A] text-sm leading-relaxed whitespace-pre-wrap font-sans">
+              {selectedEmail.body || ""}
             </div>
-            
-            {/* Quick Reply Box */}
-            <div className="p-6 border-t border-[#E8DDD0] bg-[#FAF7F2]/50">
-              <button 
+
+            {/* Quick Reply Bar */}
+            <div className="p-4 border-t border-[#E8DDD0] bg-[#FAF7F2]/40">
+              <button
                 onClick={handleReply}
-                className="w-full text-left bg-white border border-[#E8DDD0] rounded-xl p-4 text-[#9E9088] flex items-center gap-3 hover:shadow-sm transition-all hover:border-[#C8A97A]"
+                className="w-full text-left bg-white border border-[#E8DDD0] rounded-xl px-4 py-2.5 text-xs text-[#9E9088] flex items-center gap-2 hover:border-[#4A6741] transition-all cursor-pointer shadow-2xs"
               >
-                <Reply size={18} /> Click here to reply...
+                <Reply size={14} className="text-[#4A6741]" />
+                <span>Click here to quickly draft a response...</span>
               </button>
             </div>
           </div>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center bg-[#FAF7F2]/30 text-[#9E9088]">
-            <div className="w-24 h-24 rounded-full bg-[#E8DDD0]/50 flex items-center justify-center mb-6">
-              <Mail size={40} className="text-[#C8A97A]" />
+          <div className="hidden md:flex flex-1 flex-col items-center justify-center bg-[#FAF7F2]/30 text-center p-8">
+            <div className="w-16 h-16 rounded-full bg-white border border-[#E8DDD0] flex items-center justify-center mb-3 shadow-xs">
+              <Mail size={28} className="text-[#C8A97A]" />
             </div>
-            <h3 className="text-xl font-serif font-bold text-[#1C1C1A] mb-2">No email selected</h3>
-            <p>Select an email from the list to view its contents.</p>
+            <h4
+              className="text-base font-bold text-[#1C1C1A]"
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+            >
+              No Conversation Selected
+            </h4>
+            <p className="text-xs text-[#9E9088] mt-1 max-w-xs">
+              Select an incoming customer inquiry or dispatch an email from the left list.
+            </p>
           </div>
         )}
       </div>
 
-      {/* Compose Modal */}
+      {/* 4. Luxury Compose Modal */}
       <AnimatePresence>
         {isComposing && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
             <motion.div
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden border border-[#E8DDD0] flex flex-col"
+              initial={{ opacity: 0, scale: 0.96, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 15 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden border border-[#E8DDD0] flex flex-col"
             >
-              <div className="px-6 py-4 border-b border-[#E8DDD0] flex justify-between items-center bg-[#FAF7F2]">
-                <h3 className="font-serif font-bold text-lg text-[#1C1C1A]">New Message</h3>
-                <button onClick={() => setIsComposing(false)} className="text-[#9E9088] hover:text-[#1C1C1A] transition-colors">
-                  <X size={20} />
+              <div className="px-5 py-3.5 border-b border-[#E8DDD0] flex justify-between items-center bg-[#FAF7F2]">
+                <h3
+                  className="font-bold text-base text-[#1C1C1A]"
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+                >
+                  New Dispatch
+                </h3>
+                <button
+                  onClick={() => setIsComposing(false)}
+                  className="text-[#9E9088] hover:text-[#1C1C1A] p-1 rounded-md transition-colors cursor-pointer"
+                >
+                  <X size={18} />
                 </button>
               </div>
-              
+
               <form onSubmit={handleSend} className="flex flex-col flex-1">
-                <div className="px-6 py-3 border-b border-[#E8DDD0]">
+                <div className="px-5 py-2.5 border-b border-[#E8DDD0]">
                   <input
                     type="email"
                     required
-                    placeholder="To"
+                    placeholder="Recipient email (To:)"
                     value={composeData.to}
-                    onChange={(e) => setComposeData({ ...composeData, to: e.target.value })}
-                    className="w-full bg-transparent outline-none text-[#1C1C1A] placeholder-[#9E9088]"
+                    onChange={(e) =>
+                      setComposeData({ ...composeData, to: e.target.value })
+                    }
+                    className="w-full bg-transparent outline-none text-xs text-[#1C1C1A] placeholder:text-[#9E9088]"
                   />
                 </div>
-                <div className="px-6 py-3 border-b border-[#E8DDD0]">
+                <div className="px-5 py-2.5 border-b border-[#E8DDD0]">
                   <input
                     type="text"
                     required
                     placeholder="Subject"
                     value={composeData.subject}
-                    onChange={(e) => setComposeData({ ...composeData, subject: e.target.value })}
-                    className="w-full bg-transparent outline-none text-[#1C1C1A] font-medium placeholder-[#9E9088]"
+                    onChange={(e) =>
+                      setComposeData({ ...composeData, subject: e.target.value })
+                    }
+                    className="w-full bg-transparent outline-none text-xs font-semibold text-[#1C1C1A] placeholder:text-[#9E9088]"
                   />
                 </div>
-                <div className="p-6 flex-1 min-h-[300px]">
+                <div className="p-5 flex-1 min-h-[220px]">
                   <textarea
                     required
-                    placeholder="Write your message..."
+                    placeholder="Write your email dispatch here..."
                     value={composeData.body}
-                    onChange={(e) => setComposeData({ ...composeData, body: e.target.value })}
-                    className="w-full h-full bg-transparent outline-none resize-none text-[#1C1C1A] placeholder-[#9E9088]"
+                    onChange={(e) =>
+                      setComposeData({ ...composeData, body: e.target.value })
+                    }
+                    className="w-full h-full bg-transparent outline-none resize-none text-xs text-[#1C1C1A] placeholder:text-[#9E9088] leading-relaxed"
                   />
                 </div>
-                <div className="px-6 py-4 bg-[#FAF7F2] border-t border-[#E8DDD0] flex justify-end gap-3">
+                <div className="px-5 py-3 bg-[#FAF7F2] border-t border-[#E8DDD0] flex justify-end gap-2.5">
                   <button
                     type="button"
                     onClick={() => setIsComposing(false)}
-                    className="px-6 py-2 rounded-xl text-[#6B6560] font-medium hover:bg-black/5 transition-colors"
+                    className="px-4 py-1.5 rounded-xl text-xs text-[#6B6560] font-medium hover:bg-black/5 transition-colors cursor-pointer"
                   >
                     Discard
                   </button>
                   <button
                     type="submit"
                     disabled={isSending}
-                    className="px-6 py-2 rounded-xl bg-[#8B2935] text-white font-medium hover:bg-[#72202a] transition-colors disabled:opacity-50 flex items-center gap-2"
+                    className="px-5 py-1.5 rounded-xl bg-[#4A6741] text-white text-xs font-semibold hover:bg-[#3d5535] transition-colors disabled:opacity-50 flex items-center gap-1.5 shadow-xs cursor-pointer"
                   >
-                    {isSending ? <Loader2 className="animate-spin" size={18} /> : <Send size={18} />}
-                    Send
+                    {isSending ? (
+                      <Loader2 className="animate-spin" size={14} />
+                    ) : (
+                      <Send size={14} />
+                    )}
+                    <span>Send Message</span>
                   </button>
                 </div>
               </form>
@@ -498,7 +714,6 @@ export default function EmailDashboardClient() {
           </div>
         )}
       </AnimatePresence>
-
     </div>
   );
 }

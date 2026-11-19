@@ -10,6 +10,7 @@ import { User, Mail, Phone, Check, Loader2, Camera, LayoutDashboard, History, Se
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import Link from "next/link";
 import ProfileLoading from "./loading";
+import OrderTrackingStrip from "@/components/OrderTrackingStrip";
 
 const serif = "var(--font-playfair), Georgia, serif";
 const sans = "var(--font-montserrat), sans-serif";
@@ -563,17 +564,21 @@ export default function UserProfilePage() {
 
                           <div className="flex items-center gap-2">
                             <div className={`w-2 h-2 rounded-full ${quote.status === 'Pending' ? 'bg-amber-500' :
-                                quote.status === 'Approved' ? 'bg-emerald-600' :
+                                ['Approved', 'In Production', 'Shipped', 'Delivered'].includes(quote.status) ? 'bg-emerald-600' :
+                                quote.status === 'Rejected' ? 'bg-rose-500' :
                                   'bg-gray-400'
                               }`} />
                             <span className={`text-[10px] font-bold uppercase tracking-widest ${quote.status === 'Pending' ? 'text-amber-600' :
-                                quote.status === 'Approved' ? 'text-emerald-700' :
+                                ['Approved', 'In Production', 'Shipped', 'Delivered'].includes(quote.status) ? 'text-emerald-700' :
+                                quote.status === 'Rejected' ? 'text-rose-600' :
                                   'text-gray-600'
                               }`}>
                               {quote.status}
                             </span>
                           </div>
                         </div>
+
+                        <OrderTrackingStrip quote={quote} />
 
                         <div className="mb-10">
                           <table className="w-full text-left text-sm text-[#6B6560]">

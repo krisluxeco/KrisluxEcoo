@@ -82,32 +82,16 @@ function BlogSlideshow() {
   );
 }
 
-export default function BlogListing() {
+export default function BlogListing({ initialBlogs }) {
   const containerRef = useRef(null);
   const { scrollYProgress: heroProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"],
   });
   const heroY = useTransform(heroProgress, [0, 1], ["0%", "40%"]);
-  const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        const res = await fetch("/api/blog");
-        if (res.ok) {
-          const data = await res.json();
-          setBlogs(data.blogs);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchBlogs();
-  }, []);
+  // Posts come pre-rendered from the server (so search engines and AI crawlers see them).
+  const blogs = initialBlogs || [];
+  const loading = false;
 
   return (
     <div ref={containerRef} className="min-h-screen bg-[#FAF7F2] overflow-x-hidden">
@@ -168,7 +152,7 @@ export default function BlogListing() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
             {blogs.map((blog, idx) => (
               <motion.div
-                key={blog._id}
+                key={blog.slug}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
@@ -190,7 +174,7 @@ export default function BlogListing() {
                   </div>
                   <div className="space-y-3">
                     <div className="flex items-center gap-3 text-xs tracking-widest uppercase text-[#9E9088] font-bold">
-                      <span>{new Date(blog.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</span>
+                      <span>{new Date(blog.createdAt).toLocaleDateString("en-IN", { month: "long", day: "numeric", year: "numeric" })}</span>
                     </div>
                     <h2
                       className="text-2xl text-[#1C1C1A] leading-snug group-hover:text-[#C8A97A] transition-colors"
@@ -199,7 +183,7 @@ export default function BlogListing() {
                       {blog.title}
                     </h2>
                     <p className="text-gray-600 line-clamp-3 leading-relaxed">
-                      {blog.content.replace(/<[^>]+>/g, '')}
+                      {blog.excerpt}
                     </p>
                     <div className="pt-2 text-sm font-bold tracking-wider uppercase text-[#1C1C1A] flex items-center gap-2 group-hover:text-[#C8A97A] transition-colors">
                       Read Article

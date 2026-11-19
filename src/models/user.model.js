@@ -34,8 +34,16 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["user", "admin"],
+      enum: ["user", "admin", "manufacturer"],
       default: "user",
+    },
+
+    // Workshop / Manufacturer details (only used when role === "manufacturer")
+    workshopDetails: {
+      workshopName: { type: String, default: "" },
+      artisanCluster: { type: String, default: "Begusarai, Bihar" },
+      activeWeavers: { type: Number, default: 0 },
+      specialization: { type: String, default: "" },
     },
 
     image: {
@@ -104,6 +112,21 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+
+    // Manufacturer invitation (only a SHA-256 hash of the token is stored)
+    inviteTokenHash: {
+      type: String,
+      default: null,
+      index: true,
+    },
+    inviteTokenExpires: {
+      type: Date,
+      default: null,
+    },
+    invitedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
@@ -112,7 +135,7 @@ const userSchema = new mongoose.Schema(
 
 if (mongoose.models.User) {
   // If User model is cached but doesn't have the new savedProducts schema path, delete the cached version
-  if (!mongoose.models.User.schema.paths.savedProducts) {
+  if (!mongoose.models.User.schema.paths.savedProducts || !mongoose.models.User.schema.paths.inviteTokenHash) {
     delete mongoose.models.User;
   }
 }

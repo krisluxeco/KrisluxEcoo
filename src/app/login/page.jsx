@@ -332,10 +332,16 @@ export default function LoginPage() {
 
     setLoading(false);
 
-    if (sessionData?.user?.role === "admin") {
-      router.push("/admin");
+    const role = sessionData?.user?.role;
+    const callbackUrl = new URLSearchParams(window.location.search).get("callbackUrl");
+    const safeCallback = callbackUrl && callbackUrl.startsWith("/") && !callbackUrl.startsWith("//") ? callbackUrl : null;
+
+    if (role === "admin") {
+      router.push(safeCallback || "/admin");
+    } else if (role === "manufacturer") {
+      router.push("/manufacturer");
     } else {
-      router.push("/");
+      router.push(safeCallback && !safeCallback.startsWith("/admin") && !safeCallback.startsWith("/manufacturer") ? safeCallback : "/");
     }
   };
 

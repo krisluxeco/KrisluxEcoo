@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 import connectDb from "@/lib/db";
 import Quote from "@/models/quote.model";
 import { auth } from "@/auth";
+import { SALES_STATUSES } from "@/lib/trackingStages";
 
 export async function GET(req) {
   try {
     // Basic admin check
     const session = await auth();
-    if (!session || !session.user) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    if (session?.user?.role !== "admin") {
+      return NextResponse.json({ message: "Admin access required" }, { status: 403 });
     }
 
     await connectDb();
@@ -27,8 +28,8 @@ export async function GET(req) {
 export async function PATCH(req) {
   try {
     const session = await auth();
-    if (!session || !session.user) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    if (session?.user?.role !== "admin") {
+      return NextResponse.json({ message: "Admin access required" }, { status: 403 });
     }
 
     const { id, status, adminNotes, formalQuoteUrl } = await req.json();
@@ -38,9 +39,28 @@ export async function PATCH(req) {
     }
 
     await connectDb();
+    // Sales statuses only — production statuses are driven by the Production board.
+    if (status !== undefined && !SALES_STATUSES.includes(status)) {
+      return NextResponse.json({ message: "Invalid status" }, { status: 400 });
+    }
+    if (status !== undefined) {
+      const existing = await Quote.findById(id).select("status currentStage");
+      if (!existing) return NextResponse.json({ message: "Quote not found" }, { status: 404 });
+      if (existing.currentStage && existing.currentStage !== "order_received") {
+        return NextResponse.json(
+          { message: "This order is already in production. Manage it from the Production page." },
+          { status: 409 }
+        );
+      }
+    }
+    const set = {};
+    if (status !== undefined) set.status = status;
+    if (adminNotes !== undefined) set.adminNotes = adminNotes;
+    if (formalQuoteUrl !== undefined) set.formalQuoteUrl = formalQuoteUrl;
+
     const updated = await Quote.findByIdAndUpdate(
       id,
-      { $set: { status, adminNotes, formalQuoteUrl } },
+      { $set: set },
       { new: true }
     );
 

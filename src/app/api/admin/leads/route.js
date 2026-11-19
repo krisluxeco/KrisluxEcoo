@@ -1,8 +1,12 @@
+import { requireAdmin } from "@/lib/adminAuth";
 import { NextResponse } from "next/server";
 import connectDb from "@/lib/db";
 import Lead from "@/models/Lead.model";
 
 export async function GET(req) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   try {
     await connectDb();
 

@@ -1,8 +1,12 @@
+import { requireAdmin } from "@/lib/adminAuth";
 import connectDb from "@/lib/db";
 import { Catalog } from "@/models/catalog.model";
 import { NextResponse } from "next/server";
 
 export async function PUT(req, { params }) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   try {
     await connectDb();
     const { id } = await params;
@@ -33,6 +37,9 @@ export async function PUT(req, { params }) {
 }
 
 export async function DELETE(req, { params }) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+
   try {
     await connectDb();
     const { id } = await params;
